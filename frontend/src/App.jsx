@@ -71,11 +71,11 @@ export default function App() {
             </div>
 
             <a
-              href="https://github.com"
+              href="https://github.com/0xSenior"
               target="_blank"
               rel="noreferrer"
               className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white border border-white/10 transition-colors cursor-pointer"
-              title="GitHub Repository"
+              title="GitHub Profile"
             >
               <Github className="w-4 h-4" />
             </a>

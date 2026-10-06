@@ -13,7 +13,7 @@ const DOCK_ITEMS = [
   { id: 'chat', label: 'Assistant', icon: MessageSquareCode, color: 'text-blue-400' },
   { id: 'docs', label: 'Architecture', icon: Layers, color: 'text-indigo-400' },
   { id: 'knowledge', label: 'Knowledge Base', icon: Database, color: 'text-amber-400' },
-  { id: 'engineer', label: 'The Engineer', icon: UserCheck, color: 'text-emerald-400' },
+  { id: 'engineer', label: 'Ahmed Harby (0xSenior)', icon: UserCheck, color: 'text-emerald-400' },
 ];
 
 function DockIcon({ coordinate, item, activeTab, onSelect, isVertical }) {
