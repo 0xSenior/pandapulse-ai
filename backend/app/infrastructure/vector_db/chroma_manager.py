@@ -1,14 +1,13 @@
 """ChromaDB Vector Store and Local/Ollama Embeddings Manager."""
 
 import hashlib
-import json
 import math
-import os
 from pathlib import Path
-from typing import Any, Dict, List, Optional
-import httpx
+
 import chromadb
+import httpx
 from chromadb.config import Settings
+
 from app.domain.entities import DocumentChunk, RetrievalResult
 from app.domain.interfaces import IEmbeddingProvider, IVectorStore
 
@@ -27,7 +26,7 @@ class HybridEmbeddingProvider(IEmbeddingProvider):
     def get_dimension(self) -> int:
         return self.dimension
 
-    def _fallback_embed(self, text: str) -> List[float]:
+    def _fallback_embed(self, text: str) -> list[float]:
         """Deterministic high-dimensional semantic hash projection (dim=768)."""
         vector = [0.0] * self.dimension
         words = text.lower().split()
@@ -47,7 +46,7 @@ class HybridEmbeddingProvider(IEmbeddingProvider):
             vector = [v / norm for v in vector]
         return vector
 
-    async def embed_query(self, text: str) -> List[float]:
+    async def embed_query(self, text: str) -> list[float]:
         try:
             async with httpx.AsyncClient(timeout=4.0) as client:
                 res = await client.post(
@@ -62,7 +61,7 @@ class HybridEmbeddingProvider(IEmbeddingProvider):
             pass
         return self._fallback_embed(text)
 
-    async def embed_documents(self, texts: List[str]) -> List[List[float]]:
+    async def embed_documents(self, texts: list[str]) -> list[list[float]]:
         embeddings = []
         for text in texts:
             emb = await self.embed_query(text)
@@ -78,7 +77,7 @@ class ChromaVectorManager(IVectorStore):
     def __init__(
         self,
         persist_dir: str = "./chroma_db",
-        embedding_provider: Optional[IEmbeddingProvider] = None,
+        embedding_provider: IEmbeddingProvider | None = None,
     ):
         self.persist_dir = Path(persist_dir)
         self.persist_dir.mkdir(parents=True, exist_ok=True)
@@ -96,7 +95,7 @@ class ChromaVectorManager(IVectorStore):
             metadata={"hnsw:space": "cosine"},
         )
 
-    async def add_chunks(self, chunks: List[DocumentChunk]) -> int:
+    async def add_chunks(self, chunks: list[DocumentChunk]) -> int:
         if not chunks:
             return 0
 
@@ -125,7 +124,7 @@ class ChromaVectorManager(IVectorStore):
         )
         return len(ids)
 
-    async def similarity_search(self, query: str, top_k: int = 3) -> List[RetrievalResult]:
+    async def similarity_search(self, query: str, top_k: int = 3) -> list[RetrievalResult]:
         total = self.count()
         if total == 0:
             return []
@@ -139,7 +138,7 @@ class ChromaVectorManager(IVectorStore):
             include=["documents", "metadatas", "distances"],
         )
 
-        retrieval_results: List[RetrievalResult] = []
+        retrieval_results: list[RetrievalResult] = []
         if not results or not results["ids"] or not results["ids"][0]:
             return retrieval_results
 
@@ -187,7 +186,7 @@ class ChromaVectorManager(IVectorStore):
             pass
         self._init_collection()
 
-    def get_all_chunks(self, limit: int = 50) -> List[DocumentChunk]:
+    def get_all_chunks(self, limit: int = 50) -> list[DocumentChunk]:
         """Retrieve stored chunks for inspection in the Knowledge Base UI."""
         total = self.count()
         if total == 0:

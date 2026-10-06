@@ -8,12 +8,13 @@ import asyncio
 import hashlib
 import re
 import time
-from typing import AsyncIterator, List, Optional
+from collections.abc import AsyncIterator
+
 from app.application.dto import (
-    QueryRequestDTO,
-    QueryResponseDTO,
     IngestRequestDTO,
     IngestResponseDTO,
+    QueryRequestDTO,
+    QueryResponseDTO,
     StatusResponseDTO,
 )
 from app.domain.entities import LLMResponse, PromptTemplate, RetrievalResult
@@ -191,8 +192,8 @@ class QueryPandasDocsUseCase:
 
     @classmethod
     def generate_reasoning_thoughts(
-        cls, query: str, retrieved_results: List[RetrievalResult], is_arabic: bool
-    ) -> List[str]:
+        cls, query: str, retrieved_results: list[RetrievalResult], is_arabic: bool
+    ) -> list[str]:
         """Generates dynamic, intellectual Chain-of-Thought reasoning steps (DeepSeek-R1 / ChatGPT style)."""
         q_lower = query.lower()
         if is_arabic:
@@ -318,7 +319,7 @@ class QueryPandasDocsUseCase:
 
         # 4. Vector Store Similarity Search with query expansion
         retrieval_query = self.expand_query_for_retrieval(request.query)
-        retrieved_results: List[RetrievalResult] = await self.vector_store.similarity_search(
+        retrieved_results: list[RetrievalResult] = await self.vector_store.similarity_search(
             query=retrieval_query,
             top_k=request.top_k,
         )

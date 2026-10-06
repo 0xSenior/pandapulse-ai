@@ -1,8 +1,9 @@
 """Thread-safe O(1) LRU Cache implementation for PandaPulse AI."""
 
-from collections import OrderedDict
 import threading
-from typing import Any, Dict, Optional
+from collections import OrderedDict
+from typing import Any
+
 from app.domain.entities import LLMResponse
 from app.domain.interfaces import ICache
 
@@ -21,7 +22,7 @@ class LRUQueryCache(ICache):
         self._misses = 0
         self._evictions = 0
 
-    def get(self, key: str) -> Optional[LLMResponse]:
+    def get(self, key: str) -> LLMResponse | None:
         with self._lock:
             if key not in self._cache:
                 self._misses += 1
@@ -54,7 +55,7 @@ class LRUQueryCache(ICache):
                 return True
             return False
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         with self._lock:
             total_requests = self._hits + self._misses
             hit_ratio = (self._hits / total_requests) if total_requests > 0 else 0.0

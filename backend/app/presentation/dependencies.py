@@ -4,17 +4,29 @@ Adheres strictly to the Dependency Inversion Principle (DIP).
 Use cases receive concrete implementations through FastAPI dependency providers.
 """
 
-from functools import lru_cache
 from fastapi import Depends
-from app.core.config import settings
-from app.domain.interfaces import ICache, IDocLoader, IEmbeddingProvider, ILLMProvider, IVectorStore
-from app.infrastructure.cache.lru_cache import LRUQueryCache
-from app.infrastructure.loaders.markdown_loader import MarkdownDocLoader
-from app.infrastructure.vector_db.chroma_manager import ChromaVectorManager, HybridEmbeddingProvider
-from app.infrastructure.llm.ollama_provider import OllamaProvider
-from app.infrastructure.llm.groq_provider import GroqProvider
-from app.application.use_cases import QueryPandasDocsUseCase, IngestDocsUseCase, GetStatusUseCase
 
+from app.application.use_cases import (
+    GetStatusUseCase,
+    IngestDocsUseCase,
+    QueryPandasDocsUseCase,
+)
+from app.core.config import settings
+from app.domain.interfaces import (
+    ICache,
+    IDocLoader,
+    IEmbeddingProvider,
+    ILLMProvider,
+    IVectorStore,
+)
+from app.infrastructure.cache.lru_cache import LRUQueryCache
+from app.infrastructure.llm.groq_provider import GroqProvider
+from app.infrastructure.llm.ollama_provider import OllamaProvider
+from app.infrastructure.loaders.markdown_loader import MarkdownDocLoader
+from app.infrastructure.vector_db.chroma_manager import (
+    ChromaVectorManager,
+    HybridEmbeddingProvider,
+)
 
 # Singleton instances
 _cache_instance = LRUQueryCache(capacity=settings.CACHE_CAPACITY)

@@ -1,16 +1,17 @@
 """Main FastAPI application factory for PandaPulse AI."""
 
-from contextlib import asynccontextmanager
 import logging
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
 from app.core.config import settings
-from app.presentation.routes import router as api_router
 from app.presentation.dependencies import (
     get_doc_loader,
     get_vector_store,
-    get_cache,
 )
+from app.presentation.routes import router as api_router
 
 logging.basicConfig(
     level=logging.INFO,

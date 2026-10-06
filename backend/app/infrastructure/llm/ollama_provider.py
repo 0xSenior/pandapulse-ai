@@ -4,12 +4,13 @@ Integrates directly with local Ollama server (Llama 3 / Qwen) for genuine neural
 No hardcoded answers: the model dynamically generates all responses based on RAG context and system prompt.
 """
 
-import asyncio
 import json
 import re
 import time
-from typing import AsyncIterator
+from collections.abc import AsyncIterator
+
 import httpx
+
 from app.domain.entities import LLMResponse
 from app.domain.interfaces import ILLMProvider
 
@@ -107,7 +108,7 @@ class OllamaProvider(ILLMProvider):
                         model_name=self.model_name,
                     )
         except Exception as e:
-            err_msg = f"⚠️ حدث خطأ أثناء التوليد من نموذج Ollama: {str(e)}"
+            err_msg = f"⚠️ حدث خطأ أثناء التوليد من نموذج Ollama: {e!s}"
             return LLMResponse(
                 answer=err_msg,
                 citations=[],
@@ -160,4 +161,4 @@ class OllamaProvider(ILLMProvider):
                     else:
                         yield f"⚠️ خطأ من Ollama (كود {response.status_code})"
         except Exception as e:
-            yield f"⚠️ انقطع الاتصال بـ Ollama: {str(e)}"
+            yield f"⚠️ انقطع الاتصال بـ Ollama: {e!s}"

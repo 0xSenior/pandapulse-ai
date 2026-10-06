@@ -1,31 +1,32 @@
 """API Presentation routes for PandaPulse AI."""
 
 import json
-from typing import List
-from fastapi import APIRouter, Depends, HTTPException, Query as QueryParam
+
+from fastapi import APIRouter, Depends, Query as QueryParam
 from fastapi.responses import StreamingResponse
-from app.application.dto import QueryRequestDTO, IngestRequestDTO
+
+from app.application.dto import IngestRequestDTO, QueryRequestDTO
 from app.application.use_cases import (
-    QueryPandasDocsUseCase,
-    IngestDocsUseCase,
     GetStatusUseCase,
+    IngestDocsUseCase,
+    QueryPandasDocsUseCase,
 )
-from app.domain.interfaces import IVectorStore, ICache
+from app.domain.interfaces import ICache, IVectorStore
 from app.presentation.dependencies import (
-    get_query_use_case,
+    get_cache,
     get_ingest_use_case,
+    get_query_use_case,
     get_status_use_case,
     get_vector_store,
-    get_cache,
 )
 from app.presentation.schemas import (
     ChatRequest,
     ChatResponse,
+    ChunkInspectionSchema,
     CitationSchema,
     ReindexRequest,
     ReindexResponse,
     StatusResponse,
-    ChunkInspectionSchema,
 )
 
 router = APIRouter(prefix="/api/v1", tags=["PandaPulse AI"])
@@ -128,7 +129,7 @@ async def reindex_endpoint(
     )
 
 
-@router.get("/chunks", response_model=List[ChunkInspectionSchema])
+@router.get("/chunks", response_model=list[ChunkInspectionSchema])
 async def get_chunks_endpoint(
     limit: int = QueryParam(default=30, ge=1, le=100),
     vector_store: IVectorStore = Depends(get_vector_store),

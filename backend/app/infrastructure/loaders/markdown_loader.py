@@ -1,10 +1,10 @@
 """Markdown and Technical Documentation Loader for PandaPulse AI."""
 
 import hashlib
-import os
 from pathlib import Path
-from typing import Dict, List, Optional
+
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+
 from app.domain.entities import DocumentChunk, IndexManifest
 from app.domain.interfaces import IDocLoader
 
@@ -48,9 +48,9 @@ class MarkdownDocLoader(IDocLoader):
     def load_and_chunk(
         self,
         directory_path: str,
-        chunk_size: Optional[int] = None,
-        chunk_overlap: Optional[int] = None,
-    ) -> List[DocumentChunk]:
+        chunk_size: int | None = None,
+        chunk_overlap: int | None = None,
+    ) -> list[DocumentChunk]:
         """Read markdown files, calculate SHA-256 hashes, and split into DocumentChunks."""
         target_dir = Path(directory_path)
         if not target_dir.exists():
@@ -65,7 +65,7 @@ class MarkdownDocLoader(IDocLoader):
                 keep_separator=True,
             )
 
-        document_chunks: List[DocumentChunk] = []
+        document_chunks: list[DocumentChunk] = []
         md_files = sorted(list(target_dir.glob("*.md")) + list(target_dir.glob("*.txt")))
 
         for file_path in md_files:

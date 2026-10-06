@@ -7,8 +7,10 @@ qwen-2.5-coder-32b, and deepseek-r1-distill-llama-70b.
 
 import json
 import time
-from typing import AsyncIterator, Optional
+from collections.abc import AsyncIterator
+
 import httpx
+
 from app.domain.entities import LLMResponse
 from app.domain.interfaces import ILLMProvider
 
@@ -91,7 +93,7 @@ class GroqProvider(ILLMProvider):
                 )
         except Exception as e:
             return LLMResponse(
-                answer=f"⚠️ خطأ في الاتصال بسحابة Groq: {str(e)}",
+                answer=f"⚠️ خطأ في الاتصال بسحابة Groq: {e!s}",
                 citations=[],
                 latency_ms=round((time.perf_counter() - start_time) * 1000, 2),
                 cached=False,
@@ -145,4 +147,4 @@ class GroqProvider(ILLMProvider):
                             except json.JSONDecodeError:
                                 continue
         except Exception as e:
-            yield f"⚠️ خطأ أثناء تدفق البيانات من Groq: {str(e)}"
+            yield f"⚠️ خطأ أثناء تدفق البيانات من Groq: {e!s}"

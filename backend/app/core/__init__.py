@@ -1,4 +1,4 @@
 """Core settings module."""
-from app.core.config import settings, Settings
+from app.core.config import Settings, settings
 
-__all__ = ["settings", "Settings"]
+__all__ = ["Settings", "settings"]
