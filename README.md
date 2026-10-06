@@ -1,6 +1,6 @@
 # PandaPulse AI ⚡
 
-> **The Sub-millisecond Neural Engine for Modern Pandas Data Engineering.**
+> **The Intelligent Copilot & Sub-millisecond Neural Engine for Python Programming & Modern Pandas 2.0+ Data Engineering.**
 
 [![CI Pipeline](https://img.shields.io/badge/CI-Passing-brightgreen?style=flat-square&logo=githubactions)](https://github.com)
 [![Architecture](https://img.shields.io/badge/Architecture-Clean%20%2F%20SOLID-cyan?style=flat-square)](./docs/ARCHITECTURE.md)
@@ -8,15 +8,15 @@
 [![ChromaDB](https://img.shields.io/badge/Vector%20Store-ChromaDB%20Persistent-red?style=flat-square)](https://trychroma.com)
 [![React](https://img.shields.io/badge/Frontend-React%2018%20%2B%20Vite-blue?style=flat-square&logo=react)](https://react.dev)
 [![Tailwind](https://img.shields.io/badge/Style-Tailwind%20%2B%20Glassmorphic-38bdf8?style=flat-square&logo=tailwindcss)](https://tailwindcss.com)
-[![Ollama](https://img.shields.io/badge/LLM-Llama%203%20via%20Ollama-black?style=flat-square)](https://ollama.ai)
+[![Groq / Ollama](https://img.shields.io/badge/LLM-Groq%20LPU%20%2F%20Ollama-black?style=flat-square)](https://groq.com)
 
 ---
 
 ## 🌟 Executive Overview
 
-**PandaPulse AI** is a production-grade full-stack Retrieval-Augmented Generation (RAG) platform purpose-built for data engineers transitioning to **Pandas 2.0+**. 
+**PandaPulse AI** is a production-grade full-stack Retrieval-Augmented Generation (RAG) platform purpose-built for developers and data engineers writing **Python 3.x** and transitioning to **Pandas 2.0+**. 
 
-Engineered with **Strict Clean Architecture & SOLID Principles**, it combines sub-millisecond in-memory LRU caching, cosine vector retrieval via ChromaDB, Server-Sent Events (SSE) token streaming, and an ultra-modern macOS-inspired floating dock interface.
+Engineered with **Strict Clean Architecture & SOLID Principles**, it combines sub-millisecond in-memory LRU caching, cosine vector retrieval via ChromaDB, Server-Sent Events (SSE) token streaming, verified technical documentation grounding, and an ultra-modern macOS-inspired floating dock interface.
 
 ```
 +-----------------------------------------------------------------------------------------+
