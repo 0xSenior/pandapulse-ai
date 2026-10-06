@@ -14,6 +14,8 @@ export default function App() {
   const [systemOnline, setSystemOnline] = useState(false);
   const [chunkCount, setChunkCount] = useState(0);
 
+  const isChatTab = activeTab === 'chat';
+
   useEffect(() => {
     const checkStatus = async () => {
       try {
@@ -34,10 +36,10 @@ export default function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-space-950 text-slate-100 relative bg-grid-ambient selection:bg-cyan-500/20">
+    <div className="min-h-screen bg-space-950 text-slate-100 relative bg-grid-ambient selection:bg-cyan-500/20 overflow-x-hidden">
       {/* Top Navigation Bar */}
-      <header className="sticky top-0 z-40 w-full backdrop-blur-xl bg-space-950/70 border-b border-white/10 px-6 py-3.5">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+      <header className="sticky top-0 z-40 w-full backdrop-blur-xl bg-space-950/75 border-b border-white/10 px-6 py-3.5">
+        <div className="max-w-[1700px] mx-auto flex items-center justify-between">
           {/* Brand Logo */}
           <button
             type="button"
@@ -82,7 +84,7 @@ export default function App() {
       </header>
 
       {/* Main View Router */}
-      <main className="relative z-10">
+      <main className={`relative z-10 transition-all duration-300 ${isChatTab ? 'pl-20 sm:pl-24 pr-4 sm:pr-8' : ''}`}>
         <AnimatePresence mode="wait">
           {activeTab === 'home' && (
             <motion.div
@@ -99,9 +101,9 @@ export default function App() {
           {activeTab === 'chat' && (
             <motion.div
               key="chat"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
+              initial={{ opacity: 0, scale: 0.99 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.99 }}
               transition={{ duration: 0.2 }}
             >
               <ChatPage />
@@ -146,8 +148,12 @@ export default function App() {
         </AnimatePresence>
       </main>
 
-      {/* Floating macOS Dock */}
-      <FloatingDock activeTab={activeTab} onSelectTab={navigateTo} />
+      {/* Dynamic Floating Dock (Vertical on Chat page, Horizontal on other pages) */}
+      <FloatingDock
+        activeTab={activeTab}
+        onSelectTab={navigateTo}
+        orientation={isChatTab ? 'vertical' : 'horizontal'}
+      />
     </div>
   );
 }

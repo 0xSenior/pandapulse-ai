@@ -47,15 +47,15 @@ export const ChatContainer = () => {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-140px)] max-w-5xl mx-auto px-4 pb-20">
+    <div className="flex flex-col h-[calc(100vh-95px)] w-full max-w-[1600px] mx-auto px-2 sm:px-6 pb-2">
       {/* Top Header & Actions */}
-      <div className="flex items-center justify-between py-3 mb-2 border-b border-white/10">
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between py-2.5 mb-2 border-b border-white/10 shrink-0">
+        <div className="flex items-center gap-2.5">
           <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]" />
           <h2 className="text-base font-semibold text-white tracking-wide">
             Neural Query Workspace
           </h2>
-          <span className="text-xs font-mono text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-500/20">
+          <span className="text-xs font-mono text-cyan-400 bg-cyan-500/10 px-2.5 py-0.5 rounded-full border border-cyan-500/20">
             Pandas 2.2+ Invariants Active
           </span>
         </div>
@@ -63,7 +63,7 @@ export const ChatContainer = () => {
         <button
           type="button"
           onClick={clearChat}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-white/5 border border-white/5 transition-colors cursor-pointer"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-white/5 border border-white/10 transition-colors cursor-pointer"
         >
           <Trash2 className="w-3.5 h-3.5" />
           <span>Clear Session</span>
@@ -85,7 +85,7 @@ export const ChatContainer = () => {
       </div>
 
       {/* Suggested Quick Prompts */}
-      <div className="pt-3 pb-2 flex items-center gap-2 overflow-x-auto no-scrollbar">
+      <div className="pt-2 pb-2 flex items-center gap-2 overflow-x-auto no-scrollbar shrink-0">
         <Sparkles className="w-4 h-4 text-cyan-400 shrink-0" />
         <span className="text-xs text-slate-400 shrink-0 font-medium">Quick Prompts:</span>
         {QUICK_PROMPTS.map((prompt) => (
@@ -102,7 +102,7 @@ export const ChatContainer = () => {
       </div>
 
       {/* User Input Form */}
-      <form onSubmit={handleSubmit} className="relative mt-1">
+      <form onSubmit={handleSubmit} className="relative mt-1 shrink-0">
         <div className="relative flex items-center rounded-2xl glass-panel border border-white/15 focus-within:border-cyan-400/60 transition-all shadow-2xl bg-slate-900/80">
           <textarea
             value={input}

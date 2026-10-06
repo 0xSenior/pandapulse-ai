@@ -16,13 +16,16 @@ const DOCK_ITEMS = [
   { id: 'engineer', label: 'The Engineer', icon: UserCheck, color: 'text-emerald-400' },
 ];
 
-function DockIcon({ mouseX, item, activeTab, onSelect }) {
+function DockIcon({ coordinate, item, activeTab, onSelect, isVertical }) {
   const ref = useRef(null);
   const [hovered, setHovered] = useState(false);
 
-  const distance = useTransform(mouseX, (val) => {
-    const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
-    return val - bounds.x - bounds.width / 2;
+  const distance = useTransform(coordinate, (val) => {
+    const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, y: 0, width: 0, height: 0 };
+    const center = isVertical
+      ? bounds.y + bounds.height / 2
+      : bounds.x + bounds.width / 2;
+    return val - center;
   });
 
   // macOS dock magnification formula
@@ -33,16 +36,18 @@ function DockIcon({ mouseX, item, activeTab, onSelect }) {
   const Icon = item.icon;
 
   return (
-    <div className="relative flex flex-col items-center">
+    <div className="relative flex items-center justify-center">
       {/* Floating Tooltip */}
       <AnimatePresence>
         {hovered && (
           <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-            animate={{ opacity: 1, y: -45, scale: 1 }}
-            exit={{ opacity: 0, y: 5, scale: 0.95 }}
+            initial={isVertical ? { opacity: 0, x: -5, scale: 0.95 } : { opacity: 0, y: 10, scale: 0.95 }}
+            animate={isVertical ? { opacity: 1, x: 58, scale: 1 } : { opacity: 1, y: -45, scale: 1 }}
+            exit={isVertical ? { opacity: 0, x: -5, scale: 0.95 } : { opacity: 0, y: 5, scale: 0.95 }}
             transition={{ duration: 0.15 }}
-            className="absolute pointer-events-none px-3 py-1 rounded-lg text-xs font-medium tracking-wide bg-slate-900/90 text-slate-100 border border-white/10 shadow-xl backdrop-blur-xl whitespace-nowrap z-50 flex items-center gap-1.5"
+            className={`absolute pointer-events-none px-3 py-1.5 rounded-lg text-xs font-medium tracking-wide bg-slate-900/95 text-slate-100 border border-white/10 shadow-2xl backdrop-blur-xl whitespace-nowrap z-50 flex items-center gap-1.5 ${
+              isVertical ? 'left-0' : 'bottom-full mb-2'
+            }`}
           >
             <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-cyan-400' : 'bg-slate-400'}`} />
             {item.label}
@@ -58,7 +63,7 @@ function DockIcon({ mouseX, item, activeTab, onSelect }) {
         onClick={() => onSelect(item.id)}
         className={`relative flex items-center justify-center rounded-2xl cursor-pointer transition-colors duration-200 ${
           isActive 
-            ? 'bg-white/15 border border-cyan-400/50 shadow-lg shadow-cyan-500/20 text-white' 
+            ? 'bg-white/15 border border-cyan-400/50 shadow-lg shadow-cyan-500/25 text-white' 
             : 'bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 text-slate-300 hover:text-white'
         }`}
       >
@@ -66,36 +71,60 @@ function DockIcon({ mouseX, item, activeTab, onSelect }) {
         
         {/* Active Pill Indicator */}
         {isActive && (
-          <span className="absolute -bottom-1 w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#00f2fe]" />
+          isVertical ? (
+            <span className="absolute -left-1 top-1/2 -translate-y-1/2 w-1 h-3 rounded-full bg-cyan-400 shadow-[0_0_8px_#00f2fe]" />
+          ) : (
+            <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#00f2fe]" />
+          )
         )}
       </motion.button>
     </div>
   );
 }
 
-export const FloatingDock = ({ activeTab, onSelectTab }) => {
+export const FloatingDock = ({ activeTab, onSelectTab, orientation = 'horizontal' }) => {
+  const isVertical = orientation === 'vertical';
   const mouseX = useMotionValue(Infinity);
+  const mouseY = useMotionValue(Infinity);
 
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
+    <div
+      className={
+        isVertical
+          ? 'fixed left-4 top-1/2 -translate-y-1/2 z-50'
+          : 'fixed bottom-6 left-1/2 -translate-x-1/2 z-50'
+      }
+    >
       <motion.nav
-        initial={{ y: 50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        onMouseMove={(e) => mouseX.set(e.pageX)}
-        onMouseLeave={() => mouseX.set(Infinity)}
-        className="flex items-center gap-3 px-4 py-2.5 rounded-3xl bg-slate-950/75 backdrop-blur-2xl border border-white/10 shadow-2xl shadow-black/60 relative"
+        initial={isVertical ? { x: -50, opacity: 0 } : { y: 50, opacity: 0 }}
+        animate={isVertical ? { x: 0, opacity: 1 } : { y: 0, opacity: 1 }}
+        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+        onMouseMove={(e) => {
+          if (isVertical) {
+            mouseY.set(e.pageY);
+          } else {
+            mouseX.set(e.pageX);
+          }
+        }}
+        onMouseLeave={() => {
+          mouseX.set(Infinity);
+          mouseY.set(Infinity);
+        }}
+        className={`flex ${
+          isVertical ? 'flex-col gap-3 px-3 py-4' : 'flex-row items-center gap-3 px-4 py-2.5'
+        } rounded-3xl bg-slate-950/85 backdrop-blur-2xl border border-white/10 shadow-2xl shadow-black/70 relative`}
       >
         {/* Subtle glowing underlay */}
-        <div className="absolute inset-0 -z-10 rounded-3xl bg-gradient-to-r from-cyan-500/10 via-indigo-500/10 to-amber-500/10 blur-xl opacity-60" />
+        <div className="absolute inset-0 -z-10 rounded-3xl bg-gradient-to-tr from-cyan-500/10 via-indigo-500/10 to-amber-500/10 blur-xl opacity-60" />
 
         {DOCK_ITEMS.map((item) => (
           <DockIcon
             key={item.id}
             item={item}
-            mouseX={mouseX}
+            coordinate={isVertical ? mouseY : mouseX}
             activeTab={activeTab}
             onSelect={onSelectTab}
+            isVertical={isVertical}
           />
         ))}
       </motion.nav>

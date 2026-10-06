@@ -122,7 +122,7 @@ export const MessageBubble = ({
 
       {/* Bubble Container */}
       <div
-        className={`max-w-[85%] sm:max-w-[78%] rounded-2xl px-5 py-4 ${
+        className={`max-w-[94%] sm:max-w-[88%] lg:max-w-[84%] rounded-2xl px-5 py-4 ${
           isAssistant
             ? 'glass-panel border border-white/10 text-slate-100 shadow-xl'
             : 'bg-gradient-to-r from-blue-600/90 to-indigo-600/90 text-white shadow-lg shadow-indigo-600/20 border border-indigo-400/30'
