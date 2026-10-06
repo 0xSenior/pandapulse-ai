@@ -163,12 +163,13 @@ STRICT GUARDRAILS & INVARIANTS:
             for res in retrieved_results
         ]
 
+        model_id = getattr(self.llm_provider, "model_name", "qwen2.5-coder:1.5b")
         yield {
             "event": "meta",
             "data": {
                 "cached": False,
                 "citations": citations,
-                "model": "llama3:8b",
+                "model": model_id,
             },
         }
 
@@ -201,7 +202,7 @@ STRICT GUARDRAILS & INVARIANTS:
             latency_ms=total_latency,
             cached=False,
             tokens_generated=token_count,
-            model_name="llama3:8b",
+            model_name=model_id,
         )
         self.cache.set(cache_key, response_obj)
 
@@ -298,6 +299,6 @@ class GetStatusUseCase:
             total_indexed_chunks=total_chunks,
             cache_stats=cache_stats,
             ollama_status="online" if is_ollama_online else "offline / fallback_mode",
-            active_model="llama3:8b",
+            active_model=getattr(self.llm_provider, "model_name", "qwen2.5-coder:1.5b"),
             embedding_model="nomic-embed-text",
         )

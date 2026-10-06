@@ -23,7 +23,7 @@ class Settings(BaseSettings):
 
     # Ollama & Models
     OLLAMA_BASE_URL: str = "http://localhost:11434"
-    LLM_MODEL: str = "llama3:8b"
+    LLM_MODEL: str = "qwen2.5-coder:1.5b"
     EMBEDDING_MODEL: str = "nomic-embed-text"
     LLM_TEMPERATURE: float = 0.1
     LLM_MAX_TOKENS: int = 2048

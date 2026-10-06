@@ -15,7 +15,7 @@ class OllamaProvider(ILLMProvider):
     def __init__(
         self,
         base_url: str = "http://localhost:11434",
-        model_name: str = "llama3:8b",
+        model_name: str = "qwen2.5-coder:1.5b",
         temperature: float = 0.1,
     ):
         self.base_url = base_url.rstrip("/")

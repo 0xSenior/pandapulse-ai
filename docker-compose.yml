@@ -13,7 +13,7 @@ services:
       - PORT=8000
       - ENVIRONMENT=production
       - OLLAMA_BASE_URL=http://host.docker.internal:11434
-      - LLM_MODEL=llama3:8b
+      - LLM_MODEL=qwen2.5-coder:1.5b
       - EMBEDDING_MODEL=nomic-embed-text
       - CHROMA_PERSIST_DIRECTORY=/app/chroma_db
       - DOCS_DIRECTORY=/app/data/pandas_docs
