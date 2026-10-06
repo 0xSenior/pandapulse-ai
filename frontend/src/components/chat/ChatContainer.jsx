@@ -53,10 +53,10 @@ export const ChatContainer = () => {
         <div className="flex items-center gap-2.5">
           <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]" />
           <h2 className="text-base font-semibold text-white tracking-wide">
-            Neural Query Workspace
+            Pandas AI Engineering Workspace
           </h2>
-          <span className="text-xs font-mono text-cyan-400 bg-cyan-500/10 px-2.5 py-0.5 rounded-full border border-cyan-500/20">
-            Pandas 2.2+ Invariants Active
+          <span className="text-xs font-sans text-cyan-300 bg-cyan-500/10 px-3 py-0.5 rounded-full border border-cyan-500/20 font-medium">
+            Modern Pandas 2.x Copilot
           </span>
         </div>
 

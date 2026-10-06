@@ -125,7 +125,7 @@ export const KnowledgePage = () => {
             onClick={handleClearCache}
             className="text-xs sm:text-sm px-4 py-2"
           >
-            Flush LRU Cache
+            Clear Query Cache
           </GlowButton>
         </div>
       </div>
@@ -151,15 +151,15 @@ export const KnowledgePage = () => {
       {/* Metrics Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <GlassCard className="p-4" hoverEffect={false}>
-          <div className="text-xs text-slate-400 font-medium mb-1">Total Indexed Chunks</div>
+          <div className="text-xs text-slate-400 font-medium mb-1">Indexed Documentation</div>
           <div className="text-2xl font-bold text-white font-mono">
-            {status?.total_indexed_chunks ?? chunks.length}
+            {status?.total_indexed_chunks ?? chunks.length} Chunks
           </div>
           <div className="text-[11px] text-cyan-400 mt-1">ChromaDB Persistent</div>
         </GlassCard>
 
         <GlassCard className="p-4" hoverEffect={false}>
-          <div className="text-xs text-slate-400 font-medium mb-1">LRU Cache Entries</div>
+          <div className="text-xs text-slate-400 font-medium mb-1">Cached Queries</div>
           <div className="text-2xl font-bold text-white font-mono">
             {status?.cache_stats?.current_size ?? 0} / {status?.cache_stats?.capacity ?? 256}
           </div>

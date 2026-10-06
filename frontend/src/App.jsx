@@ -63,11 +63,11 @@ export default function App() {
 
           {/* Right Status Badge & Github Link */}
           <div className="flex items-center gap-4">
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/80 border border-white/10 text-xs font-mono">
+            <div className="hidden sm:flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-900/80 border border-white/10 text-xs font-sans">
               <span className={`w-2 h-2 rounded-full ${systemOnline ? 'bg-emerald-400 shadow-[0_0_8px_#34d399]' : 'bg-amber-400'}`} />
-              <span className="text-slate-300">{systemOnline ? 'Core Operational' : 'Local Standby'}</span>
-              <span className="text-slate-500">|</span>
-              <span className="text-cyan-400">{chunkCount} Vectors</span>
+              <span className="text-slate-300 font-medium">{systemOnline ? 'Engine Ready' : 'Connecting...'}</span>
+              <span className="text-slate-500">•</span>
+              <span className="text-cyan-400 font-medium">Pandas 2.0+ Active</span>
             </div>
 
             <a

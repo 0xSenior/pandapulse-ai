@@ -130,22 +130,22 @@ export const MessageBubble = ({
       >
         {/* Assistant Header Metadata */}
         {isAssistant && (
-          <div className="flex flex-wrap items-center justify-between gap-2 pb-2 mb-2 border-b border-white/5 text-[11px] text-slate-400 font-mono">
+          <div className="flex flex-wrap items-center justify-between gap-2 pb-2 mb-2 border-b border-white/5 text-[11px] text-slate-400 font-sans">
             <span className="font-semibold text-cyan-400 flex items-center gap-1.5">
-              <span>PandaPulse Core</span>
+              <span>PandaPulse AI</span>
               {message.cached && (
-                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 text-[10px]">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 text-[10px]">
                   <Zap className="w-3 h-3 text-cyan-400" />
-                  O(1) Cached
+                  Instant Response
                 </span>
               )}
             </span>
 
             <div className="flex items-center gap-2.5">
               {message.latency_ms !== null && (
-                <span className="flex items-center gap-1 text-slate-400">
+                <span className="flex items-center gap-1 text-slate-400 text-[11px]">
                   <Clock className="w-3 h-3 text-slate-400" />
-                  {message.latency_ms} ms
+                  {message.latency_ms < 50 ? 'Sub-second' : `${(message.latency_ms / 1000).toFixed(2)}s`}
                 </span>
               )}
 
@@ -156,7 +156,7 @@ export const MessageBubble = ({
                   className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-300 hover:bg-blue-500/25 border border-blue-400/30 transition-colors cursor-pointer"
                 >
                   <BookOpen className="w-3 h-3" />
-                  <span>{message.citations.length} Citations</span>
+                  <span>{message.citations.length} Verified Sources</span>
                 </button>
               )}
             </div>

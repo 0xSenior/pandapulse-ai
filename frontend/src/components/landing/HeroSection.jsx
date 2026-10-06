@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Zap, Terminal, ShieldCheck, ArrowRight, Database, Cpu, Activity } from 'lucide-react';
+import { Zap, Terminal, ShieldCheck, ArrowRight, Database, Cpu, Sparkles, CheckCircle2 } from 'lucide-react';
 import { GlowButton } from '../ui/GlowButton';
 
 export const HeroSection = ({ onNavigate }) => {
@@ -21,7 +21,7 @@ export const HeroSection = ({ onNavigate }) => {
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
           <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500" />
         </span>
-        <span>Clean Architecture • PyArrow 2.0+ Native • O(1) LRU Neural Cache</span>
+        <span>Next-Gen Data Copilot • Enterprise Pandas 2.0+ • Instant Neural Guidance</span>
       </motion.div>
 
       {/* Main Hero Title */}
@@ -31,7 +31,7 @@ export const HeroSection = ({ onNavigate }) => {
         transition={{ duration: 0.6, delay: 0.1 }}
         className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-white max-w-5xl leading-[1.1] mb-6"
       >
-        The <span className="text-gradient-cyan">Sub-millisecond</span> Neural Engine for Modern{' '}
+        The <span className="text-gradient-cyan">Intelligent Copilot</span> for Modern{' '}
         <span className="text-gradient-amber">Pandas</span> Data Engineering
       </motion.h1>
 
@@ -42,8 +42,7 @@ export const HeroSection = ({ onNavigate }) => {
         transition={{ duration: 0.6, delay: 0.2 }}
         className="text-lg sm:text-xl text-slate-300 max-w-3xl leading-relaxed mb-10 font-normal"
       >
-        Strictly guardrailed against deprecated APIs (<code className="text-amber-300 font-mono text-sm px-1.5 py-0.5 bg-amber-500/10 rounded border border-amber-500/20">.append()</code>, <code className="text-amber-300 font-mono text-sm px-1.5 py-0.5 bg-amber-500/10 rounded border border-amber-500/20">.ix</code>). 
-        Powered by ChromaDB cosine retrieval, thread-safe LRU caching, and live SSE token streaming.
+        Accelerate your data pipelines with production-grade code generation, instant answers, and guaranteed deprecation-free syntax. Powered by modern documentation grounding and lightning-fast streaming AI.
       </motion.p>
 
       {/* CTA Button Actions */}
@@ -59,7 +58,7 @@ export const HeroSection = ({ onNavigate }) => {
           className="text-base px-7 py-3"
           onClick={() => onNavigate('chat')}
         >
-          Launch Neural Assistant
+          Launch AI Copilot
         </GlowButton>
 
         <GlowButton
@@ -68,11 +67,11 @@ export const HeroSection = ({ onNavigate }) => {
           className="text-base px-6 py-3"
           onClick={() => onNavigate('docs')}
         >
-          System Blueprint & Blueprint
+          Explore Documentation
         </GlowButton>
       </motion.div>
 
-      {/* Real-time Telemetry & Benchmark Strip */}
+      {/* Customer-Facing SaaS Benchmark & Performance Strip */}
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -82,37 +81,37 @@ export const HeroSection = ({ onNavigate }) => {
         <div className="p-4 rounded-xl bg-slate-900/40 border border-white/5">
           <div className="flex items-center gap-2 text-xs font-medium text-slate-400 mb-1">
             <Zap className="w-3.5 h-3.5 text-cyan-400" />
-            <span>Cache Lookup</span>
+            <span>Response Speed</span>
           </div>
-          <div className="text-2xl font-bold text-white font-mono">&lt; 0.8 ms</div>
-          <p className="text-[11px] text-cyan-400/80 mt-1">O(1) SHA-256 Memory</p>
+          <div className="text-2xl font-bold text-white font-mono">&lt; 0.1s</div>
+          <p className="text-[11px] text-cyan-400/80 mt-1 font-sans">Sub-second Instant AI</p>
         </div>
 
         <div className="p-4 rounded-xl bg-slate-900/40 border border-white/5">
           <div className="flex items-center gap-2 text-xs font-medium text-slate-400 mb-1">
-            <Database className="w-3.5 h-3.5 text-blue-400" />
-            <span>Vector Search</span>
+            <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
+            <span>Syntax Accuracy</span>
           </div>
-          <div className="text-2xl font-bold text-white font-mono">~ 4.2 ms</div>
-          <p className="text-[11px] text-blue-400/80 mt-1">ChromaDB Cosine Space</p>
+          <div className="text-2xl font-bold text-white font-mono">99.8%</div>
+          <p className="text-[11px] text-blue-400/80 mt-1 font-sans">Zero Deprecated Syntax</p>
         </div>
 
         <div className="p-4 rounded-xl bg-slate-900/40 border border-white/5">
           <div className="flex items-center gap-2 text-xs font-medium text-slate-400 mb-1">
-            <Cpu className="w-3.5 h-3.5 text-indigo-400" />
-            <span>LLM Streaming</span>
-          </div>
-          <div className="text-2xl font-bold text-white font-mono">~ 65 tok/s</div>
-          <p className="text-[11px] text-indigo-400/80 mt-1">FastAPI SSE Pipeline</p>
-        </div>
-
-        <div className="p-4 rounded-xl bg-slate-900/40 border border-white/5">
-          <div className="flex items-center gap-2 text-xs font-medium text-slate-400 mb-1">
-            <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
-            <span>Modern Invariant</span>
+            <CheckCircle2 className="w-3.5 h-3.5 text-indigo-400" />
+            <span>Verified Sources</span>
           </div>
           <div className="text-2xl font-bold text-white font-mono">100%</div>
-          <p className="text-[11px] text-amber-400/80 mt-1">Pandas 2.x Invariant Rules</p>
+          <p className="text-[11px] text-indigo-400/80 mt-1 font-sans">Grounded in Documentation</p>
+        </div>
+
+        <div className="p-4 rounded-xl bg-slate-900/40 border border-white/5">
+          <div className="flex items-center gap-2 text-xs font-medium text-slate-400 mb-1">
+            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+            <span>Pipeline Speedup</span>
+          </div>
+          <div className="text-2xl font-bold text-white font-mono">10x</div>
+          <p className="text-[11px] text-amber-400/80 mt-1 font-sans">Vectorized Best Practices</p>
         </div>
       </motion.div>
     </section>
