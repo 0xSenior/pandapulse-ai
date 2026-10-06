@@ -196,7 +196,7 @@ print(result)
 
         if has_ollama and has_model:
             try:
-                async with httpx.AsyncClient(timeout=60.0) as client:
+                async with httpx.AsyncClient(timeout=120.0) as client:
                     payload = {
                         "model": self.model_name,
                         "prompt": prompt,
@@ -220,7 +220,7 @@ print(result)
             except Exception:
                 pass
 
-        # Intelligent Fallback
+        # Fallback only when backend unreachable
         fallback_text = self._generate_authoritative_fallback(prompt)
         latency = (time.perf_counter() - start_time) * 1000
         return LLMResponse(
@@ -229,7 +229,7 @@ print(result)
             latency_ms=round(latency, 2),
             cached=False,
             tokens_generated=len(fallback_text.split()),
-            model_name=f"{self.model_name} (Fast-Neural Engine)",
+            model_name=f"{self.model_name} (Fast-Engine)",
         )
 
     async def generate_stream(self, prompt: str, system_prompt: str) -> AsyncIterator[str]:
@@ -238,7 +238,7 @@ print(result)
 
         if has_ollama and has_model:
             try:
-                async with httpx.AsyncClient(timeout=60.0) as client:
+                async with httpx.AsyncClient(timeout=120.0) as client:
                     payload = {
                         "model": self.model_name,
                         "prompt": prompt,
@@ -248,6 +248,7 @@ print(result)
                     }
                     async with client.stream("POST", f"{self.base_url}/api/generate", json=payload) as response:
                         if response.status_code == 200:
+                            has_tokens = False
                             async for line in response.aiter_lines():
                                 if not line:
                                     continue
@@ -255,12 +256,14 @@ print(result)
                                     chunk_data = json.loads(line)
                                     token = chunk_data.get("response", "")
                                     if token:
+                                        has_tokens = True
                                         yield token
                                     if chunk_data.get("done", False):
                                         break
                                 except json.JSONDecodeError:
                                     continue
-                            return
+                            if has_tokens:
+                                return
             except Exception:
                 pass
 
