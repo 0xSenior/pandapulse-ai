@@ -1,5 +1,6 @@
 """Core configuration and settings for PandaPulse AI."""
 
+import os
 from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -34,7 +35,11 @@ class Settings(BaseSettings):
     GROQ_BASE_URL: str = "https://api.groq.com/openai/v1"
 
     # Vector Storage & Ingestion
-    CHROMA_PERSIST_DIRECTORY: str = str(Path(__file__).resolve().parent.parent.parent / "chroma_db")
+    CHROMA_PERSIST_DIRECTORY: str = (
+        "/tmp/chroma_db"
+        if os.environ.get("VERCEL")
+        else str(Path(__file__).resolve().parent.parent.parent / "chroma_db")
+    )
     DOCS_DIRECTORY: str = str(Path(__file__).resolve().parent.parent.parent / "data" / "pandas_docs")
     CHUNK_SIZE: int = 700
     CHUNK_OVERLAP: int = 100

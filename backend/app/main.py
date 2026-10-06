@@ -24,21 +24,24 @@ logger = logging.getLogger("pandapulse")
 async def lifespan(app: FastAPI):
     """Application lifecycle: auto-indexes documentation on initial cold boot if empty."""
     logger.info("Initializing PandaPulse AI Engine...")
-    vector_store = get_vector_store()
-    doc_loader = get_doc_loader()
+    try:
+        vector_store = get_vector_store()
+        doc_loader = get_doc_loader()
 
-    # Check if vector collection already has data
-    current_count = vector_store.count()
-    if current_count == 0:
-        logger.info(f"Vector database is empty. Auto-indexing documentation from '{settings.DOCS_DIRECTORY}'...")
-        chunks = doc_loader.load_and_chunk(settings.DOCS_DIRECTORY)
-        if chunks:
-            indexed = await vector_store.add_chunks(chunks)
-            logger.info(f"Successfully auto-indexed {indexed} chunks into ChromaDB.")
+        # Check if vector collection already has data
+        current_count = vector_store.count()
+        if current_count == 0:
+            logger.info(f"Vector database is empty. Auto-indexing documentation from '{settings.DOCS_DIRECTORY}'...")
+            chunks = doc_loader.load_and_chunk(settings.DOCS_DIRECTORY)
+            if chunks:
+                indexed = await vector_store.add_chunks(chunks)
+                logger.info(f"Successfully auto-indexed {indexed} chunks into ChromaDB.")
+            else:
+                logger.warning(f"No documentation files found in {settings.DOCS_DIRECTORY}.")
         else:
-            logger.warning(f"No documentation files found in {settings.DOCS_DIRECTORY}.")
-    else:
-        logger.info(f"ChromaDB ready with {current_count} pre-indexed semantic chunks.")
+            logger.info(f"ChromaDB ready with {current_count} pre-indexed semantic chunks.")
+    except Exception as e:
+        logger.error(f"Error during vector store cold-boot initialization: {e}")
 
     yield
     logger.info("Shutting down PandaPulse AI Engine...")

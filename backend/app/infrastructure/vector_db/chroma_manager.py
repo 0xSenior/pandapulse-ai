@@ -80,13 +80,18 @@ class ChromaVectorManager(IVectorStore):
         embedding_provider: IEmbeddingProvider | None = None,
     ):
         self.persist_dir = Path(persist_dir)
-        self.persist_dir.mkdir(parents=True, exist_ok=True)
+        try:
+            self.persist_dir.mkdir(parents=True, exist_ok=True)
+            self.client = chromadb.PersistentClient(
+                path=str(self.persist_dir),
+                settings=Settings(anonymized_telemetry=False, is_persistent=True),
+            )
+        except Exception:
+            # Serverless fallback when persistent storage cannot be written
+            self.client = chromadb.EphemeralClient(
+                settings=Settings(anonymized_telemetry=False)
+            )
         self.embedding_provider = embedding_provider or HybridEmbeddingProvider()
-
-        self.client = chromadb.PersistentClient(
-            path=str(self.persist_dir),
-            settings=Settings(anonymized_telemetry=False, is_persistent=True),
-        )
         self._init_collection()
 
     def _init_collection(self):
