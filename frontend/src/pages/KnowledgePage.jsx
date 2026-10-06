@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { GlassCard } from '../components/ui/GlassCard';
 import { GlowButton } from '../components/ui/GlowButton';
+import { API_BASE_URL } from '../config/api';
 
 export const KnowledgePage = () => {
   const [status, setStatus] = useState(null);
@@ -25,8 +26,8 @@ export const KnowledgePage = () => {
     try {
       setLoading(true);
       const [resStatus, resChunks] = await Promise.all([
-        fetch('/api/v1/status'),
-        fetch('/api/v1/chunks?limit=50'),
+        fetch(`${API_BASE_URL}/api/v1/status`),
+        fetch(`${API_BASE_URL}/api/v1/chunks?limit=50`),
       ]);
 
       if (resStatus.ok) {
@@ -51,7 +52,7 @@ export const KnowledgePage = () => {
   const handleReindex = async () => {
     try {
       setReindexing(true);
-      const res = await fetch('/api/v1/reindex', {
+      const res = await fetch(`${API_BASE_URL}/api/v1/reindex`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ force_reindex: true }),
@@ -76,7 +77,7 @@ export const KnowledgePage = () => {
 
   const handleClearCache = async () => {
     try {
-      const res = await fetch('/api/v1/cache/clear', { method: 'POST' });
+      const res = await fetch(`${API_BASE_URL}/api/v1/cache/clear`, { method: 'POST' });
       if (res.ok) {
         setNotification({ type: 'success', message: 'LRU Query Cache successfully flushed.' });
         await fetchStatusAndChunks();

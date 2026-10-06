@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
+import { API_BASE_URL } from '../config/api';
 
 export const useChatStream = () => {
   const [messages, setMessages] = useState([
@@ -58,7 +59,7 @@ export const useChatStream = () => {
     abortControllerRef.current = new AbortController();
 
     try {
-      const response = await fetch('/api/v1/stream-chat', {
+      const response = await fetch(`${API_BASE_URL}/api/v1/stream-chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: queryText.trim(), top_k: topK }),

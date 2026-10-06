@@ -8,6 +8,7 @@ import { DocsPage } from './pages/DocsPage';
 import { KnowledgePage } from './pages/KnowledgePage';
 import { EngineerPage } from './pages/EngineerPage';
 import { useDock } from './hooks/useDock';
+import { API_BASE_URL } from './config/api';
 
 export default function App() {
   const { activeTab, navigateTo } = useDock('home');
@@ -27,11 +28,13 @@ export default function App() {
   useEffect(() => {
     const checkStatus = async () => {
       try {
-        const res = await fetch('/api/v1/status');
+        const res = await fetch(`${API_BASE_URL}/api/v1/status`);
         if (res.ok) {
           const data = await res.json();
           setSystemOnline(true);
           setChunkCount(data.total_indexed_chunks || 0);
+        } else {
+          setSystemOnline(false);
         }
       } catch (e) {
         setSystemOnline(false);
