@@ -1,13 +1,124 @@
-import React, { useState } from 'react';
-import { 
-  Bot, 
-  User, 
-  Copy, 
-  Check, 
-  BookOpen, 
-  Zap, 
-  Clock 
+import React, { useState, useEffect, useMemo } from 'react';
+import {
+  Bot,
+  User,
+  Copy,
+  Check,
+  BookOpen,
+  Zap,
+  Clock,
+  Brain,
+  Sparkles,
+  ChevronDown,
+  ChevronUp,
+  CheckCircle2,
+  Loader2,
+  Terminal,
 } from 'lucide-react';
+
+/**
+ * Minimalist ChatGPT / DeepSeek-style visual thinking component.
+ * Displays clean gray internal monologue with subtle timer and collapses seamlessly without boxy containers.
+ */
+const ThinkingProcess = ({
+  isThinking,
+  thoughtDurationMs,
+  statusMessage,
+  thoughts = [],
+  isStreaming,
+  hasContent,
+}) => {
+  const [isExpanded, setIsExpanded] = useState(isThinking);
+  const [elapsedSec, setElapsedSec] = useState('0.0');
+
+  // Live timer while actively thinking
+  useEffect(() => {
+    if (!isThinking) return;
+    const start = Date.now();
+    const interval = setInterval(() => {
+      setElapsedSec(((Date.now() - start) / 1000).toFixed(1));
+    }, 100);
+    return () => clearInterval(interval);
+  }, [isThinking]);
+
+  // When real answer starts streaming and thinking finishes, auto-collapse
+  useEffect(() => {
+    if (hasContent && !isThinking) {
+      setIsExpanded(false);
+    }
+  }, [hasContent, isThinking]);
+
+  // Keep expanded while actively thinking
+  useEffect(() => {
+    if (isThinking) {
+      setIsExpanded(true);
+    }
+  }, [isThinking]);
+
+  const durationText = thoughtDurationMs
+    ? `${(thoughtDurationMs / 1000).toFixed(1)} ثانية`
+    : `${elapsedSec} ثانية`;
+
+  return (
+    <div className="mb-3 select-none font-sans">
+      {/* Minimalist ChatGPT-style Toggle Button */}
+      <button
+        type="button"
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="group inline-flex items-center gap-2 py-1 text-xs sm:text-sm text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer select-none"
+      >
+        {isThinking ? (
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-400"></span>
+          </span>
+        ) : (
+          <Brain className="w-3.5 h-3.5 text-zinc-500 group-hover:text-zinc-400 transition-colors shrink-0" />
+        )}
+
+        <span className="font-medium text-zinc-300 group-hover:text-zinc-100 transition-colors">
+          {isThinking ? 'يفكر الموديل...' : `تم التفكير (${durationText})`}
+        </span>
+
+        {isThinking && (
+          <span className="text-[11px] text-zinc-500 font-mono">
+            {elapsedSec} ثانية
+          </span>
+        )}
+
+        <ChevronDown
+          className={`w-3.5 h-3.5 text-zinc-500 group-hover:text-zinc-300 transition-transform duration-200 ${
+            isExpanded ? 'rotate-180' : ''
+          }`}
+        />
+      </button>
+
+      {/* Pure Gray Internal Monologue (ChatGPT Style: No card, No box, No borders) */}
+      {isExpanded && (
+        <div className="mt-2 pr-3.5 border-r-2 border-zinc-700/60 space-y-2 text-xs sm:text-[13px] text-zinc-400 leading-relaxed font-sans transition-all">
+          {thoughts && thoughts.length > 0 ? (
+            thoughts.map((thought, tIdx) => (
+              <p key={tIdx} className="text-zinc-400/90 leading-relaxed font-sans">
+                {thought}
+              </p>
+            ))
+          ) : (
+            <p className="text-zinc-500 italic">
+              {statusMessage || 'جاري استحضار المعطيات وتحليل بنية البيانات...'}
+            </p>
+          )}
+
+          {isThinking && (
+            <div className="flex items-center gap-1.5 text-zinc-500 text-xs italic pt-1">
+              <span className="inline-block w-1.5 h-3 bg-zinc-400 animate-pulse" />
+              <span>جاري بلورة الأفكار وبناء الحل...</span>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
 
 export const MessageBubble = ({
   message,
@@ -15,47 +126,81 @@ export const MessageBubble = ({
   isLast = false,
   onViewCitations,
 }) => {
-  const [copied, setCopied] = useState(false);
+  const [copiedIndex, setCopiedIndex] = useState(null);
   const isAssistant = message.role === 'assistant';
 
-  const handleCopy = (text) => {
+  const handleCopy = (text, index) => {
     navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setCopiedIndex(index);
+    setTimeout(() => setCopiedIndex(null), 2000);
   };
 
-  // Basic Markdown-to-HTML parser for code blocks, bold text, and headers
+  /**
+   * Resilient Streaming Markdown-to-HTML parser.
+   * Seamlessly formats code blocks even while actively streaming and unclosed,
+   * isolating code blocks with strict LTR and monospaced typography.
+   */
   const renderFormattedContent = (content) => {
     if (!content) return null;
 
-    // Split on code blocks
-    const parts = content.split(/(```[\s\S]*?```)/g);
+    // Auto-close open streaming code block for immediate beautiful rendering
+    const backtickCount = (content.match(/```/g) || []).length;
+    const safeContent = backtickCount % 2 !== 0 ? `${content}\n\`\`\`` : content;
+
+    // Split safely on code blocks
+    const parts = safeContent.split(/(```[\s\S]*?```)/g);
 
     return parts.map((part, index) => {
       if (part.startsWith('```')) {
-        const lines = part.slice(3, -3).trim().split('\n');
-        const language = lines[0].match(/^[a-zA-Z0-9_-]+$/) ? lines[0] : 'python';
-        const codeText = lines[0].match(/^[a-zA-Z0-9_-]+$/)
-          ? lines.slice(1).join('\n')
-          : lines.join('\n');
+        const rawInside = part.slice(3, -3);
+        const newlineIdx = rawInside.indexOf('\n');
+
+        let language = 'python';
+        let codeText = rawInside.trim();
+
+        if (newlineIdx !== -1) {
+          const firstLine = rawInside.slice(0, newlineIdx).trim();
+          if (/^[a-zA-Z0-9_#-]+$/.test(firstLine)) {
+            language = firstLine;
+            codeText = rawInside.slice(newlineIdx + 1).trim();
+          } else if (/^(python|py)\s+/i.test(firstLine)) {
+            // Handle edge case where model merged code on first line e.g. "python import pandas"
+            language = 'python';
+            const remainder = firstLine.replace(/^(python|py)\s+/i, '');
+            codeText = `${remainder}\n${rawInside.slice(newlineIdx + 1)}`.trim();
+          }
+        }
 
         return (
-          <div key={index} className="my-3 rounded-xl overflow-hidden border border-white/10 bg-slate-950/90 shadow-lg">
-            <div className="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-white/10 text-xs text-slate-400 font-mono">
-              <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-cyan-400/80" />
-                {language}
+          <div
+            key={index}
+            dir="ltr"
+            className="my-3 rounded-xl overflow-hidden border border-cyan-500/20 bg-slate-950/95 shadow-xl text-left"
+          >
+            <div className="flex items-center justify-between px-4 py-2 bg-slate-900/90 border-b border-white/10 text-xs text-slate-300 font-mono">
+              <span className="flex items-center gap-2">
+                <Terminal className="w-3.5 h-3.5 text-cyan-400" />
+                <span className="text-cyan-300 font-semibold">{language}</span>
               </span>
               <button
                 type="button"
-                onClick={() => handleCopy(codeText)}
-                className="flex items-center gap-1 hover:text-cyan-400 transition-colors cursor-pointer"
+                onClick={() => handleCopy(codeText, index)}
+                className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-white/5 hover:bg-white/10 text-slate-300 hover:text-cyan-300 transition-colors cursor-pointer"
               >
-                {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                <span>{copied ? 'Copied' : 'Copy code'}</span>
+                {copiedIndex === index ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                    <span className="text-emerald-400">Copied</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3.5 h-3.5" />
+                    <span>Copy code</span>
+                  </>
+                )}
               </button>
             </div>
-            <pre className="p-4 text-xs sm:text-sm font-mono text-cyan-200/90 overflow-x-auto leading-relaxed selection:bg-cyan-500/30">
+            <pre className="p-4 text-xs sm:text-sm font-mono text-cyan-200/90 overflow-x-auto leading-relaxed selection:bg-cyan-500/30 whitespace-pre">
               <code>{codeText}</code>
             </pre>
           </div>
@@ -64,35 +209,53 @@ export const MessageBubble = ({
 
       // Format text paragraphs, headers, and bullet points
       return (
-        <div key={index} className="space-y-2 text-slate-200 leading-relaxed text-sm sm:text-base">
+        <div
+          key={index}
+          dir="auto"
+          className="space-y-2.5 text-slate-200 leading-relaxed text-sm sm:text-base text-right"
+        >
           {part.split('\n\n').map((paragraph, pIdx) => {
-            if (paragraph.startsWith('### ')) {
+            const trimmed = paragraph.trim();
+            if (!trimmed) return null;
+
+            if (trimmed.startsWith('### ')) {
               return (
-                <h4 key={pIdx} className="text-base sm:text-lg font-bold text-white pt-2 pb-1">
-                  {paragraph.replace('### ', '')}
+                <h4 key={pIdx} className="text-base sm:text-lg font-bold text-white pt-2 pb-1 border-b border-white/5">
+                  {trimmed.replace('### ', '')}
                 </h4>
               );
             }
-            if (paragraph.startsWith('## ')) {
+            if (trimmed.startsWith('## ')) {
               return (
-                <h3 key={pIdx} className="text-lg sm:text-xl font-bold text-white pt-3 pb-1 border-b border-white/10">
-                  {paragraph.replace('## ', '')}
+                <h3 key={pIdx} className="text-lg sm:text-xl font-bold text-cyan-300 pt-3 pb-1 border-b border-white/10">
+                  {trimmed.replace('## ', '')}
                 </h3>
               );
             }
-            if (paragraph.startsWith('> ')) {
+            if (trimmed === '---') {
+              return <hr key={pIdx} className="border-t border-white/10 my-3.5" />;
+            }
+            if (trimmed.startsWith('> ')) {
               return (
-                <div key={pIdx} className="border-l-2 border-amber-400 bg-amber-500/10 px-3 py-2 rounded-r-lg text-amber-200 text-xs sm:text-sm">
-                  {paragraph.replace('> ', '')}
+                <div
+                  key={pIdx}
+                  className="border-r-4 border-amber-400 bg-amber-500/10 px-3.5 py-2 rounded-l-lg text-amber-200 text-xs sm:text-sm my-2"
+                >
+                  {trimmed.replace('> ', '')}
                 </div>
               );
             }
+
             return (
-              <p key={pIdx} className="leading-relaxed">
-                {paragraph.split('`').map((chunk, cIdx) => {
+              <p key={pIdx} className="leading-relaxed whitespace-pre-wrap">
+                {trimmed.split('`').map((chunk, cIdx) => {
                   if (cIdx % 2 === 1) {
                     return (
-                      <code key={cIdx} className="px-1.5 py-0.5 rounded bg-white/10 text-cyan-300 font-mono text-xs font-semibold">
+                      <code
+                        key={cIdx}
+                        dir="ltr"
+                        className="inline-block px-1.5 py-0.5 mx-0.5 rounded bg-white/10 text-cyan-300 font-mono text-xs font-semibold"
+                      >
                         {chunk}
                       </code>
                     );
@@ -100,7 +263,13 @@ export const MessageBubble = ({
                   // Bold styling
                   const boldParts = chunk.split('**');
                   return boldParts.map((bChunk, bIdx) =>
-                    bIdx % 2 === 1 ? <strong key={bIdx} className="text-white font-semibold">{bChunk}</strong> : bChunk
+                    bIdx % 2 === 1 ? (
+                      <strong key={bIdx} className="text-white font-semibold">
+                        {bChunk}
+                      </strong>
+                    ) : (
+                      bChunk
+                    )
                   );
                 })}
               </p>
@@ -110,6 +279,12 @@ export const MessageBubble = ({
       );
     });
   };
+
+  const showThinkingWidget =
+    isAssistant &&
+    (message.isThinking ||
+      Boolean(message.thoughtDurationMs) ||
+      (isStreaming && isLast && !message.content));
 
   return (
     <div className={`flex gap-3.5 my-4 ${isAssistant ? 'justify-start' : 'justify-end'}`}>
@@ -163,12 +338,25 @@ export const MessageBubble = ({
           </div>
         )}
 
+        {/* ChatGPT / DeepSeek Visual Thinking Accordion */}
+        {showThinkingWidget && (
+          <ThinkingProcess
+            isThinking={message.isThinking || (isStreaming && isLast && !message.content)}
+            thoughtDurationMs={message.thoughtDurationMs}
+            statusMessage={message.statusMessage}
+            thoughts={message.thoughts || []}
+            steps={message.steps}
+            isStreaming={isStreaming}
+            hasContent={Boolean(message.content)}
+          />
+        )}
+
         {/* Message Content */}
         <div className="relative">
           {renderFormattedContent(message.content)}
-          
+
           {/* Real-time Streaming Cursor */}
-          {isStreaming && isLast && isAssistant && (
+          {isStreaming && isLast && isAssistant && Boolean(message.content) && (
             <span className="inline-block w-2 h-4 ml-1 bg-cyan-400 animate-pulse align-middle" />
           )}
         </div>

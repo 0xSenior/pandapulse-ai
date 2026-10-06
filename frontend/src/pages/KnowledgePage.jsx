@@ -100,10 +100,10 @@ export const KnowledgePage = () => {
         <div>
           <h2 className="text-3xl font-extrabold text-white tracking-tight flex items-center gap-2.5">
             <Database className="w-8 h-8 text-amber-400" />
-            Knowledge Base & Vector Engine
+            Python & Pandas Knowledge Engine
           </h2>
           <p className="text-sm text-slate-400 mt-1">
-            Real-time ChromaDB collection telemetry, chunk inspection, and index management.
+            Real-time ChromaDB collection telemetry for Python and Pandas 2.0+ documentation, chunk inspection, and vector indexing.
           </p>
         </div>
 
@@ -151,7 +151,7 @@ export const KnowledgePage = () => {
       {/* Metrics Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <GlassCard className="p-4" hoverEffect={false}>
-          <div className="text-xs text-slate-400 font-medium mb-1">Indexed Documentation</div>
+          <div className="text-xs text-slate-400 font-medium mb-1">Python & Pandas Chunks</div>
           <div className="text-2xl font-bold text-white font-mono">
             {status?.total_indexed_chunks ?? chunks.length} Chunks
           </div>

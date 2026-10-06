@@ -5,13 +5,15 @@ import { SourceDrawer } from './SourceDrawer';
 import { useChatStream } from '../../hooks/useChatStream';
 
 const QUICK_PROMPTS = [
-  'How to append rows without using deprecated df.append()?',
-  'Explain modern Copy-on-Write (CoW) in Pandas 2.0+',
-  'How to enable PyArrow backend for string columns?',
-  'Modern syntax for Groupby with named aggregation',
+  'اكتب دالة بايثون نظيفة مع Type Hints ومعالجة استثناءات',
+  'كيفية دمج الجداول بدون دالة append الملغية في Pandas 2.0+',
+  'تفعيل Copy-on-Write وتفادي SettingWithCopyWarning',
+  'مقارنة استهلاك الذاكرة بين List و Generator في بايثون',
+  'تسريع استعلامات Pandas عبر محرك PyArrow و ArrowDtype',
+  'Named Aggregation في Groupby لحساب عدة مقاييس بأسماء مخصصة',
 ];
 
-export const ChatContainer = () => {
+export const ChatContainer = ({ initialPrompt = '', onClearInitialPrompt }) => {
   const {
     messages,
     isStreaming,
@@ -25,6 +27,14 @@ export const ChatContainer = () => {
 
   const [input, setInput] = useState('');
   const messagesEndRef = useRef(null);
+
+  // If initialPrompt was provided from Landing Page
+  useEffect(() => {
+    if (initialPrompt && !isStreaming) {
+      setInput(initialPrompt);
+      if (onClearInitialPrompt) onClearInitialPrompt();
+    }
+  }, [initialPrompt, isStreaming, onClearInitialPrompt]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -53,10 +63,10 @@ export const ChatContainer = () => {
         <div className="flex items-center gap-2.5">
           <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]" />
           <h2 className="text-base font-semibold text-white tracking-wide">
-            Pandas AI Engineering Workspace
+            Python & Pandas AI Engineering Workspace
           </h2>
           <span className="text-xs font-sans text-cyan-300 bg-cyan-500/10 px-3 py-0.5 rounded-full border border-cyan-500/20 font-medium">
-            Modern Pandas 2.x Copilot
+            Python 3.x & Pandas 2.x
           </span>
         </div>
 
@@ -113,7 +123,7 @@ export const ChatContainer = () => {
                 handleSubmit();
               }
             }}
-            placeholder="Ask about high-performance Pandas 2.x, arrow types, or modern joins..."
+            placeholder="اسأل عن أي شيء يخص بايثون أو مكتبة Pandas 2.0+ أو معالجة البيانات..."
             rows={1}
             disabled={isStreaming}
             className="w-full bg-transparent px-5 py-4 text-sm text-slate-100 placeholder-slate-400 focus:outline-none resize-none font-sans"

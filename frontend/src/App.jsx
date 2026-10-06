@@ -13,8 +13,16 @@ export default function App() {
   const { activeTab, navigateTo } = useDock('home');
   const [systemOnline, setSystemOnline] = useState(false);
   const [chunkCount, setChunkCount] = useState(0);
+  const [pendingPrompt, setPendingPrompt] = useState('');
 
   const isChatTab = activeTab === 'chat';
+
+  const handleNavigate = (tab, prompt = '') => {
+    if (prompt) {
+      setPendingPrompt(prompt);
+    }
+    navigateTo(tab);
+  };
 
   useEffect(() => {
     const checkStatus = async () => {
@@ -43,7 +51,7 @@ export default function App() {
           {/* Brand Logo */}
           <button
             type="button"
-            onClick={() => navigateTo('home')}
+            onClick={() => handleNavigate('home')}
             className="flex items-center gap-3 text-left cursor-pointer group"
           >
             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 p-[1px] shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition-transform">
@@ -56,7 +64,7 @@ export default function App() {
                 PandaPulse<span className="text-cyan-400">.ai</span>
               </span>
               <span className="hidden sm:inline-block text-[10px] text-slate-400 font-mono ml-2 border-l border-white/10 pl-2">
-                Neural Pandas 2.x
+                Python 3.x & Pandas 2.x
               </span>
             </div>
           </button>
@@ -65,9 +73,9 @@ export default function App() {
           <div className="flex items-center gap-4">
             <div className="hidden sm:flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-900/80 border border-white/10 text-xs font-sans">
               <span className={`w-2 h-2 rounded-full ${systemOnline ? 'bg-emerald-400 shadow-[0_0_8px_#34d399]' : 'bg-amber-400'}`} />
-              <span className="text-slate-300 font-medium">{systemOnline ? 'Engine Ready' : 'Connecting...'}</span>
+              <span className="text-slate-300 font-medium">{systemOnline ? 'Engine Online' : 'Connecting...'}</span>
               <span className="text-slate-500">•</span>
-              <span className="text-cyan-400 font-medium">Pandas 2.0+ Active</span>
+              <span className="text-cyan-400 font-medium">Python & Pandas 2.x</span>
             </div>
 
             <a
@@ -94,7 +102,7 @@ export default function App() {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
             >
-              <HomePage onNavigate={navigateTo} />
+              <HomePage onNavigate={handleNavigate} />
             </motion.div>
           )}
 
@@ -106,7 +114,10 @@ export default function App() {
               exit={{ opacity: 0, scale: 0.99 }}
               transition={{ duration: 0.2 }}
             >
-              <ChatPage />
+              <ChatPage
+                initialPrompt={pendingPrompt}
+                onClearInitialPrompt={() => setPendingPrompt('')}
+              />
             </motion.div>
           )}
 

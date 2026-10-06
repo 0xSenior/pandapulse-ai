@@ -5,7 +5,12 @@ export const useChatStream = () => {
     {
       id: 'welcome',
       role: 'assistant',
-      content: "Hello! I am **PandaPulse AI**, your neural data engineering engine for modern Pandas 2.x.\n\nAsk me anything about modern indexing (`.loc`), DataFrame concatenation (`pd.concat`), Apache Arrow integration, or high-performance groupbys!",
+      content:
+        "أهلاً بك! أنا **PandaPulse AI**، المساعد الهندسي والبرمجي المتخصص في لغة **Python 3.x** ومكتبة **Pandas 2.0+** الحديثة. 🚀\n\n" +
+        "أنا جاهز لمساعدتك بحلول برمجية حقيقية وموثقة بعيداً عن التخمينات أو الدوال الملغية:\n" +
+        "- 🐍 **لغة Python البرمجية**: دوال نظيفة، هياكل البيانات والتعقيد الزمني Big-O، المولدات (Generators) لتوفير RAM، والبرمجة الكائنية OOP مع `@dataclass`.\n" +
+        "- 🐼 **مكتبة Pandas 2.0+**: الدمج المعياري عبر `pd.concat` (بديل `.append` الملغية)، الفهرسة الصارمة عبر `.loc` و `.iloc`، أمان الذاكرة عبر **Copy-on-Write**، ومحرك **Apache Arrow**.\n" +
+        "- ⚡ **دقة هندسية**: استشهادات موثقة من ChromaDB وشرح منطقي خطوة بخطوة.",
       citations: [],
       latency_ms: 0.4,
       cached: true,
@@ -27,6 +32,7 @@ export const useChatStream = () => {
       timestamp: new Date().toISOString(),
     };
 
+    const startTime = Date.now();
     const assistantMsgId = `asst-${Date.now()}`;
     const initialAssistantMsg = {
       id: assistantMsgId,
@@ -36,6 +42,14 @@ export const useChatStream = () => {
       latency_ms: null,
       cached: false,
       timestamp: new Date().toISOString(),
+      isThinking: true,
+      thinkingStartTime: startTime,
+      thoughtDurationMs: null,
+      statusMessage: 'تحليل الاستفسار ومعايير Python & Pandas 2.0+...',
+      thoughts: [],
+      steps: [
+        { id: 'init', label: 'تحليل السؤال والتحقق من معايير Python & Pandas في الكاش', time: '0.0s' }
+      ],
     };
 
     setMessages((prev) => [...prev, userMessage, initialAssistantMsg]);
@@ -85,7 +99,38 @@ export const useChatStream = () => {
           try {
             const parsed = JSON.parse(eventData);
 
-            if (eventType === 'meta') {
+            if (eventType === 'thought') {
+              setMessages((prev) =>
+                prev.map((msg) =>
+                  msg.id === assistantMsgId
+                    ? {
+                        ...msg,
+                        thoughts: [...(msg.thoughts || []), parsed.thought],
+                      }
+                    : msg
+                )
+              );
+            } else if (eventType === 'status') {
+              const elapsedSec = ((Date.now() - startTime) / 1000).toFixed(1);
+              setMessages((prev) =>
+                prev.map((msg) =>
+                  msg.id === assistantMsgId
+                    ? {
+                        ...msg,
+                        statusMessage: parsed.message || msg.statusMessage,
+                        steps: [
+                          ...(msg.steps || []),
+                          {
+                            id: parsed.step || Date.now(),
+                            label: parsed.message || 'خطوة معالجة',
+                            time: `${elapsedSec}s`,
+                          },
+                        ],
+                      }
+                    : msg
+                )
+              );
+            } else if (eventType === 'meta') {
               setMessages((prev) =>
                 prev.map((msg) =>
                   msg.id === assistantMsgId
@@ -100,11 +145,19 @@ export const useChatStream = () => {
               );
             } else if (eventType === 'token') {
               setMessages((prev) =>
-                prev.map((msg) =>
-                  msg.id === assistantMsgId
-                    ? { ...msg, content: msg.content + (parsed.token || '') }
-                    : msg
-                )
+                prev.map((msg) => {
+                  if (msg.id !== assistantMsgId) return msg;
+                  const isFirstToken = msg.isThinking;
+                  const duration = isFirstToken
+                    ? Date.now() - (msg.thinkingStartTime || startTime)
+                    : msg.thoughtDurationMs;
+                  return {
+                    ...msg,
+                    isThinking: false,
+                    thoughtDurationMs: duration,
+                    content: msg.content + (parsed.token || ''),
+                  };
+                })
               );
             } else if (eventType === 'done') {
               setMessages((prev) =>
@@ -112,6 +165,9 @@ export const useChatStream = () => {
                   msg.id === assistantMsgId
                     ? {
                         ...msg,
+                        isThinking: false,
+                        thoughtDurationMs:
+                          msg.thoughtDurationMs || (Date.now() - (msg.thinkingStartTime || startTime)),
                         latency_ms: parsed.latency_ms ?? msg.latency_ms,
                       }
                     : msg

@@ -1,15 +1,15 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Terminal, 
-  Github, 
-  Linkedin, 
-  Mail, 
-  Code2, 
-  Cpu, 
-  Sparkles, 
-  Layers, 
-  CheckCircle2, 
+import {
+  Terminal,
+  Github,
+  Linkedin,
+  Mail,
+  Code2,
+  Cpu,
+  Sparkles,
+  Layers,
+  CheckCircle2,
   ExternalLink,
   Globe,
   Send,
@@ -43,7 +43,7 @@ export const EngineerPage = () => {
                 />
               </div>
             </div>
-            <span 
+            <span
               className="absolute -bottom-2 -right-2 p-1.5 rounded-xl bg-slate-900 border border-emerald-400/50 shadow-lg"
               title="Available for High-Impact Projects"
             >
@@ -65,14 +65,14 @@ export const EngineerPage = () => {
             </div>
 
             <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-1 flex items-center justify-center md:justify-start gap-3">
-              <span>Ahmed Harby</span>
+              <span>Eng.Ahmed Harby</span>
               <span className="text-sm font-mono font-semibold px-2.5 py-0.5 rounded-lg bg-white/10 text-cyan-300 border border-white/10">
                 0xSenior
               </span>
             </h1>
 
             <p className="text-sm text-slate-300 max-w-2xl leading-relaxed mb-6 font-normal">
-              Data Scientist & Machine Learning Developer specializing in architecting end-to-end ML pipelines, predictive modeling, and intelligent production systems. 
+              Data Scientist & Machine Learning Developer specializing in architecting end-to-end ML pipelines, predictive modeling, and intelligent production systems.
               Lead Creator & Architect of <strong>PandaPulse AI</strong> — bridging enterprise software craftsmanship, clean architecture, and low-latency Neural RAG.
             </p>
 
@@ -85,7 +85,7 @@ export const EngineerPage = () => {
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 transition-all text-xs font-medium cursor-pointer shadow-lg shadow-cyan-500/10"
               >
                 <Globe className="w-4 h-4 text-cyan-400" />
-                <span>Official Portfolio (7arby.me)</span>
+                <span>Official Portfolio</span>
                 <ExternalLink className="w-3 h-3 text-cyan-400/70" />
               </a>
 
@@ -96,7 +96,7 @@ export const EngineerPage = () => {
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 transition-colors text-xs font-medium cursor-pointer"
               >
                 <Github className="w-4 h-4 text-cyan-400" />
-                <span>GitHub (0xSenior)</span>
+                <span>GitHub</span>
                 <ExternalLink className="w-3 h-3 text-slate-400" />
               </a>
 
@@ -123,13 +123,13 @@ export const EngineerPage = () => {
               </a>
 
               <a
-                href="https://twitter.com/my_ra3d"
+                href="https://www.youtube.com/@Senior_KLash"
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 transition-colors text-xs font-medium cursor-pointer"
               >
                 <span className="font-bold text-xs text-slate-300">𝕏</span>
-                <span>@my_ra3d</span>
+                <span>Youtube</span>
                 <ExternalLink className="w-3 h-3 text-slate-400" />
               </a>
             </div>

@@ -1,18 +1,18 @@
 import React, { useRef, useState } from 'react';
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
-import { 
-  Sparkles, 
-  MessageSquareCode, 
-  Layers, 
-  Database, 
-  UserCheck 
+import {
+  Sparkles,
+  MessageSquareCode,
+  Layers,
+  Database,
+  UserCheck
 } from 'lucide-react';
 
 const DOCK_ITEMS = [
-  { id: 'home', label: 'Home / Hero', icon: Sparkles, color: 'text-cyan-400' },
-  { id: 'chat', label: 'Assistant', icon: MessageSquareCode, color: 'text-blue-400' },
-  { id: 'docs', label: 'Architecture', icon: Layers, color: 'text-indigo-400' },
-  { id: 'knowledge', label: 'Knowledge Base', icon: Database, color: 'text-amber-400' },
+  { id: 'home', label: 'Overview & Standards', icon: Sparkles, color: 'text-cyan-400' },
+  { id: 'chat', label: 'Python & Pandas Copilot', icon: MessageSquareCode, color: 'text-blue-400' },
+  { id: 'docs', label: 'System Architecture', icon: Layers, color: 'text-indigo-400' },
+  { id: 'knowledge', label: 'Knowledge Base & Chunks', icon: Database, color: 'text-amber-400' },
   { id: 'engineer', label: 'Ahmed Harby (0xSenior)', icon: UserCheck, color: 'text-emerald-400' },
 ];
 
@@ -45,9 +45,8 @@ function DockIcon({ coordinate, item, activeTab, onSelect, isVertical }) {
             animate={isVertical ? { opacity: 1, x: 58, scale: 1 } : { opacity: 1, y: -45, scale: 1 }}
             exit={isVertical ? { opacity: 0, x: -5, scale: 0.95 } : { opacity: 0, y: 5, scale: 0.95 }}
             transition={{ duration: 0.15 }}
-            className={`absolute pointer-events-none px-3 py-1.5 rounded-lg text-xs font-medium tracking-wide bg-slate-900/95 text-slate-100 border border-white/10 shadow-2xl backdrop-blur-xl whitespace-nowrap z-50 flex items-center gap-1.5 ${
-              isVertical ? 'left-0' : 'bottom-full mb-2'
-            }`}
+            className={`absolute pointer-events-none px-3 py-1.5 rounded-lg text-xs font-medium tracking-wide bg-slate-900/95 text-slate-100 border border-white/10 shadow-2xl backdrop-blur-xl whitespace-nowrap z-50 flex items-center gap-1.5 ${isVertical ? 'left-0' : 'bottom-full mb-2'
+              }`}
           >
             <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-cyan-400' : 'bg-slate-400'}`} />
             {item.label}
@@ -61,14 +60,13 @@ function DockIcon({ coordinate, item, activeTab, onSelect, isVertical }) {
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         onClick={() => onSelect(item.id)}
-        className={`relative flex items-center justify-center rounded-2xl cursor-pointer transition-colors duration-200 ${
-          isActive 
-            ? 'bg-white/15 border border-cyan-400/50 shadow-lg shadow-cyan-500/25 text-white' 
+        className={`relative flex items-center justify-center rounded-2xl cursor-pointer transition-colors duration-200 ${isActive
+            ? 'bg-white/15 border border-cyan-400/50 shadow-lg shadow-cyan-500/25 text-white'
             : 'bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 text-slate-300 hover:text-white'
-        }`}
+          }`}
       >
         <Icon className={`w-5 h-5 transition-transform duration-200 ${item.color}`} />
-        
+
         {/* Active Pill Indicator */}
         {isActive && (
           isVertical ? (
@@ -110,9 +108,8 @@ export const FloatingDock = ({ activeTab, onSelectTab, orientation = 'horizontal
           mouseX.set(Infinity);
           mouseY.set(Infinity);
         }}
-        className={`flex ${
-          isVertical ? 'flex-col gap-3 px-3 py-4' : 'flex-row items-center gap-3 px-4 py-2.5'
-        } rounded-3xl bg-slate-950/85 backdrop-blur-2xl border border-white/10 shadow-2xl shadow-black/70 relative`}
+        className={`flex ${isVertical ? 'flex-col gap-3 px-3 py-4' : 'flex-row items-center gap-3 px-4 py-2.5'
+          } rounded-3xl bg-slate-950/85 backdrop-blur-2xl border border-white/10 shadow-2xl shadow-black/70 relative`}
       >
         {/* Subtle glowing underlay */}
         <div className="absolute inset-0 -z-10 rounded-3xl bg-gradient-to-tr from-cyan-500/10 via-indigo-500/10 to-amber-500/10 blur-xl opacity-60" />
