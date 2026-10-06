@@ -97,3 +97,18 @@ async def test_query_use_case_flow():
     res2 = await use_case.execute(req)
     assert res2.cached is True
     assert res2.answer == res.answer
+
+
+def test_is_in_scope_comparative_and_followup():
+    """Verify conversational follow-ups and comparisons are always in scope."""
+    assert QueryPandasDocsUseCase.is_in_scope("طيب اي الي يميزها عن باقي المكتبات؟") is True
+    assert QueryPandasDocsUseCase.is_in_scope("How does Pandas compare to Polars and SQL?") is True
+    assert QueryPandasDocsUseCase.is_in_scope("طريقة عمل البيتزا الإيطالية") is False
+
+
+@pytest.mark.asyncio
+async def test_groq_provider_availability():
+    from app.infrastructure.llm.groq_provider import GroqProvider
+    empty_provider = GroqProvider(api_key="")
+    assert await empty_provider.is_available() is False
+

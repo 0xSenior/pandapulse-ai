@@ -49,3 +49,9 @@ When chained indexing like `df['price'][0] = 190.0` is performed, Pandas will ra
 # Modern idiomatic assignment
 df.loc['tech_1', 'price'] = 190.0
 ```
+
+### 5. Converting DataFrames to Arrays (`to_numpy` vs legacy `values`)
+- **Use `df.to_numpy()`**: In modern Pandas 2.0+, `df.to_numpy()` is the standard method to convert a DataFrame or Series to a NumPy array.
+- **Avoid `df.values`**: The legacy `.values` attribute is discouraged due to inconsistent typing and memory behavior.
+- **Notice on `df.array()`**: There is **no `df.array()` method** on DataFrame (calling it raises `AttributeError`). For Pandas ExtensionArrays, use `Series.array` or `pd.array()`.
+

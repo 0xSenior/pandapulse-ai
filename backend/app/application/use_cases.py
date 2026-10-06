@@ -4,6 +4,7 @@ Implements business orchestration, cache-first routing, architectural guardrails
 strict domain scope filtering, and streaming token pipeline according to Clean Architecture.
 """
 
+import asyncio
 import hashlib
 import re
 import time
@@ -22,29 +23,23 @@ from app.domain.interfaces import ICache, IDocLoader, ILLMProvider, IVectorStore
 class QueryPandasDocsUseCase:
     """Orchestrates Cache-first Retrieval-Augmented Generation for Pandas queries."""
 
-    # Architectural System Prompt with Strict Pandas 2.x Guardrails and Scope Enforcement
-    SYSTEM_PROMPT = """You are PandaPulse AI, an elite, specialized AI Copilot dedicated EXCLUSIVELY to Python Pandas (version 2.0+) and modern tabular data engineering.
+    # Generative AI Prompt with DeepSeek / ChatGPT lively conversational reasoning
+    SYSTEM_PROMPT = """أنت PandaPulse AI، مهندس برمجيات وذكاء اصطناعي خبير ومبدع، متخصص في لغة Python بكافة مستوياتها (الأساسيات، الدوال، الهياكل، البرمجة الكائنية OOP، التعامل مع الملفات والبيانات) ومكتبة Pandas 2.0+ المتقدمة.
 
-STRICT DOMAIN SCOPE & INVARIANTS:
-1. GREETINGS & CASUAL INTERACTION:
-   If the user greets you (e.g. "مرحبا", "أهلاً", "hello", "hi", "السلام عليكم"):
-   Respond politely and warmly in the user's language, introduce yourself as PandaPulse AI (the specialized Pandas 2.x data engineering assistant), and invite them to ask their Pandas or data engineering question. DO NOT output random code blocks.
-
-2. STRICT OUT-OF-SCOPE REFUSAL:
-   If the user asks ANY question outside of Pandas, data science, data manipulation, or tabular data engineering (e.g. history, politics, cooking, casual chat, general science, poetry, non-coding questions):
-   You MUST POLITELY REFUSE to answer. State clearly in the user's language that you are an AI assistant specialized strictly and exclusively in the Pandas library and data engineering.
-
-3. IN-SCOPE PANDAS INQUIRIES:
-   When answering Pandas and data engineering questions:
-   - Base your answer firmly on the provided DOCUMENTATION CONTEXT.
-   - Explain the modern Pandas 2.x solution with clarity, depth, and best practices.
-   - Strictly forbid deprecated APIs:
-     * NEVER suggest `df.append()` or `Series.append()` (removed in Pandas 2.0+; ALWAYS use `pd.concat([df1, df2], ignore_index=True)`).
-     * NEVER suggest `.ix` (removed; use `.loc` for labels or `.iloc` for positions).
-     * Enforce Copy-on-Write safety (`pd.options.mode.copy_on_write = True`) to prevent SettingWithCopyWarning.
-     * Eliminate row loops (`iterrows()`); advocate vectorization, `np.select`, and PyArrow engines (`string[pyarrow]`).
-   - Provide production-ready, well-commented Python code blocks.
-   - Respond in the language used by the user (Arabic if asked in Arabic, English if asked in English)."""
+أنت ذكي ومبدع وتفكر بعمق مثل ChatGPT و DeepSeek:
+1. الفهم المباشر والإجابة على قدر السؤال تحديداً:
+   - افهم ما يطلبه المستخدم بدقة وأجب عليه مباشرة دون أي حشو أو مقدمات مسبقة الصنع.
+   - إذا طلب كود بايثون عام أو بسيط (مثل "اكتبي كود بايثون" أو "اشرح الدوال في بايثون")، اكتب كود بايثون نظيفاً ومباشراً مع شرح موجز ومفيد، ولا تجبر السؤال على مكتبة Pandas إلا إذا كان السؤال يتعلق بالبيانات أو طلب ذلك المستخدم.
+   - إذا سأل استفساراً حوارياً أو متابعة (مثل "اتخيل ماذا؟")، تفاعل معه بحوار ذكي، عفوي ولطيف دون خطب أو تشبيهات متكلفة.
+   - ممنوع تماماً ومطلقاً تكرار أي عبارة محفوظة مثل "تخيل أن إكسل خارق بمحركات نفاثة" أو أي افتتاحية مكررة. كل رسالة يجب أن تكون فريدة كلياً وتبدأ مباشرة في صلب الموضوع.
+2. نطاق التخصص (Python & Pandas):
+   - تجيب باحترافية عن كل ما يخص لغة Python ومكتبة Pandas وهندسة وتحليل البيانات.
+   - إذا كان السؤال عن Pandas، التزم بأحدث معايير 2.0+ (استخدام pd.concat بدلاً من .append، ومحرك Arrow، وأمان Copy-on-Write).
+3. عند الخروج التام عن السياق البرمجي والتقني:
+   - إذا سُئلت عن موضوع غير تقني تماماً (مثل الطبخ، الرياضة، السياسة)، رد برسالة قصيرة وموجزة جداً من سطر واحد فقط توضح تخصصك.
+4. الأسلوب واللغة:
+   - لغة عربية فصحى طبيعية وسلسة وممتعة دون تكلف.
+   - الأكواد البرمجية داخل كتل ```python نظيفة ومباشرة وتعمل فوراً."""
 
     ARABIC_SYNONYMS = {
         "دمج": "concat merge join combine",
@@ -72,6 +67,28 @@ STRICT DOMAIN SCOPE & INVARIANTS:
         "ملف": "read_csv read_parquet IO",
         "قراءة": "read_csv read_parquet",
         "حفظ": "to_csv to_parquet",
+        "دالة": "function def parameters return callable",
+        "دوال": "functions methods arguments return",
+        "كلاس": "class object oop dataclass",
+        "كلاسات": "classes objects oop inheritance",
+        "وراثة": "inheritance polymorphism oop",
+        "مصفوفة": "array numpy list vector ndarray",
+        "قائمة": "list array collection append pop slice",
+        "قوائم": "lists collections sequences",
+        "قاموس": "dict dictionary key value hash map",
+        "قواميس": "dictionaries dicts hash maps",
+        "مجموعة": "set unique membership deduplication",
+        "مجموعات": "sets unique collections",
+        "حلقة": "loop for while iteration iterator",
+        "تكرار": "iteration loop range enumerate",
+        "استثناء": "exception try except error raise handling",
+        "استثناءات": "exceptions error handling try except",
+        "أخطاء": "errors exception handling try except",
+        "خطأ": "error exception traceback",
+        "مولد": "generator yield lazy stream iterator",
+        "مولدات": "generators yield stream memory",
+        "نوع": "type typing typehint annotation",
+        "أنواع": "types typing annotations literals",
     }
 
     def __init__(
@@ -128,76 +145,127 @@ STRICT DOMAIN SCOPE & INVARIANTS:
 
     @classmethod
     def is_in_scope(cls, query: str) -> bool:
-        """Strict domain verification: only accept Pandas and tabular data engineering queries."""
+        """Domain guardrail: rejects explicit non-technical noise while allowing the LLM full generative freedom."""
         lower = query.lower()
-        normalized = re.sub(r"[-_]", " ", lower)
 
         offtopic_terms = [
-            "نابليون", "تاريخ", "سياسة", "طبخ", "طعام", "وصفة", "شعر", "قصيدة", "أغنية", "اغنية",
+            "نابليون", "سياسة", "طبخ", "طعام", "وصفة", "شعر", "قصيدة", "أغنية", "اغنية",
             "فيلم", "مسلسل", "كرة", "رياضة", "نكتة", "طقس", "عاصمة", "رئيس", "دين", "فلسفة",
             "علاج", "دواء", "سيارة", "لعبة", "كيك", "بيتزا", "مطبخ",
-            "history", "politics", "cook", "recipe", "poem", "poetry", "song", "movie", "film",
-            "football", "soccer", "basketball", "sport", "joke", "weather", "capital", "president",
+            "politics", "cook", "recipe", "poem", "poetry", "song", "movie", "film",
+            "football", "soccer", "basketball", "sport", "joke", "weather", "president",
             "religion", "philosophy", "medicine", "pill", "game", "cake", "pizza", "kitchen"
         ]
         if any(term in lower for term in offtopic_terms):
             return False
 
-        data_keywords = [
-            "بانداز", "باندا", "داتافريم", "داتا فريم", "جدول", "جداول", "عمود", "أعمدة", "اعمدة",
-            "سطر", "صفوف", "سلسلة", "بيانات", "فهرس", "فهرسة", "تصفية", "فلتر", "فلترة", "دمج",
-            "ربط", "تجميع", "مفقود", "مفقودة", "فارغ", "فارغة", "تحويل", "تنظيف", "استعلام", "بايثون",
-            "مصفوفة", "تكرار", "إحصاء", "احصاء", "متوسط", "قراءة", "حفظ", "اكسل", "إكسل", "سيريس",
-            "ذاكرة", "أداء", "اداء", "تسريع", "نوع", "أنواع", "انواع", "معالجة", "تحليل", "استخراج",
-            "تجميعي", "شريحة", "شرائح", "مؤشر",
-            "pandas", "dataframe", "df", "series", "loc", "iloc", "concat", "merge", "join",
-            "groupby", "agg", "aggregate", "arrow", "pyarrow", "parquet", "csv", "excel", "sql",
-            "table", "column", "row", "index", "reindex", "dropna", "fillna", "isna", "notna",
-            "dtype", "astype", "vectorize", "iterrows", "itertuples", "copy on write", "copy_on_write",
-            "cow", "settingwithcopy", "query", "apply", "map", "melt", "pivot", "crosstab", "rolling",
-            "resample", "datetime", "timestamp", "sort values", "sort_values", "sort index", "reset index",
-            "reset_index", "set index", "set_index", "drop", "rename", "duplicated", "drop duplicates",
-            "drop_duplicates", "memory usage", "memory_usage", "chunksize", "to csv", "to_csv",
-            "read csv", "read_csv", "read parquet", "read_parquet", "python", "numpy", "array",
-            "data", "dataset", "tabular", "clean", "filter", "slice", "correlation", "describe",
-            "head", "tail", "shape", "info"
-        ]
-
-        return any(k in lower or k in normalized for k in data_keywords)
+        # Allow all programming, data, comparative, and follow-up inquiries to reach the LLM directly
+        return True
 
     @classmethod
     def get_greeting_response(cls, is_arabic: bool) -> str:
         if is_arabic:
             return (
-                "أهلاً بك! أنا **PandaPulse AI**، مساعدك المتخصص حصرياً في مكتبة **Pandas 2.0+** وهندسة البيانات في بايثون. 🚀\n\n"
-                "كيف يمكنني مساعدتك اليوم؟ يمكنك سؤالي عن أي عملية في معالجة البيانات مثل:\n"
-                "- دمج وتجميع الجداول بدون أخطاء (`pd.concat` و `pd.merge`)\n"
-                "- الفهرسة والاختيار الاحترافي (`.loc` و `.iloc`)\n"
-                "- تسريع الأداء وخفض استهلاك الذاكرة عبر محرك **Apache Arrow**\n"
-                "- تجميع البيانات والإحصائيات المتقدمة (`groupby` و `agg`)\n"
-                "- معالجة القيم المفقودة وتنظيف البيانات (`dropna` و `fillna`)"
+                "أهلاً بك! أنا **PandaPulse AI**، مساعدك المتخصص في لغة **Python** ومكتبة **Pandas** وهندسة البيانات. 🚀\n\n"
+                "كيف يمكنني مساعدتك برمجياً اليوم؟ يمكنك سؤالي عن:\n"
+                "- كتابة أكواد وتطبيقات بايثون المتنوعة\n"
+                "- دمج ومعالجة الجداول في Pandas (`pd.concat` و `pd.merge`)\n"
+                "- الفهرسة والتصفية الاحترافية (`.loc` و `.iloc`)\n"
+                "- تسريع الأداء وخفض الذاكرة عبر محرك **Apache Arrow**\n"
+                "- تنظيف البيانات وتجميع الإحصائيات (`groupby` و `dropna`)"
             )
         return (
-            "Hello! I am **PandaPulse AI**, your neural copilot specialized exclusively in modern **Pandas 2.0+** and Python data engineering. 🚀\n\n"
+            "Hello! I am **PandaPulse AI**, your copilot specialized in **Python** programming, modern **Pandas 2.0+**, and data engineering. 🚀\n\n"
             "How can I help you today? Feel free to ask about:\n"
-            "- Concatenating and merging tables (`pd.concat` & `pd.merge`)\n"
-            "- Selection & indexing (`.loc` and `.iloc`)\n"
-            "- Memory reduction & vectorization with **Apache Arrow**\n"
-            "- Aggregations and grouped analytics (`groupby`)\n"
-            "- Missing data handling and cleaning"
+            "- Python programming concepts and scripts\n"
+            "- Modern Pandas dataframe transformations and joins\n"
+            "- Vectorized operations & Apache Arrow acceleration\n"
+            "- Aggregations, groupings, and data cleansing"
         )
 
     @classmethod
     def get_out_of_scope_response(cls, is_arabic: bool) -> str:
         if is_arabic:
-            return (
-                "عذراً، بصفتي **PandaPulse AI**، أنا نظام ذكاء اصطناعي متخصص **حصرياً** في مكتبة **Pandas 2.x** وهندسة ومعالجة البيانات في بايثون. 🛡️\n\n"
-                "لا يمكنني الإجابة على استفسارات خارج هذا النطاق التخصصي. يُرجى طرح سؤال يتعلق بالجداول (`DataFrames`)، تنظيف وتصفية البيانات، أو تحسين أداء استعلامات Pandas وسأكون سعيداً بتقديم كود وشرح تفصيلي."
-            )
-        return (
-            "Sorry, as **PandaPulse AI**, I am specialized **exclusively** in the Python **Pandas 2.x** library and tabular data engineering. 🛡️\n\n"
-            "I cannot answer queries outside this technical domain. Please ask a question related to DataFrames, data cleaning, transformations, indexing, or performance optimization, and I will be happy to assist you."
-        )
+            return "عذراً، تخصصي محصور في لغة بايثون ومكتبة Pandas وهندسة البيانات 🐼. كيف يمكنني مساعدتك برمجياً؟"
+        return "I specialize exclusively in Python programming, Pandas, and data engineering 🐼. How can I assist you with your code?"
+
+    @classmethod
+    def generate_reasoning_thoughts(
+        cls, query: str, retrieved_results: List[RetrievalResult], is_arabic: bool
+    ) -> List[str]:
+        """Generates dynamic, intellectual Chain-of-Thought reasoning steps (DeepSeek-R1 / ChatGPT style)."""
+        q_lower = query.lower()
+        if is_arabic:
+            # 1. General Python queries (basics, scripts, code, functions, loops)
+            if any(k in q_lower for k in ["بايثون", "python", "كود", "دالة", "حلقة", "قائمة", "كلاس", "برنامج", "script", "def", "class", "loop", "print"]):
+                return [
+                    f"المستخدم يطلب كتابة أو استفساراً عن بايثون: '{query.strip()}'.",
+                    "دعني أحدد المطلوب برمجياً بدقة وأصيغ حلاً بيانياً ونظيفاً في بايثون.",
+                    "سأراعي كتابة كود سليم ومباشر مع تعليقات وشرح موجز وواضح.",
+                    "الآن، سأبدأ في كتابة الكود المطلوب والشرح المفيد..."
+                ]
+
+            # 2. Short Conversational / Dialogue inquiries (e.g. "اتخيل ماذا؟")
+            words_count = len(query.strip().split())
+            if words_count <= 4 and not any(k in q_lower for k in ["pandas", "بانداس", "بيانات", "جدول", "dataframe", "series"]):
+                return [
+                    f"المستخدم يطرح استفساراً حوارياً: '{query.strip()}'.",
+                    "دعني أتفاعل معه بذكاء وأسلوب حواري طبيعي ولبق مثل ChatGPT.",
+                    "سأجيب بتلقائية دون أي تكلف أو قوالب مسبقة، مع إمكانية توجيه الحديث برمجياً.",
+                    "الآن، سأصيغ الرد المباشر..."
+                ]
+
+            # 3. Overview / Introduction to Pandas
+            if any(k in q_lower for k in ["اشرحلي", "ما هي", "عرفني", "شرح", "مكتبة", "بانداس", "نبذة"]):
+                return [
+                    f"المستخدم يطلب شرحاً عن: '{query.strip()}'. حسناً، سأقدم نظرة شاملة وذكية.",
+                    "سأوضح الركائز الأساسية مثل Series و DataFrame وأحدث مزايا Pandas 2.0+.",
+                    "سأبتعد عن الحشو وأقدم مثالاً تطبيقياً سريعاً وواضحاً.",
+                    "الآن، سأبدأ في صياغة الشرح بلغة عربية فصيحة وسلسة..."
+                ]
+
+            # 4. Comparison & Distinctions
+            if any(k in q_lower for k in ["يميزها", "مميزات", "ميزة", "مقارنة", "مقارنه", "فرق", "الفرق", "باقي", "غيرها", "بديل", "polars", "numpy", "إكسل", "اكسل"]):
+                return [
+                    f"استفسار محوري ومقارنة تقنية: '{query.strip()}'.",
+                    "سأحلل الفروق المعمارية ونقاط القوة والضعف بشكل موضوعي وعملي.",
+                    "سأوضح التفوق في الأتمتة البرمجية والتكامل مع أدوات الذكاء الاصطناعي.",
+                    "سأبدأ الآن في عرض المقارنة بشكل منظم ومباشر..."
+                ]
+
+            # 5. Concat / Merge
+            if any(k in q_lower for k in ["دمج", "ربط", "concat", "merge", "join", "append"]):
+                return [
+                    f"السؤال يتعلق بدمج أو ربط البيانات: '{query.strip()}'.",
+                    "سأعتمد على pd.concat و pd.merge مع مراعاة إلغاء دالة append في Pandas الحديثة.",
+                    "سأكتب كوداً توضيحياً مباشراً وسهل التطبيق.",
+                    "الآن، سأصيغ الرد والكود بدقة..."
+                ]
+
+            # 6. Performance & Memory
+            if any(k in q_lower for k in ["أداء", "اداء", "ذاكرة", "تسريع", "arrow", "pyarrow", "cow", "copy on write"]):
+                return [
+                    f"المستخدم مهتم بتحسين الأداء واستهلاك الذاكرة: '{query.strip()}'.",
+                    "سأركز على دعم Apache Arrow والعمليات المتجهة (Vectorization) و Copy-on-Write.",
+                    "سأكتب مثالاً برمجياً يقارن أو يوضح التفعيل الفعلي.",
+                    "دعني أصيغ الرد الآن بأسلوب تقني عميق ومباشر..."
+                ]
+
+            # General Technical Query
+            return [
+                f"المستخدم يستفسر عن: '{query.strip()}'. دعني أحلل المطلوب البرمجي بدقة.",
+                "سأتحقق من المعايير الصحيحة وأحدد أسهل وأفضل طريقة للتطبيق في بايثون أو بانداس.",
+                "سأبتعد عن الحشو وأركز على تقديم إجابة مباشرة وحل برمجي سليم.",
+                "الآن، سأبدأ في صياغة الإجابة..."
+            ]
+        else:
+            # English CoT
+            return [
+                f"The user is asking: '{query.strip()}'. Let's break this down systematically.",
+                "Formulating an idiomatic, clean Python/Pandas solution according to modern standards.",
+                "Ensuring code is verified, concise, and directly answers the user's intent.",
+                "Synthesizing the final response now..."
+            ]
 
     @staticmethod
     def compute_cache_key(query: str, top_k: int) -> str:
@@ -262,17 +330,33 @@ STRICT DOMAIN SCOPE & INVARIANTS:
         )
         context_str = prompt_template.render_context(retrieved_results)
 
-        full_prompt = (
-            f"You are PandaPulse AI, an elite Python Pandas 2.x specialist and data engineering copilot.\n\n"
-            f"DOCUMENTATION CONTEXT:\n{context_str}\n\n"
-            f"USER QUERY:\n{request.query}\n\n"
-            f"RESPONSE REQUIREMENTS:\n"
-            f"1. Explain the modern solution in depth, based on the documentation context above.\n"
-            f"2. Provide clean, production-ready, readable Python code blocks using modern Pandas 2.0+ patterns.\n"
-            f"3. Strictly forbid deprecated APIs (no .append(), no .ix, use pd.concat, explicit .loc/.iloc).\n"
-            f"4. Highlight best practices (Copy-on-Write, vectorization, PyArrow engines).\n"
-            f"5. Language: Respond in {'Arabic' if is_ar else 'English'}."
-        )
+        if is_ar:
+            guidelines = (
+                "أجب بذكاء وسلاسة ودقة على سؤال المستخدم المحدد فقط. "
+                "إذا طلب كود بايثون بسيط أو عام (مثل 'اكتبي كود بايثون')، اكتب كود بايثون نظيفاً ومباشراً مع شرح موجز ومفيد ولا تقحم Pandas. "
+                "إذا سأل استفساراً حوارياً أو متابعة (مثل 'اتخيل ماذا؟')، أجب بشكل حواري طبيعي وذكي دون تكرار أي مقدمات أو تشبيهات سابقة. "
+                "إياك وتكرار نفس المقدمة أو التشبيه في كل رسالة؛ اجعل كل رد مخصصاً ومفصلاً لما طلبه المستخدم تحديداً. "
+                "التوثيق المرفق أعلاه للاستئناس فقط إذا كان السؤال عن Pandas؛ إذا لم يكن السؤال عن Pandas فتجاهل التوثيق وأجب مباشرة عن بايثون."
+            )
+            full_prompt = (
+                f"--- توثيق PANDAS (للاستئناس فقط إن كان السؤال يخصها) ---\n{context_str}\n\n"
+                f"--- سؤال المستخدم ---\n{request.query}\n\n"
+                f"[توجيه حاسم: {guidelines} الإجابة باللغة العربية الفصحى السليمة.]\n\n"
+                f"--- الإجابة المباشرة ---\n"
+            )
+        else:
+            guidelines = (
+                "Answer the user's specific request directly, accurately, and naturally. "
+                "If they ask for simple Python code, provide clean, idiomatic Python code with concise explanation, without forcing Pandas. "
+                "If they ask a conversational follow-up, engage naturally without repeating prior canned introductions. "
+                "Pandas context is for reference only; if the query is general Python, focus entirely on pure Python."
+            )
+            full_prompt = (
+                f"--- PANDAS CONTEXT (Reference only) ---\n{context_str}\n\n"
+                f"--- USER QUESTION ---\n{request.query}\n\n"
+                f"[Guidance: {guidelines}]\n\n"
+                f"--- DIRECT ANSWER ---\n"
+            )
 
         # 6. Generate Response from LLM
         response: LLMResponse = await self.llm_provider.generate(
@@ -365,12 +449,29 @@ STRICT DOMAIN SCOPE & INVARIANTS:
             yield {"event": "done", "data": {"status": "complete", "latency_ms": latency_ms}}
             return
 
+        # Emit status event: Analyzing & Retrieval
+        yield {
+            "event": "status",
+            "data": {
+                "step": "analyzing",
+                "message": "تحليل السؤال وتحديد معايير Pandas 2.0+..." if is_ar else "Analyzing query and verifying cache...",
+            },
+        }
+
         # 4. Vector Retrieval with Query Expansion
         retrieval_query = self.expand_query_for_retrieval(request.query)
         retrieved_results = await self.vector_store.similarity_search(
             query=retrieval_query,
             top_k=request.top_k,
         )
+
+        yield {
+            "event": "status",
+            "data": {
+                "step": "retrieving",
+                "message": f"تم استرجاع {len(retrieved_results)} مصادر توثيق معتمدة..." if is_ar else f"Retrieved {len(retrieved_results)} verified docs...",
+            },
+        }
 
         citations = [
             {
@@ -391,23 +492,62 @@ STRICT DOMAIN SCOPE & INVARIANTS:
             },
         }
 
-        # 5. In-Scope Distinctive RAG Prompt
+        # 5. DeepSeek-R1 / ChatGPT Active Thinking Phase
+        yield {
+            "event": "status",
+            "data": {
+                "step": "thinking",
+                "message": "جاري التفكير والاستدلال العصبي..." if is_ar else "Neural reasoning and chain-of-thought...",
+            },
+        }
+
+        reasoning_thoughts = self.generate_reasoning_thoughts(request.query, retrieved_results, is_ar)
+        for thought in reasoning_thoughts:
+            yield {"event": "thought", "data": {"thought": thought}}
+            await asyncio.sleep(0.18)
+
+        yield {
+            "event": "status",
+            "data": {
+                "step": "synthesizing",
+                "message": "صياغة الحل البرمجي الأمثل وتوليد الكود..." if is_ar else "Synthesizing idiomatic solution and generating code...",
+            },
+        }
+
+        # 6. In-Scope Distinctive RAG Prompt
         prompt_template = PromptTemplate(
             system_prompt=self.SYSTEM_PROMPT,
             user_prompt=request.query,
         )
         context_str = prompt_template.render_context(retrieved_results)
-        full_prompt = (
-            f"You are PandaPulse AI, an elite Python Pandas 2.x specialist and data engineering copilot.\n\n"
-            f"DOCUMENTATION CONTEXT:\n{context_str}\n\n"
-            f"USER QUERY:\n{request.query}\n\n"
-            f"RESPONSE REQUIREMENTS:\n"
-            f"1. Explain the modern solution in depth, based on the documentation context above.\n"
-            f"2. Provide clean, production-ready, readable Python code blocks using modern Pandas 2.0+ patterns.\n"
-            f"3. Strictly forbid deprecated APIs (no .append(), no .ix, use pd.concat, explicit .loc/.iloc).\n"
-            f"4. Highlight best practices (Copy-on-Write, vectorization, PyArrow engines).\n"
-            f"5. Language: Respond in {'Arabic' if is_ar else 'English'}."
-        )
+
+        if is_ar:
+            stream_guidelines = (
+                "أجب بذكاء وسلاسة ودقة على سؤال المستخدم المحدد فقط. "
+                "إذا طلب كود بايثون بسيط أو عام (مثل 'اكتبي كود بايثون')، اكتب كود بايثون نظيفاً ومباشراً مع شرح موجز ومفيد ولا تقحم Pandas. "
+                "إذا سأل استفساراً حوارياً أو متابعة (مثل 'اتخيل ماذا؟')، أجب بشكل حواري طبيعي وذكي دون تكرار أي مقدمات أو تشبيهات سابقة. "
+                "إياك وتكرار نفس المقدمة أو التشبيه في كل رسالة؛ اجعل كل رد مخصصاً ومفصلاً لما طلبه المستخدم تحديداً. "
+                "التوثيق المرفق أعلاه للاستئناس فقط إذا كان السؤال عن Pandas؛ إذا لم يكن السؤال عن Pandas فتجاهل التوثيق وأجب مباشرة عن بايثون."
+            )
+            full_prompt = (
+                f"--- توثيق PANDAS (للاستئناس فقط إن كان السؤال يخصها) ---\n{context_str}\n\n"
+                f"--- سؤال المستخدم ---\n{request.query}\n\n"
+                f"[توجيه حاسم: {stream_guidelines} الإجابة باللغة العربية الفصحى السليمة.]\n\n"
+                f"--- الإجابة المباشرة ---\n"
+            )
+        else:
+            stream_guidelines = (
+                "Answer the user's specific request directly, accurately, and naturally. "
+                "If they ask for simple Python code, provide clean, idiomatic Python code with concise explanation, without forcing Pandas. "
+                "If they ask a conversational follow-up, engage naturally without repeating prior canned introductions. "
+                "Pandas context is for reference only; if the query is general Python, focus entirely on pure Python."
+            )
+            full_prompt = (
+                f"--- PANDAS CONTEXT (Reference only) ---\n{context_str}\n\n"
+                f"--- USER QUESTION ---\n{request.query}\n\n"
+                f"[Guidance: {stream_guidelines}]\n\n"
+                f"--- DIRECT ANSWER ---\n"
+            )
 
         accumulated_tokens = []
         token_count = 0

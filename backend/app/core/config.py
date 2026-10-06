@@ -21,12 +21,18 @@ class Settings(BaseSettings):
         "*",
     ]
 
-    # Ollama & Models
+    # Ollama & Local Models
     OLLAMA_BASE_URL: str = "http://localhost:11434"
     LLM_MODEL: str = "qwen2.5-coder:1.5b"
     EMBEDDING_MODEL: str = "nomic-embed-text"
-    LLM_TEMPERATURE: float = 0.1
+    LLM_TEMPERATURE: float = 0.65
     LLM_MAX_TOKENS: int = 2048
+
+    # Cloud LLM Configuration (for zero-download local use & Vercel deployment)
+    LLM_PROVIDER: str = "auto"  # 'auto', 'ollama', or 'groq'
+    GROQ_API_KEY: str = ""
+    GROQ_MODEL: str = "qwen/qwen3.8-27b"
+    GROQ_BASE_URL: str = "https://api.groq.com/openai/v1"
 
     # Vector Storage & Ingestion
     CHROMA_PERSIST_DIRECTORY: str = str(Path(__file__).resolve().parent.parent.parent / "chroma_db")

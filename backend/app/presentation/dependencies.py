@@ -12,6 +12,7 @@ from app.infrastructure.cache.lru_cache import LRUQueryCache
 from app.infrastructure.loaders.markdown_loader import MarkdownDocLoader
 from app.infrastructure.vector_db.chroma_manager import ChromaVectorManager, HybridEmbeddingProvider
 from app.infrastructure.llm.ollama_provider import OllamaProvider
+from app.infrastructure.llm.groq_provider import GroqProvider
 from app.application.use_cases import QueryPandasDocsUseCase, IngestDocsUseCase, GetStatusUseCase
 
 
@@ -25,11 +26,24 @@ _vector_store_instance = ChromaVectorManager(
     persist_dir=settings.CHROMA_PERSIST_DIRECTORY,
     embedding_provider=_embedding_instance,
 )
-_llm_instance = OllamaProvider(
-    base_url=settings.OLLAMA_BASE_URL,
-    model_name=settings.LLM_MODEL,
-    temperature=settings.LLM_TEMPERATURE,
-)
+
+# Hybrid LLM Selection: Auto-detect Groq API key or use local Ollama
+if settings.LLM_PROVIDER == "groq" or (
+    settings.LLM_PROVIDER == "auto" and bool(settings.GROQ_API_KEY.strip())
+):
+    _llm_instance = GroqProvider(
+        api_key=settings.GROQ_API_KEY,
+        model_name=settings.GROQ_MODEL,
+        base_url=settings.GROQ_BASE_URL,
+        temperature=settings.LLM_TEMPERATURE,
+    )
+else:
+    _llm_instance = OllamaProvider(
+        base_url=settings.OLLAMA_BASE_URL,
+        model_name=settings.LLM_MODEL,
+        temperature=settings.LLM_TEMPERATURE,
+    )
+
 _doc_loader_instance = MarkdownDocLoader(
     chunk_size=settings.CHUNK_SIZE,
     chunk_overlap=settings.CHUNK_OVERLAP,
