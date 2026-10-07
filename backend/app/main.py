@@ -69,6 +69,7 @@ def create_app() -> FastAPI:
     app.include_router(api_router)
 
     @app.get("/")
+    @app.get("/api/index.py")
     async def root():
         return {
             "name": "PandaPulse AI",
