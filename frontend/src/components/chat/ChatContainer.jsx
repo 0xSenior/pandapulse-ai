@@ -89,6 +89,7 @@ export const ChatContainer = ({ initialPrompt = '', onClearInitialPrompt }) => {
             isStreaming={isStreaming}
             isLast={index === messages.length - 1}
             onViewCitations={viewCitations}
+            onSelectSuggestion={handleQuickPrompt}
           />
         ))}
         <div ref={messagesEndRef} />

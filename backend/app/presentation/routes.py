@@ -42,6 +42,7 @@ async def chat_endpoint(
         query=request.query,
         top_k=request.top_k,
         session_id=request.session_id,
+        history=request.history,
     )
     result = await use_case.execute(dto_in)
 
@@ -66,6 +67,7 @@ async def stream_chat_endpoint(
         query=request.query,
         top_k=request.top_k,
         session_id=request.session_id,
+        history=request.history,
     )
 
     async def event_generator():

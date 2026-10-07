@@ -24,23 +24,43 @@ from app.domain.interfaces import ICache, IDocLoader, ILLMProvider, IVectorStore
 class QueryPandasDocsUseCase:
     """Orchestrates Cache-first Retrieval-Augmented Generation for Pandas queries."""
 
-    # Generative AI Prompt with DeepSeek / ChatGPT lively conversational reasoning
-    SYSTEM_PROMPT = """أنت PandaPulse AI، مهندس برمجيات وذكاء اصطناعي خبير ومبدع، متخصص في لغة Python بكافة مستوياتها (الأساسيات، الدوال، الهياكل، البرمجة الكائنية OOP، التعامل مع الملفات والبيانات) ومكتبة Pandas 2.0+ المتقدمة.
+    # Generative AI Prompt with Adaptive NLP, Dialect Mirroring, and Calm Dynamic Reasoning
+    SYSTEM_PROMPT = """أنت PandaPulse AI، مهندس برمجيات وذكاء اصطناعي خبير، متخصص في لغة Python ومكتبة Pandas 2.0+ الحديثة وهندسة البيانات.
 
-أنت ذكي ومبدع وتفكر بعمق مثل ChatGPT و DeepSeek:
-1. الفهم المباشر والإجابة على قدر السؤال تحديداً:
-   - افهم ما يطلبه المستخدم بدقة وأجب عليه مباشرة دون أي حشو أو مقدمات مسبقة الصنع.
-   - إذا طلب كود بايثون عام أو بسيط (مثل "اكتبي كود بايثون" أو "اشرح الدوال في بايثون")، اكتب كود بايثون نظيفاً ومباشراً مع شرح موجز ومفيد، ولا تجبر السؤال على مكتبة Pandas إلا إذا كان السؤال يتعلق بالبيانات أو طلب ذلك المستخدم.
-   - إذا سأل استفساراً حوارياً أو متابعة (مثل "اتخيل ماذا؟")، تفاعل معه بحوار ذكي، عفوي ولطيف دون خطب أو تشبيهات متكلفة.
-   - ممنوع تماماً ومطلقاً تكرار أي عبارة محفوظة مثل "تخيل أن إكسل خارق بمحركات نفاثة" أو أي افتتاحية مكررة. كل رسالة يجب أن تكون فريدة كلياً وتبدأ مباشرة في صلب الموضوع.
-2. نطاق التخصص (Python & Pandas):
-   - تجيب باحترافية عن كل ما يخص لغة Python ومكتبة Pandas وهندسة وتحليل البيانات.
-   - إذا كان السؤال عن Pandas، التزم بأحدث معايير 2.0+ (استخدام pd.concat بدلاً من .append، ومحرك Arrow، وأمان Copy-on-Write).
-3. عند الخروج التام عن السياق البرمجي والتقني:
-   - إذا سُئلت عن موضوع غير تقني تماماً (مثل الطبخ، الرياضة، السياسة)، رد برسالة قصيرة وموجزة جداً من سطر واحد فقط توضح تخصصك.
-4. الأسلوب واللغة:
-   - لغة عربية فصحى طبيعية وسلسة وممتعة دون تكلف.
-   - الأكواد البرمجية داخل كتل ```python نظيفة ومباشرة وتعمل فوراً."""
+أنت تتحدث بذكاء وعفوية وتفكير تحليلي كزميل عمل خبير (Pair Programmer) مثل ChatGPT و DeepSeek، وتلتزم بالمبادئ التالية:
+
+1. مرآة اللهجة والأسلوب (Adaptive NLP & Dialect Mirroring):
+   - تكيّف تلقائياً مع لهجة ونبرة المستخدم وطريقة كلامه بعفوية تامة دون تصنّع:
+     * إذا تحدث بالعامية المصرية (مثل: "يا باشا"، "ازيك"، "عايز أعمل كذا"): رد عليه بعفوية مصرية مهذبة وهادئة ومباشرة.
+     * إذا تحدث بلهجة خليجية (مثل: "يا هلا"، "ودي أسوي كذا"): رد بلهجة خليجية طبيعية وهادئة.
+     * إذا تحدث بالفصحى: رد بلغة عربية فصيحة وسلسة وعصرية دون تقعر.
+     * إذا تحدث بالإنجليزية أو بمزيج تقني (Tech English / Arabizi): تحدث بطبيعية مبرمجي التقنية، واستخدم المصطلحات البرمجية الإنجليزية الشائعة بحرية دون تعريب حرفي متكلف.
+
+2. الهدوء التام والابتعاد عن التلقين وعلامات التعجب:
+   - ممنوع منعاً باتاً استخدام علامات التعجب (!) في أي رد من ردودك، لأنها تعطي إحساساً بالنصوص المحفوظة أو الحماس المصطنع.
+   - حافظ دائماً على نبرة هادئة، متزنة، احترافية وواثقة كمهندس برمجيات حقيقي يتناقش مع زميله.
+   - ممنوع إلقاء خطب افتتاحية مكررة أو سرد قائمة مهاراتك بشكل مسبق، وادخل في صلب الموضوع بهدوء.
+
+3. الفهم المباشر والإجابة الدقيقة:
+   - افهم ما يطلبه المستخدم بدقة وأجب عليه مباشرة على قدر السؤال دون حشو.
+   - إذا طلب كود بايثون عام (مثل "اكتب كود بايثون" أو "اشرح الدوال")، اكتب كود بايثون نظيفاً مع شرح موجز ولا تقحم Pandas إلا إذا كان السؤال يخص البيانات.
+   - إذا كان السؤال عن Pandas، التزم بأحدث معايير 2.0+ (استخدام pd.concat بدلاً من .append، ومحرك Apache Arrow، وأمان Copy-on-Write).
+   - الأكواد البرمجية تكون دائماً داخل كتل ```python نظيفة وجاهزة للتشغيل مباشرة.
+
+4. اقتراحات المتابعة التفاعلية الذكية (Contextual Follow-ups):
+   - في نهاية كل رد تقني أو كود، اقترح 2 إلى 3 أسئلة متابعة ذكية وعفوية ترتبط بما تم شرحه (مثل: قياس استهلاك الذاكرة، توضيح نقطة في الفهرسة، أو كتابة دالة مخصصة).
+   - ضع هذه الاقتراحات في نهاية الرد تماماً داخل هذا القالب المخصص دون استخدام علامات تعجب:
+<<<SUGGESTIONS>>>
+- اقتراح أول
+- اقتراح ثاني
+- اقتراح ثالث
+<<<END_SUGGESTIONS>>>
+
+5. التعامل الذكي مع المواضيع الخارجة عن السياق (Witty & Playful Redirection):
+   - إذا سُئلت عن موضوع خارج البرمجة والبيانات تماماً (مثل الطبخ، البيتزا، الرياضة، السياسة):
+     * رد بدعابة خفيفة ومرحة وعفوية تطابق لهجة السائل (مثل: 'يعني إيه، أبعتهالك دليفري أونلاين ولا إيه ههههه؟ خلينا في عجن وتظبيط الـ DataFrames أحسن').
+     * حافظ على نبرة الزميل المبرمج اللطيف، وتجنب الردود الآلية الجافة مثل 'أنا نموذج لغوي لا يستطيع'.
+     * وجّه الحديث بلباقة واطلب منه إخبارك بما يعمل عليه في بايثون أو داتا فريمز، دون علامات تعجب."""
 
     ARABIC_SYNONYMS = {
         "دمج": "concat merge join combine",
@@ -167,28 +187,65 @@ class QueryPandasDocsUseCase:
     def get_greeting_response(cls, is_arabic: bool) -> str:
         if is_arabic:
             return (
-                "أهلاً بك! أنا **PandaPulse AI**، مساعدك المتخصص في لغة **Python** ومكتبة **Pandas** وهندسة البيانات. 🚀\n\n"
-                "كيف يمكنني مساعدتك برمجياً اليوم؟ يمكنك سؤالي عن:\n"
-                "- كتابة أكواد وتطبيقات بايثون المتنوعة\n"
-                "- دمج ومعالجة الجداول في Pandas (`pd.concat` و `pd.merge`)\n"
-                "- الفهرسة والتصفية الاحترافية (`.loc` و `.iloc`)\n"
-                "- تسريع الأداء وخفض الذاكرة عبر محرك **Apache Arrow**\n"
-                "- تنظيف البيانات وتجميع الإحصائيات (`groupby` و `dropna`)"
+                "أهلاً بك، معك PandaPulse AI. شغال على إيه في بايثون أو بانداس اليوم، أو محتاج مساعدة في كود معين؟\n\n"
+                "<<<SUGGESTIONS>>>\n"
+                "- دمج وفلترة الجداول في Pandas 2.0\n"
+                "- تسريع العمليات وخفض الذاكرة بـ PyArrow\n"
+                "- حل مشكلة أو مراجعة كود بايثون\n"
+                "<<<END_SUGGESTIONS>>>"
             )
         return (
-            "Hello! I am **PandaPulse AI**, your copilot specialized in **Python** programming, modern **Pandas 2.0+**, and data engineering. 🚀\n\n"
-            "How can I help you today? Feel free to ask about:\n"
-            "- Python programming concepts and scripts\n"
-            "- Modern Pandas dataframe transformations and joins\n"
-            "- Vectorized operations & Apache Arrow acceleration\n"
-            "- Aggregations, groupings, and data cleansing"
+            "Hello, I am PandaPulse AI. What Python or Pandas challenge are you working on today?\n\n"
+            "<<<SUGGESTIONS>>>\n"
+            "- Modern dataframe merging and filtering\n"
+            "- Performance optimization with PyArrow\n"
+            "- Debugging Python scripts and functions\n"
+            "<<<END_SUGGESTIONS>>>"
         )
 
     @classmethod
-    def get_out_of_scope_response(cls, is_arabic: bool) -> str:
+    def get_out_of_scope_response(cls, is_arabic: bool, query: str = "") -> str:
+        q_lower = query.lower()
         if is_arabic:
-            return "عذراً، تخصصي محصور في لغة بايثون ومكتبة Pandas وهندسة البيانات 🐼. كيف يمكنني مساعدتك برمجياً؟"
-        return "I specialize exclusively in Python programming, Pandas, and data engineering 🐼. How can I assist you with your code?"
+            if any(w in q_lower for w in ["بيتزا", "pizza", "طبخ", "طعام", "وصفة", "أكل", "اكل", "مطبخ", "كيك"]):
+                return (
+                    "يعني إيه، أبعتهالك دليفري أونلاين ولا إيه ههههه. "
+                    "خلينا في عجن الداتا وتظبيط الـ DataFrames أحسن، دي لعبتي وسريعة مع Pandas ومحرك Arrow. شغال على كود إيه النهاردة؟\n\n"
+                    "<<<SUGGESTIONS>>>\n"
+                    "- فلترة ودمج الجداول في Pandas\n"
+                    "- تسريع قراءة الملفات بـ PyArrow\n"
+                    "- كتابة دالة بايثون نظيفة\n"
+                    "<<<END_SUGGESTIONS>>>"
+                )
+            if any(w in q_lower for w in ["كرة", "كورة", "رياضة", "ماتش", "football", "soccer", "ميسي", "رونالدو"]):
+                return (
+                    "الماتشات دي بنحلل أرقامها بالبايثون ونطلع منها رسوم بيانية ومقاييس أداء، بس السيرفر ملوش في اللعب برة الـ IDE ههههه. "
+                    "لو معاك كود أو داتا فريم محتاجين نظبطهم قولي عليهم.\n\n"
+                    "<<<SUGGESTIONS>>>\n"
+                    "- تجميع وإحصائيات GroupBy في Pandas\n"
+                    "- تحليل واستكشاف البيانات ببايثون\n"
+                    "- معالجة القيم المفقودة في الداتا\n"
+                    "<<<END_SUGGESTIONS>>>"
+                )
+            return (
+                "شكلك حبيت تجربني برة الملعب ههههه، بس أنا ملعبي وسكتي لغة Python ومكتبة Pandas وهندسة البيانات. "
+                "سيبك من الكلام ده وقلي واقف معاك إيه في الكود النهاردة أو شغال على مشروع إيه؟\n\n"
+                "<<<SUGGESTIONS>>>\n"
+                "- دمج وفلترة الجداول في Pandas 2.0\n"
+                "- تسريع العمليات وخفض الذاكرة بـ PyArrow\n"
+                "- حل مشكلة أو مراجعة كود بايثون\n"
+                "<<<END_SUGGESTIONS>>>"
+            )
+        return (
+            "Looks like you are testing me outside my playground. "
+            "I specialize strictly in Python, modern Pandas, and data engineering. "
+            "Let us focus on your code instead, what are you building today?\n\n"
+            "<<<SUGGESTIONS>>>\n"
+            "- Modern dataframe merging and filtering\n"
+            "- Performance optimization with PyArrow\n"
+            "- Debugging Python scripts and functions\n"
+            "<<<END_SUGGESTIONS>>>"
+        )
 
     @classmethod
     def generate_reasoning_thoughts(
@@ -281,27 +338,79 @@ class QueryPandasDocsUseCase:
 
         # 1. Scope Guardrail: Greetings
         if self.is_greeting(request.query):
-            greeting_text = self.get_greeting_response(is_ar)
-            latency_ms = (time.perf_counter() - start_time) * 1000
-            return QueryResponseDTO(
-                answer=greeting_text,
-                citations=[],
-                latency_ms=round(latency_ms, 2),
-                cached=False,
-                model_name=getattr(self.llm_provider, "model_name", "qwen2.5-coder:1.5b"),
+            greeting_prompt = (
+                f"المستخدم يلقي التحية أو يبدأ الحوار: '{request.query}'.\n"
+                f"رد عليه باختصار وهدوء وبعفوية تطابق لهجته ونبرته تماماً (عامية مصرية، خليجية، فصحى، إنجليزية) كمهندس برمجيات وزميل عمل.\n"
+                f"تنبيهات صارمة:\n"
+                f"1. ممنوع نهائياً استخدام أي علامات تعجب (!).\n"
+                f"2. ممنوع سرد قوائم مهاراتك أو ديباجة مسبقة الصنع.\n"
+                f"3. اسأله ببساطة عن الكود أو المشكلة التي يعمل عليها اليوم في بايثون أو داتا فريمز.\n"
+                f"4. في نهاية الرد ضع 2 إلى 3 اقتراحات سريعة في الوسم:\n"
+                f"<<<SUGGESTIONS>>>\n"
+                f"- دمج وفلترة الجداول في Pandas 2.0\n"
+                f"- تسريع العمليات وخفض الذاكرة بـ PyArrow\n"
+                f"- حل مشكلة أو مراجعة كود بايثون\n"
+                f"<<<END_SUGGESTIONS>>>"
             )
+            try:
+                llm_res = await self.llm_provider.generate(greeting_prompt, self.SYSTEM_PROMPT)
+                clean_ans = llm_res.answer.replace("!", "")
+                latency_ms = (time.perf_counter() - start_time) * 1000
+                return QueryResponseDTO(
+                    answer=clean_ans,
+                    citations=[],
+                    latency_ms=round(latency_ms, 2),
+                    cached=False,
+                    model_name=getattr(self.llm_provider, "model_name", "qwen2.5-coder:1.5b"),
+                )
+            except Exception:
+                greeting_text = self.get_greeting_response(is_ar)
+                latency_ms = (time.perf_counter() - start_time) * 1000
+                return QueryResponseDTO(
+                    answer=greeting_text,
+                    citations=[],
+                    latency_ms=round(latency_ms, 2),
+                    cached=False,
+                    model_name=getattr(self.llm_provider, "model_name", "qwen2.5-coder:1.5b"),
+                )
 
-        # 2. Scope Guardrail: Out of Scope
+        # 2. Scope Guardrail: Out of Scope (Witty, playful engineering banter)
         if not self.is_in_scope(request.query):
-            refusal_text = self.get_out_of_scope_response(is_ar)
-            latency_ms = (time.perf_counter() - start_time) * 1000
-            return QueryResponseDTO(
-                answer=refusal_text,
-                citations=[],
-                latency_ms=round(latency_ms, 2),
-                cached=False,
-                model_name=getattr(self.llm_provider, "model_name", "qwen2.5-coder:1.5b"),
+            witty_prompt = (
+                f"المستخدم يطرح سؤالاً خارج سياق البرمجة تماماً: '{request.query}'.\n"
+                f"رد عليه بمزاح خفيف وذكي، وعفوية طبيعية جداً تطابق لهجته ونبرته (مثلاً: 'يعني إيه، أبعتهالك دليفري أونلاين ولا إيه ههههه؟'، أو تشبيه تقني ساخر ولطيف)، ثم وجّه الحديث بلباقة واطلب منه إخبارك بما يعمل عليه في بايثون أو داتا فريمز.\n"
+                f"تنبيهات صارمة:\n"
+                f"1. ممنوع نهائياً استخدام أي علامات تعجب (!).\n"
+                f"2. ممنوع الرد ببرود أو بعبارات خدمة عملاء روبوتية وجافة.\n"
+                f"3. اجعل الرد قصيراً (سطرين) وظريفاً كزميل مبرمج يجلس بجانبه في المكتب.\n"
+                f"4. في نهاية الرد ضع 2 إلى 3 اقتراحات برمجية في الوسم المخصص:\n"
+                f"<<<SUGGESTIONS>>>\n"
+                f"- دمج وفلترة الجداول في Pandas 2.0\n"
+                f"- تسريع العمليات وخفض الذاكرة بـ PyArrow\n"
+                f"- حل مشكلة أو مراجعة كود بايثون\n"
+                f"<<<END_SUGGESTIONS>>>"
             )
+            try:
+                llm_res = await self.llm_provider.generate(witty_prompt, self.SYSTEM_PROMPT)
+                clean_ans = llm_res.answer.replace("!", "")
+                latency_ms = (time.perf_counter() - start_time) * 1000
+                return QueryResponseDTO(
+                    answer=clean_ans,
+                    citations=[],
+                    latency_ms=round(latency_ms, 2),
+                    cached=False,
+                    model_name=getattr(self.llm_provider, "model_name", "qwen2.5-coder:1.5b"),
+                )
+            except Exception:
+                refusal_text = self.get_out_of_scope_response(is_ar, request.query)
+                latency_ms = (time.perf_counter() - start_time) * 1000
+                return QueryResponseDTO(
+                    answer=refusal_text,
+                    citations=[],
+                    latency_ms=round(latency_ms, 2),
+                    cached=False,
+                    model_name=getattr(self.llm_provider, "model_name", "qwen2.5-coder:1.5b"),
+                )
 
         # 3. Cache-First Lookup (O(1))
         cache_key = self.compute_cache_key(request.query, request.top_k)
@@ -324,6 +433,20 @@ class QueryPandasDocsUseCase:
             top_k=request.top_k,
         )
 
+        # Multi-turn conversational history builder
+        history_str = ""
+        if request.history:
+            history_lines = []
+            for h in request.history[-6:]:
+                role = "المستخدم" if h.get("role") == "user" else "المساعد"
+                content = h.get("content", "").strip()
+                if content:
+                    clean_h = re.sub(r"<<<SUGGESTIONS>>>[\s\S]*?(?:<<<END_SUGGESTIONS>>>|$)", "", content).strip()
+                    if clean_h:
+                        history_lines.append(f"{role}: {clean_h}")
+            if history_lines:
+                history_str = "--- سياق المحادثة السابقة ---\n" + "\n".join(history_lines) + "\n\n"
+
         # 5. Construct Guardrailed In-Scope Distinctive Prompt
         prompt_template = PromptTemplate(
             system_prompt=self.SYSTEM_PROMPT,
@@ -333,26 +456,36 @@ class QueryPandasDocsUseCase:
 
         if is_ar:
             guidelines = (
-                "أجب بذكاء وسلاسة ودقة على سؤال المستخدم المحدد فقط. "
-                "إذا طلب كود بايثون بسيط أو عام (مثل 'اكتبي كود بايثون')، اكتب كود بايثون نظيفاً ومباشراً مع شرح موجز ومفيد ولا تقحم Pandas. "
-                "إذا سأل استفساراً حوارياً أو متابعة (مثل 'اتخيل ماذا؟')، أجب بشكل حواري طبيعي وذكي دون تكرار أي مقدمات أو تشبيهات سابقة. "
-                "إياك وتكرار نفس المقدمة أو التشبيه في كل رسالة؛ اجعل كل رد مخصصاً ومفصلاً لما طلبه المستخدم تحديداً. "
-                "التوثيق المرفق أعلاه للاستئناس فقط إذا كان السؤال عن Pandas؛ إذا لم يكن السؤال عن Pandas فتجاهل التوثيق وأجب مباشرة عن بايثون."
+                "أجب بذكاء وسلاسة ودقة عفوية تطابق لهجة ونبرة المستخدم (عامية مصرية، خليجية، فصحى، إنجليزية). "
+                "ممنوع استخدام علامات التعجب (!) نهائياً في أي مكان في الرد، وتحدث بهدوء كمهندس خبير. "
+                "إذا طلب كود بايثون بسيط أو عام، اكتب كود بايثون نظيفاً ومباشراً مع شرح موجز ومفيد ولا تقحم Pandas إلا إذا كان السؤال عن البيانات. "
+                "إذا سأل استفساراً حوارياً، أجب بحوار طبيعي وذكي. "
+                "في نهاية الرد، اقترح 2 إلى 3 أسئلة متابعة ذكية وعفوية بحسب سياق الموضوع في هذا القالب تماماً:\n"
+                "<<<SUGGESTIONS>>>\n"
+                "- اقتراح أول\n"
+                "- اقتراح ثاني\n"
+                "<<<END_SUGGESTIONS>>>"
             )
             full_prompt = (
+                f"{history_str}"
                 f"--- توثيق PANDAS (للاستئناس فقط إن كان السؤال يخصها) ---\n{context_str}\n\n"
                 f"--- سؤال المستخدم ---\n{request.query}\n\n"
-                f"[توجيه حاسم: {guidelines} الإجابة باللغة العربية الفصحى السليمة.]\n\n"
+                f"[توجيه حاسم: {guidelines}]\n\n"
                 f"--- الإجابة المباشرة ---\n"
             )
         else:
             guidelines = (
-                "Answer the user's specific request directly, accurately, and naturally. "
-                "If they ask for simple Python code, provide clean, idiomatic Python code with concise explanation, without forcing Pandas. "
-                "If they ask a conversational follow-up, engage naturally without repeating prior canned introductions. "
-                "Pandas context is for reference only; if the query is general Python, focus entirely on pure Python."
+                "Answer the user's specific request directly, accurately, and naturally matching their technical tone. "
+                "Strictly avoid exclamation marks (!) anywhere in your response. "
+                "If they ask for simple Python code, provide clean, idiomatic Python code with concise explanation. "
+                "At the end of your response, provide 2 to 3 smart follow-up suggestions in this exact block:\n"
+                "<<<SUGGESTIONS>>>\n"
+                "- Follow-up question 1\n"
+                "- Follow-up question 2\n"
+                "<<<END_SUGGESTIONS>>>"
             )
             full_prompt = (
+                f"{history_str}"
                 f"--- PANDAS CONTEXT (Reference only) ---\n{context_str}\n\n"
                 f"--- USER QUESTION ---\n{request.query}\n\n"
                 f"[Guidance: {guidelines}]\n\n"
@@ -364,6 +497,7 @@ class QueryPandasDocsUseCase:
             prompt=full_prompt,
             system_prompt=self.SYSTEM_PROMPT,
         )
+        response.answer = response.answer.replace("!", "")
 
         # 7. Extract Citations
         citations = []
@@ -401,33 +535,81 @@ class QueryPandasDocsUseCase:
 
         # 1. Scope Guardrail: Greeting
         if self.is_greeting(request.query):
-            greeting_text = self.get_greeting_response(is_ar)
-            latency_ms = round((time.perf_counter() - start_time) * 1000, 2)
+            greeting_prompt = (
+                f"المستخدم يلقي التحية أو يبدأ الحوار: '{request.query}'.\n"
+                f"رد عليه باختصار وهدوء وبعفوية تطابق لهجته ونبرته تماماً (عامية مصرية، خليجية، فصحى، إنجليزية) كمهندس برمجيات وزميل عمل.\n"
+                f"تنبيهات صارمة:\n"
+                f"1. ممنوع نهائياً استخدام أي علامات تعجب (!).\n"
+                f"2. ممنوع سرد قوائم مهاراتك أو ديباجة مسبقة الصنع.\n"
+                f"3. اسأله ببساطة عن الكود أو المشكلة التي يعمل عليها اليوم في بايثون أو داتا فريمز.\n"
+                f"4. في نهاية الرد ضع 2 إلى 3 اقتراحات سريعة في الوسم:\n"
+                f"<<<SUGGESTIONS>>>\n"
+                f"- دمج وفلترة الجداول في Pandas 2.0\n"
+                f"- تسريع العمليات وخفض الذاكرة بـ PyArrow\n"
+                f"- حل مشكلة أو مراجعة كود بايثون\n"
+                f"<<<END_SUGGESTIONS>>>"
+            )
             yield {
                 "event": "meta",
-                "data": {"cached": False, "citations": [], "model": model_id, "latency_ms": latency_ms},
+                "data": {"cached": False, "citations": [], "model": model_id},
             }
-            words = greeting_text.split(" ")
-            for i, word in enumerate(words):
-                token = word if i == len(words) - 1 else word + " "
-                yield {"event": "token", "data": {"token": token}}
-            yield {"event": "done", "data": {"status": "complete", "latency_ms": latency_ms}}
-            return
+            try:
+                accumulated = []
+                async for token in self.llm_provider.generate_stream(greeting_prompt, self.SYSTEM_PROMPT):
+                    clean_tok = token.replace("!", "")
+                    accumulated.append(clean_tok)
+                    yield {"event": "token", "data": {"token": clean_tok}}
+                latency_ms = round((time.perf_counter() - start_time) * 1000, 2)
+                yield {"event": "done", "data": {"status": "complete", "latency_ms": latency_ms, "tokens": len(accumulated)}}
+                return
+            except Exception:
+                greeting_text = self.get_greeting_response(is_ar)
+                latency_ms = round((time.perf_counter() - start_time) * 1000, 2)
+                words = greeting_text.split(" ")
+                for i, word in enumerate(words):
+                    token = word if i == len(words) - 1 else word + " "
+                    yield {"event": "token", "data": {"token": token}}
+                yield {"event": "done", "data": {"status": "complete", "latency_ms": latency_ms}}
+                return
 
-        # 2. Scope Guardrail: Out of Scope
+        # 2. Scope Guardrail: Out of Scope (Witty, playful engineering banter)
         if not self.is_in_scope(request.query):
-            refusal_text = self.get_out_of_scope_response(is_ar)
-            latency_ms = round((time.perf_counter() - start_time) * 1000, 2)
+            witty_prompt = (
+                f"المستخدم يطرح سؤالاً خارج سياق البرمجة تماماً: '{request.query}'.\n"
+                f"رد عليه بمزاح خفيف وذكي، وعفوية طبيعية جداً تطابق لهجته ونبرته (مثلاً: 'يعني إيه، أبعتهالك دليفري أونلاين ولا إيه ههههه؟'، أو تشبيه تقني ساخر ولطيف)، ثم وجّه الحديث بلباقة واطلب منه إخبارك بما يعمل عليه في بايثون أو داتا فريمز.\n"
+                f"تنبيهات صارمة:\n"
+                f"1. ممنوع نهائياً استخدام أي علامات تعجب (!).\n"
+                f"2. ممنوع الرد ببرود أو بعبارات خدمة عملاء روبوتية وجافة.\n"
+                f"3. اجعل الرد قصيراً (سطرين) وظريفاً كزميل مبرمج يجلس بجانبه في المكتب.\n"
+                f"4. في نهاية الرد ضع 2 إلى 3 اقتراحات برمجية في الوسم المخصص:\n"
+                f"<<<SUGGESTIONS>>>\n"
+                f"- دمج وفلترة الجداول في Pandas 2.0\n"
+                f"- تسريع العمليات وخفض الذاكرة بـ PyArrow\n"
+                f"- حل مشكلة أو مراجعة كود بايثون\n"
+                f"<<<END_SUGGESTIONS>>>"
+            )
             yield {
                 "event": "meta",
-                "data": {"cached": False, "citations": [], "model": model_id, "latency_ms": latency_ms},
+                "data": {"cached": False, "citations": [], "model": model_id},
             }
-            words = refusal_text.split(" ")
-            for i, word in enumerate(words):
-                token = word if i == len(words) - 1 else word + " "
-                yield {"event": "token", "data": {"token": token}}
-            yield {"event": "done", "data": {"status": "complete", "latency_ms": latency_ms}}
-            return
+            try:
+                accumulated = []
+                async for token in self.llm_provider.generate_stream(witty_prompt, self.SYSTEM_PROMPT):
+                    clean_tok = token.replace("!", "")
+                    accumulated.append(clean_tok)
+                    yield {"event": "token", "data": {"token": clean_tok}}
+                latency_ms = round((time.perf_counter() - start_time) * 1000, 2)
+                yield {"event": "done", "data": {"status": "complete", "latency_ms": latency_ms, "tokens": len(accumulated)}}
+                return
+            except Exception:
+                refusal_text = self.get_out_of_scope_response(is_ar, request.query)
+                latency_ms = round((time.perf_counter() - start_time) * 1000, 2)
+                words = refusal_text.split(" ")
+                for i, word in enumerate(words):
+                    token = word if i == len(words) - 1 else word + " "
+                    yield {"event": "token", "data": {"token": token}}
+                yield {"event": "done", "data": {"status": "complete", "latency_ms": latency_ms}}
+                return
 
         # 3. Cache-First Check
         cache_key = self.compute_cache_key(request.query, request.top_k)
@@ -515,6 +697,20 @@ class QueryPandasDocsUseCase:
             },
         }
 
+        # Multi-turn conversational history builder
+        history_str = ""
+        if request.history:
+            history_lines = []
+            for h in request.history[-6:]:
+                role = "المستخدم" if h.get("role") == "user" else "المساعد"
+                content = h.get("content", "").strip()
+                if content:
+                    clean_h = re.sub(r"<<<SUGGESTIONS>>>[\s\S]*?(?:<<<END_SUGGESTIONS>>>|$)", "", content).strip()
+                    if clean_h:
+                        history_lines.append(f"{role}: {clean_h}")
+            if history_lines:
+                history_str = "--- سياق المحادثة السابقة ---\n" + "\n".join(history_lines) + "\n\n"
+
         # 6. In-Scope Distinctive RAG Prompt
         prompt_template = PromptTemplate(
             system_prompt=self.SYSTEM_PROMPT,
@@ -524,26 +720,36 @@ class QueryPandasDocsUseCase:
 
         if is_ar:
             stream_guidelines = (
-                "أجب بذكاء وسلاسة ودقة على سؤال المستخدم المحدد فقط. "
-                "إذا طلب كود بايثون بسيط أو عام (مثل 'اكتبي كود بايثون')، اكتب كود بايثون نظيفاً ومباشراً مع شرح موجز ومفيد ولا تقحم Pandas. "
-                "إذا سأل استفساراً حوارياً أو متابعة (مثل 'اتخيل ماذا؟')، أجب بشكل حواري طبيعي وذكي دون تكرار أي مقدمات أو تشبيهات سابقة. "
-                "إياك وتكرار نفس المقدمة أو التشبيه في كل رسالة؛ اجعل كل رد مخصصاً ومفصلاً لما طلبه المستخدم تحديداً. "
-                "التوثيق المرفق أعلاه للاستئناس فقط إذا كان السؤال عن Pandas؛ إذا لم يكن السؤال عن Pandas فتجاهل التوثيق وأجب مباشرة عن بايثون."
+                "أجب بذكاء وسلاسة ودقة عفوية تطابق لهجة ونبرة المستخدم تماماً (عامية مصرية، خليجية، فصحى، إنجليزية). "
+                "ممنوع استخدام علامات التعجب (!) نهائياً في أي مكان في الرد، وتحدث بهدوء كمهندس خبير. "
+                "إذا طلب كود بايثون بسيط أو عام، اكتب كود بايثون نظيفاً ومباشراً مع شرح موجز ومفيد ولا تقحم Pandas إلا إذا كان السؤال عن البيانات. "
+                "إذا سأل استفساراً حوارياً أو متابعة، أجب بشكل حواري طبيعي وذكي دون تكرار أي مقدمات سابقة. "
+                "في نهاية الرد، اقترح 2 إلى 3 أسئلة متابعة ذكية ترتبط بسياق الموضوع في هذا القالب تماماً:\n"
+                "<<<SUGGESTIONS>>>\n"
+                "- اقتراح أول\n"
+                "- اقتراح ثاني\n"
+                "<<<END_SUGGESTIONS>>>"
             )
             full_prompt = (
+                f"{history_str}"
                 f"--- توثيق PANDAS (للاستئناس فقط إن كان السؤال يخصها) ---\n{context_str}\n\n"
                 f"--- سؤال المستخدم ---\n{request.query}\n\n"
-                f"[توجيه حاسم: {stream_guidelines} الإجابة باللغة العربية الفصحى السليمة.]\n\n"
+                f"[توجيه حاسم: {stream_guidelines}]\n\n"
                 f"--- الإجابة المباشرة ---\n"
             )
         else:
             stream_guidelines = (
-                "Answer the user's specific request directly, accurately, and naturally. "
-                "If they ask for simple Python code, provide clean, idiomatic Python code with concise explanation, without forcing Pandas. "
-                "If they ask a conversational follow-up, engage naturally without repeating prior canned introductions. "
-                "Pandas context is for reference only; if the query is general Python, focus entirely on pure Python."
+                "Answer the user's specific request directly, accurately, and naturally matching their technical tone. "
+                "Strictly avoid exclamation marks (!) anywhere in your response. "
+                "If they ask for simple Python code, provide clean, idiomatic Python code with concise explanation. "
+                "At the end of your response, provide 2 to 3 smart follow-up suggestions in this exact block:\n"
+                "<<<SUGGESTIONS>>>\n"
+                "- Follow-up question 1\n"
+                "- Follow-up question 2\n"
+                "<<<END_SUGGESTIONS>>>"
             )
             full_prompt = (
+                f"{history_str}"
                 f"--- PANDAS CONTEXT (Reference only) ---\n{context_str}\n\n"
                 f"--- USER QUESTION ---\n{request.query}\n\n"
                 f"[Guidance: {stream_guidelines}]\n\n"
@@ -553,9 +759,10 @@ class QueryPandasDocsUseCase:
         accumulated_tokens = []
         token_count = 0
         async for token in self.llm_provider.generate_stream(full_prompt, self.SYSTEM_PROMPT):
-            accumulated_tokens.append(token)
+            clean_token = token.replace("!", "")
+            accumulated_tokens.append(clean_token)
             token_count += 1
-            yield {"event": "token", "data": {"token": token}}
+            yield {"event": "token", "data": {"token": clean_token}}
 
         total_latency = round((time.perf_counter() - start_time) * 1000, 2)
         full_answer = "".join(accumulated_tokens)

@@ -125,6 +125,7 @@ export const MessageBubble = ({
   isStreaming = false,
   isLast = false,
   onViewCitations,
+  onSelectSuggestion,
 }) => {
   const [copiedIndex, setCopiedIndex] = useState(null);
   const isAssistant = message.role === 'assistant';
@@ -360,6 +361,30 @@ export const MessageBubble = ({
             <span className="inline-block w-2 h-4 ml-1 bg-cyan-400 animate-pulse align-middle" />
           )}
         </div>
+
+        {/* Dynamic Contextual Suggestions (ChatGPT-style) */}
+        {isAssistant && message.suggestions && message.suggestions.length > 0 && !message.isThinking && (
+          <div className="mt-3.5 pt-3 border-t border-white/10 select-none">
+            <div className="flex items-center gap-1.5 mb-2 text-xs text-slate-400 font-medium">
+              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+              <span>اقتراحات للمتابعة:</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {message.suggestions.map((suggestion, sIdx) => (
+                <button
+                  key={sIdx}
+                  type="button"
+                  disabled={isStreaming}
+                  onClick={() => onSelectSuggestion && onSelectSuggestion(suggestion)}
+                  className="group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800/85 hover:bg-slate-700/85 border border-white/10 hover:border-cyan-500/40 text-xs sm:text-[13px] text-slate-300 hover:text-cyan-200 transition-all cursor-pointer shadow-sm disabled:opacity-50 disabled:cursor-not-allowed text-right"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 group-hover:scale-125 transition-transform shrink-0" />
+                  <span>{suggestion}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* User Avatar */}

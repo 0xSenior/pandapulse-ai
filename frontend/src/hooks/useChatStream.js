@@ -1,19 +1,47 @@
 import { useState, useCallback, useRef } from 'react';
 import { API_BASE_URL } from '../config/api';
 
+/**
+ * Extracts contextual follow-up suggestions from model responses,
+ * cleaning the visible text and preventing exclamation marks.
+ */
+export const parseContentAndSuggestions = (rawText) => {
+  if (!rawText) return { cleanText: '', suggestions: [] };
+
+  const match = rawText.match(/<<<SUGGESTIONS>>>([\s\S]*?)(?:<<<END_SUGGESTIONS>>>|$)/);
+  if (!match) {
+    return { cleanText: rawText.replace(/!+/g, ''), suggestions: [] };
+  }
+
+  const suggestionsBlock = match[1];
+  const suggestions = suggestionsBlock
+    .split('\n')
+    .map((s) => s.replace(/^[-*•\d.]+\s*/, '').replace(/!+/g, '').trim())
+    .filter((s) => s.length > 0 && !s.includes('<<<'));
+
+  const cleanText = rawText
+    .replace(/<<<SUGGESTIONS>>>[\s\S]*?(?:<<<END_SUGGESTIONS>>>|$)/, '')
+    .replace(/!+/g, '')
+    .trim();
+
+  return { cleanText, suggestions };
+};
+
 export const useChatStream = () => {
   const [messages, setMessages] = useState([
     {
       id: 'welcome',
       role: 'assistant',
       content:
-        "أهلاً بك! أنا **PandaPulse AI**، المساعد الهندسي والبرمجي المتخصص في لغة **Python 3.x** ومكتبة **Pandas 2.0+** الحديثة. 🚀\n\n" +
-        "أنا جاهز لمساعدتك بحلول برمجية حقيقية وموثقة بعيداً عن التخمينات أو الدوال الملغية:\n" +
-        "- 🐍 **لغة Python البرمجية**: دوال نظيفة، هياكل البيانات والتعقيد الزمني Big-O، المولدات (Generators) لتوفير RAM، والبرمجة الكائنية OOP مع `@dataclass`.\n" +
-        "- 🐼 **مكتبة Pandas 2.0+**: الدمج المعياري عبر `pd.concat` (بديل `.append` الملغية)، الفهرسة الصارمة عبر `.loc` و `.iloc`، أمان الذاكرة عبر **Copy-on-Write**، ومحرك **Apache Arrow**.\n" +
-        "- ⚡ **دقة هندسية**: استشهادات موثقة من ChromaDB وشرح منطقي خطوة بخطوة.",
+        'أهلاً بك، معك PandaPulse AI المتخصص في بايثون ومكتبة Pandas 2.0+ وهندسة البيانات.\n\n' +
+        'شغال على كود إيه النهاردة أو محتاج مساعدة في إيه في بايثون وبانداس؟',
+      suggestions: [
+        'كيف أدمج جدولين في Pandas 2.0 بدون دوال ملغية؟',
+        'كيف أسرع قراءة ملفات البيانات الضخمة بواسطة PyArrow؟',
+        'ما هو Copy-on-Write وكيف يوفر استهلاك الذاكرة؟',
+      ],
       citations: [],
-      latency_ms: 0.4,
+      latency_ms: 0.2,
       cached: true,
       timestamp: new Date().toISOString(),
     },
@@ -38,7 +66,9 @@ export const useChatStream = () => {
     const initialAssistantMsg = {
       id: assistantMsgId,
       role: 'assistant',
+      rawContent: '',
       content: '',
+      suggestions: [],
       citations: [],
       latency_ms: null,
       cached: false,
@@ -46,12 +76,22 @@ export const useChatStream = () => {
       isThinking: true,
       thinkingStartTime: startTime,
       thoughtDurationMs: null,
-      statusMessage: 'تحليل الاستفسار ومعايير Python & Pandas 2.0+...',
+      statusMessage: 'تحليل الاستفسار واستدعاء المعايير البرمجية...',
       thoughts: [],
       steps: [
-        { id: 'init', label: 'تحليل السؤال والتحقق من معايير Python & Pandas في الكاش', time: '0.0s' }
+        { id: 'init', label: 'تحليل السؤال وتحديد متطلبات الحل البرمجي', time: '0.0s' }
       ],
     };
+
+    // Extract recent conversation history for multi-turn context (last 6 turns)
+    const recentHistory = messages
+      .filter((m) => (m.role === 'user' || m.role === 'assistant') && m.content)
+      .slice(-6)
+      .map((m) => ({
+        role: m.role,
+        content: m.content.replace(/<<<SUGGESTIONS>>>[\s\S]*?(?:<<<END_SUGGESTIONS>>>|$)/, '').trim(),
+      }))
+      .filter((m) => m.content.length > 0);
 
     setMessages((prev) => [...prev, userMessage, initialAssistantMsg]);
     setIsStreaming(true);
@@ -62,7 +102,11 @@ export const useChatStream = () => {
       const response = await fetch(`${API_BASE_URL}/api/v1/stream-chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: queryText.trim(), top_k: topK }),
+        body: JSON.stringify({
+          query: queryText.trim(),
+          top_k: topK,
+          history: recentHistory,
+        }),
         signal: abortControllerRef.current.signal,
       });
 
@@ -152,27 +196,35 @@ export const useChatStream = () => {
                   const duration = isFirstToken
                     ? Date.now() - (msg.thinkingStartTime || startTime)
                     : msg.thoughtDurationMs;
+
+                  const rawUpdated = (msg.rawContent || '') + (parsed.token || '');
+                  const { cleanText, suggestions } = parseContentAndSuggestions(rawUpdated);
+
                   return {
                     ...msg,
                     isThinking: false,
                     thoughtDurationMs: duration,
-                    content: msg.content + (parsed.token || ''),
+                    rawContent: rawUpdated,
+                    content: cleanText,
+                    suggestions: suggestions.length > 0 ? suggestions : msg.suggestions,
                   };
                 })
               );
             } else if (eventType === 'done') {
               setMessages((prev) =>
-                prev.map((msg) =>
-                  msg.id === assistantMsgId
-                    ? {
-                        ...msg,
-                        isThinking: false,
-                        thoughtDurationMs:
-                          msg.thoughtDurationMs || (Date.now() - (msg.thinkingStartTime || startTime)),
-                        latency_ms: parsed.latency_ms ?? msg.latency_ms,
-                      }
-                    : msg
-                )
+                prev.map((msg) => {
+                  if (msg.id !== assistantMsgId) return msg;
+                  const { cleanText, suggestions } = parseContentAndSuggestions(msg.rawContent || msg.content);
+                  return {
+                    ...msg,
+                    isThinking: false,
+                    content: cleanText,
+                    suggestions: suggestions.length > 0 ? suggestions : (msg.suggestions || []),
+                    thoughtDurationMs:
+                      msg.thoughtDurationMs || (Date.now() - (msg.thinkingStartTime || startTime)),
+                    latency_ms: parsed.latency_ms ?? msg.latency_ms,
+                  };
+                })
               );
             }
           } catch (e) {
@@ -188,7 +240,7 @@ export const useChatStream = () => {
             msg.id === assistantMsgId
               ? {
                   ...msg,
-                  content: msg.content || 'Error: Could not reach the PandaPulse backend service.',
+                  content: msg.content || 'عذراً، حدث انقطاع في الاتصال بخدمة PandaPulse الخلفية.',
                 }
               : msg
           )
@@ -198,7 +250,7 @@ export const useChatStream = () => {
       setIsStreaming(false);
       abortControllerRef.current = null;
     }
-  }, [isStreaming]);
+  }, [isStreaming, messages]);
 
   const viewCitations = useCallback((citations) => {
     setActiveCitations(citations);
@@ -214,7 +266,13 @@ export const useChatStream = () => {
       {
         id: 'welcome',
         role: 'assistant',
-        content: "Chat cleared. Ready for your next modern Pandas inquiry!",
+        content:
+          'تم مسح المحادثة. معك PandaPulse AI، شغال على إيه في بايثون أو داتا فريمز؟',
+        suggestions: [
+          'كيف أدمج جدولين في Pandas 2.0 بدون دوال ملغية؟',
+          'كيف أسرع قراءة ملفات البيانات الضخمة بواسطة PyArrow؟',
+          'ما هو Copy-on-Write وكيف يوفر استهلاك الذاكرة؟',
+        ],
         citations: [],
         latency_ms: 0.1,
         cached: true,

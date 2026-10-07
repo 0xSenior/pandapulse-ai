@@ -11,6 +11,7 @@ class ChatRequest(BaseModel):
     query: str = Field(..., min_length=1, max_length=2000, description="Pandas question or code query")
     top_k: int = Field(default=3, ge=1, le=10, description="Top-k similar document chunks to retrieve")
     session_id: str | None = Field(default=None, description="Optional conversational session ID")
+    history: list[dict[str, str]] | None = Field(default=None, description="Recent conversation turns for multi-turn context")
 
 
 class CitationSchema(BaseModel):
