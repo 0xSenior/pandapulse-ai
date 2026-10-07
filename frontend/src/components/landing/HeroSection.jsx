@@ -21,7 +21,7 @@ export const HeroSection = ({ onNavigate }) => {
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
           <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500" />
         </span>
-        <span>Python 3.12+ & Pandas 2.0+ Architecture • Grounded Neural Copilot</span>
+        <span>Python 3.12+ & Pandas 2.0+ Architecture • PandaPulse Neural Engine</span>
       </motion.div>
 
       {/* Main Hero Title */}
@@ -31,7 +31,7 @@ export const HeroSection = ({ onNavigate }) => {
         transition={{ duration: 0.6, delay: 0.1 }}
         className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-white max-w-5xl leading-[1.1] mb-5 font-sans"
       >
-        The Intelligent Copilot for{' '}
+        The Intelligent AI Engine for{' '}
         <span className="text-gradient-cyan">Python Programming</span> & Modern{' '}
         <span className="text-gradient-amber">Pandas 2.0+</span>
       </motion.h1>
@@ -70,7 +70,7 @@ export const HeroSection = ({ onNavigate }) => {
           className="text-base px-7 py-3"
           onClick={() => onNavigate('chat')}
         >
-          Launch AI Copilot
+          Launch PandaPulse AI
         </GlowButton>
 
         <GlowButton

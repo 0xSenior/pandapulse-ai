@@ -10,7 +10,7 @@ import {
 
 const DOCK_ITEMS = [
   { id: 'home', label: 'Overview & Standards', icon: Sparkles, color: 'text-cyan-400' },
-  { id: 'chat', label: 'Python & Pandas Copilot', icon: MessageSquareCode, color: 'text-blue-400' },
+  { id: 'chat', label: 'PandaPulse AI Workspace', icon: MessageSquareCode, color: 'text-blue-400' },
   { id: 'docs', label: 'System Architecture', icon: Layers, color: 'text-indigo-400' },
   { id: 'knowledge', label: 'Knowledge Base & Chunks', icon: Database, color: 'text-amber-400' },
   { id: 'engineer', label: 'Ahmed Harby (0xSenior)', icon: UserCheck, color: 'text-emerald-400' },

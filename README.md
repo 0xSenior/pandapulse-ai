@@ -1,6 +1,6 @@
 # PandaPulse AI ⚡
 
-> **The Intelligent Copilot & Sub-millisecond Neural Engine for Python Programming & Modern Pandas 2.0+ Data Engineering.**
+> **The Intelligent AI Assistant & Sub-millisecond Neural Engine for Python Programming & Modern Pandas 2.0+ Data Engineering.**
 
 [![CI Pipeline](https://img.shields.io/badge/CI-Passing-brightgreen?style=flat-square&logo=githubactions)](https://github.com)
 [![Architecture](https://img.shields.io/badge/Architecture-Clean%20%2F%20SOLID-cyan?style=flat-square)](./docs/ARCHITECTURE.md)

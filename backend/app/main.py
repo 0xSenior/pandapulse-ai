@@ -53,7 +53,7 @@ def create_app() -> FastAPI:
     """Build and configure the FastAPI application."""
     app = FastAPI(
         title="PandaPulse AI",
-        description="The Neural Copilot for Python Programming and Modern Pandas Data Engineering",
+        description="The Neural AI Engine for Python Programming and Modern Pandas Data Engineering",
         version="1.0.0",
         lifespan=lifespan,
     )
@@ -84,7 +84,7 @@ def create_app() -> FastAPI:
     async def root():
         return {
             "name": "PandaPulse AI",
-            "tagline": "The Neural Copilot for Python Programming and Modern Pandas Data Engineering",
+            "tagline": "The Neural AI Engine for Python Programming and Modern Pandas Data Engineering",
             "version": "1.0.0",
             "status": "operational",
             "endpoints": {

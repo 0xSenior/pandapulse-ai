@@ -78,7 +78,7 @@ export const InteractivePromptsSection = ({ onTryPrompt }) => {
           <span>Interactive Query Sandbox</span>
         </div>
         <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-3">
-          Test Real Scenarios in <span className="text-gradient-cyan">PandaPulse Copilot</span>
+          Test Real Scenarios in <span className="text-gradient-cyan">PandaPulse AI</span>
         </h2>
         <p className="text-slate-400 max-w-2xl mx-auto text-sm sm:text-base">
           انقر على أي سؤال حقيقي بالأسفل لتجربته فوراً داخل المساعد الذكي مع استخراج الاستشهادات الموثقة والشرح خطوة بخطوة.

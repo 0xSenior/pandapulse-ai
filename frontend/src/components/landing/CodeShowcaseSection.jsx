@@ -296,7 +296,7 @@ export const CodeShowcaseSection = ({ onTryPrompt }) => {
           </pre>
         </div>
 
-        {/* Right Column: Key Technical Takeaways & Copilot Action */}
+        {/* Right Column: Key Technical Takeaways & PandaPulse AI Action */}
         <div className="lg:col-span-4 space-y-4">
           <GlassCard className={`p-6 border ${activeTab.borderColor}`} hoverEffect={false}>
             <div className="flex items-center justify-between mb-3">
@@ -334,7 +334,7 @@ export const CodeShowcaseSection = ({ onTryPrompt }) => {
               className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-xs sm:text-sm transition-all shadow-lg shadow-cyan-500/20 cursor-pointer"
             >
               <Sparkles className="w-4 h-4" />
-              <span>Ask AI Copilot About This</span>
+              <span>Ask PandaPulse AI About This</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </GlassCard>
