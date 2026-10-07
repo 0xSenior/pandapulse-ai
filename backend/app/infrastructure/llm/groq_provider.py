@@ -68,14 +68,13 @@ class GroqProvider(ILLMProvider):
                     json=payload,
                 )
                 if res.status_code == 429:
-                    err_json = res.json().get("error", {}).get("message", "Rate limit exceeded")
                     return LLMResponse(
-                        answer=f"⚠️ تجاوزت حصة الاستخدام المؤقتة لـ Groq: {err_json}. يرجى الانتظار ثوانٍ قليلة.",
+                        answer="⚠️ تجاوزت معدل الطلبات المسموح به مؤقتاً (Rate Limit). يرجى الانتظار بضع ثوانٍ وإعادة المحاولة.",
                         citations=[],
                         latency_ms=round((time.perf_counter() - start_time) * 1000, 2),
                         cached=False,
                         tokens_generated=10,
-                        model_name=f"{self.model_name} (Groq-Cloud)",
+                        model_name=f"PandaPulse Neural Engine ({self.model_name})",
                     )
                 res.raise_for_status()
                 data = res.json()
@@ -89,16 +88,16 @@ class GroqProvider(ILLMProvider):
                     latency_ms=round(latency, 2),
                     cached=False,
                     tokens_generated=tokens_generated,
-                    model_name=f"{self.model_name} (Groq-Cloud)",
+                    model_name=f"PandaPulse Neural Engine ({self.model_name})",
                 )
         except Exception as e:
             return LLMResponse(
-                answer=f"⚠️ خطأ في الاتصال بسحابة Groq: {e!s}",
+                answer=f"⚠️ حدث خطأ أثناء معالجة الطلب في المحرك العصبي: {e!s}",
                 citations=[],
                 latency_ms=round((time.perf_counter() - start_time) * 1000, 2),
                 cached=False,
                 tokens_generated=10,
-                model_name=f"{self.model_name} (Groq-Cloud)",
+                model_name=f"PandaPulse Neural Engine ({self.model_name})",
             )
 
     async def generate_stream(self, prompt: str, system_prompt: str) -> AsyncIterator[str]:
@@ -127,7 +126,7 @@ class GroqProvider(ILLMProvider):
                     json=payload,
                 ) as response:
                     if response.status_code == 429:
-                        yield "⚠️ تجاوزت حصة الاستخدام المؤقتة لموديل Groq المجاني (Rate Limit). يرجى الانتظار ثوانٍ وإعادة المحاولة."
+                        yield "⚠️ المحرك العصبي مشغول حالياً بسبب كثافة الطلبات (Rate Limit). يرجى الانتظار بضع ثوانٍ وإعادة المحاولة."
                         return
                     response.raise_for_status()
                     async for line in response.aiter_lines():
@@ -147,4 +146,4 @@ class GroqProvider(ILLMProvider):
                             except json.JSONDecodeError:
                                 continue
         except Exception as e:
-            yield f"⚠️ خطأ أثناء تدفق البيانات من Groq: {e!s}"
+            yield f"⚠️ حدث انقطاع أثناء معالجة الرد من المحرك الذكي: {e!s}"

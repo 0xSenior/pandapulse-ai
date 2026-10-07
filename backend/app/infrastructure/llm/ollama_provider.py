@@ -64,8 +64,8 @@ class OllamaProvider(ILLMProvider):
         has_ollama = await self.is_available()
         if not has_ollama:
             msg = (
-                "⚠️ **تنبيه:** تعذر الاتصال بمحرك Ollama المحلي على الرابط http://localhost:11434.\n\n"
-                "يرجى التأكد من تشغيل Ollama على جهازك (`ollama serve`) أو تفعيل مفتاح `GROQ_API_KEY` لاستخدام السحابة مباشرة دون أي تحميل."
+                "⚠️ **تنبيه:** تعذر الاتصال بمحرك الذكاء الاصطناعي المحلي.\n\n"
+                "يرجى التأكد من تشغيل المحرك المحلي أو إدخال مفتاح الذكاء الاصطناعي السحابي في إعدادات البيئة."
             )
             return LLMResponse(
                 answer=msg,
@@ -122,7 +122,7 @@ class OllamaProvider(ILLMProvider):
         """Stream tokens in real-time from Ollama."""
         has_ollama = await self.is_available()
         if not has_ollama:
-            yield "⚠️ **تنبيه:** محرك Ollama غير متاح حالياً. يرجى التأكد من تشغيل Ollama أو إضافة `GROQ_API_KEY` في ملف الإعدادات."
+            yield "⚠️ **تنبيه:** المحرك العصبي غير متصل حالياً. يرجى تفعيل مفتاح الربط السحابي في الإعدادات أو تشغيل المحرك المحلي."
             return
 
         payload = {
