@@ -33,12 +33,12 @@ export const useChatStream = () => {
       id: 'welcome',
       role: 'assistant',
       content:
-        'أهلاً بك، معك PandaPulse AI المتخصص في بايثون ومكتبة Pandas 2.0+ وهندسة البيانات.\n\n' +
-        'شغال على كود إيه النهاردة أو محتاج مساعدة في إيه في بايثون وبانداس؟',
+        'Welcome to **PandaPulse AI** — your specialized engineering workspace for **Python 3.x** and modern **Pandas 2.0+** data pipelines.\n\n' +
+        'What code, pipeline, or data challenge are you working on today?',
       suggestions: [
-        'كيف أدمج جدولين في Pandas 2.0 بدون دوال ملغية؟',
-        'كيف أسرع قراءة ملفات البيانات الضخمة بواسطة PyArrow؟',
-        'ما هو Copy-on-Write وكيف يوفر استهلاك الذاكرة؟',
+        'How to concatenate DataFrames in Pandas 2.0 without deprecated append?',
+        'How to accelerate reading large datasets using Apache Arrow?',
+        'What is Copy-on-Write and how does it optimize memory in Pandas 2.x?',
       ],
       citations: [],
       latency_ms: 0.2,
@@ -267,11 +267,11 @@ export const useChatStream = () => {
         id: 'welcome',
         role: 'assistant',
         content:
-          'تم مسح المحادثة. معك PandaPulse AI، شغال على إيه في بايثون أو داتا فريمز؟',
+          'Session cleared. I am PandaPulse AI, ready for your next Python or Pandas engineering challenge.',
         suggestions: [
-          'كيف أدمج جدولين في Pandas 2.0 بدون دوال ملغية؟',
-          'كيف أسرع قراءة ملفات البيانات الضخمة بواسطة PyArrow؟',
-          'ما هو Copy-on-Write وكيف يوفر استهلاك الذاكرة؟',
+          'How to concatenate DataFrames in Pandas 2.0 without deprecated append?',
+          'How to accelerate reading large datasets using Apache Arrow?',
+          'What is Copy-on-Write and how does it optimize memory in Pandas 2.x?',
         ],
         citations: [],
         latency_ms: 0.1,

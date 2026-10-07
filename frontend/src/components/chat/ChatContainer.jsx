@@ -5,12 +5,12 @@ import { SourceDrawer } from './SourceDrawer';
 import { useChatStream } from '../../hooks/useChatStream';
 
 const QUICK_PROMPTS = [
-  'اكتب دالة بايثون نظيفة مع Type Hints ومعالجة استثناءات',
-  'كيفية دمج الجداول بدون دالة append الملغية في Pandas 2.0+',
-  'تفعيل Copy-on-Write وتفادي SettingWithCopyWarning',
-  'مقارنة استهلاك الذاكرة بين List و Generator في بايثون',
-  'تسريع استعلامات Pandas عبر محرك PyArrow و ArrowDtype',
-  'Named Aggregation في Groupby لحساب عدة مقاييس بأسماء مخصصة',
+  'Write clean Python functions with type hints and exception handling',
+  'Concatenate DataFrames without deprecated append in Pandas 2.0+',
+  'Enable Copy-on-Write to eliminate SettingWithCopyWarning',
+  'Compare memory overhead: List vs. Generator in Python',
+  'Accelerate Pandas queries with PyArrow and ArrowDtype',
+  'Perform Named Aggregations in GroupBy with custom metric names',
 ];
 
 export const ChatContainer = ({ initialPrompt = '', onClearInitialPrompt }) => {
@@ -124,7 +124,7 @@ export const ChatContainer = ({ initialPrompt = '', onClearInitialPrompt }) => {
                 handleSubmit();
               }
             }}
-            placeholder="اسأل عن أي شيء يخص بايثون أو مكتبة Pandas 2.0+ أو معالجة البيانات..."
+            placeholder="Ask anything about Python 3.x, modern Pandas 2.0+, or data engineering..."
             rows={1}
             disabled={isStreaming}
             className="w-full bg-transparent px-5 py-4 text-sm text-slate-100 placeholder-slate-400 focus:outline-none resize-none font-sans"

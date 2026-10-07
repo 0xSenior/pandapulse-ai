@@ -47,13 +47,11 @@ class QueryPandasDocsUseCase:
    - إذا كان السؤال عن Pandas، التزم بأحدث معايير 2.0+ (استخدام pd.concat بدلاً من .append، ومحرك Apache Arrow، وأمان Copy-on-Write).
    - الأكواد البرمجية تكون دائماً داخل كتل ```python نظيفة وجاهزة للتشغيل مباشرة.
 
-4. اقتراحات المتابعة التفاعلية الذكية (Contextual Follow-ups):
-   - في نهاية كل رد تقني أو كود، اقترح 2 إلى 3 أسئلة متابعة ذكية وعفوية ترتبط بما تم شرحه (مثل: قياس استهلاك الذاكرة، توضيح نقطة في الفهرسة، أو كتابة دالة مخصصة).
-   - ضع هذه الاقتراحات في نهاية الرد تماماً داخل هذا القالب المخصص دون استخدام علامات تعجب:
+4. اقتراحات المتابعة التفاعلية الذكية بالإنجليزية (Contextual Follow-ups in English):
+   - في نهاية كل رد، اقترح 2 إلى 3 أسئلة متابعة ذكية باللغة الإنجليزية التقنية (لتكون واضحة برمجياً وسلسة التنسيق بدون تشوه في اتجاه النصوص)، وضعها في نهاية الرد تماماً داخل هذا القالب دون استخدام علامات تعجب:
 <<<SUGGESTIONS>>>
-- اقتراح أول
-- اقتراح ثاني
-- اقتراح ثالث
+- Follow-up question 1 in English
+- Follow-up question 2 in English
 <<<END_SUGGESTIONS>>>
 
 5. التعامل الذكي مع المواضيع الخارجة عن السياق (Witty & Playful Redirection):
@@ -189,9 +187,9 @@ class QueryPandasDocsUseCase:
             return (
                 "أهلاً بك، معك PandaPulse AI. شغال على إيه في بايثون أو بانداس اليوم، أو محتاج مساعدة في كود معين؟\n\n"
                 "<<<SUGGESTIONS>>>\n"
-                "- دمج وفلترة الجداول في Pandas 2.0\n"
-                "- تسريع العمليات وخفض الذاكرة بـ PyArrow\n"
-                "- حل مشكلة أو مراجعة كود بايثون\n"
+                "- How to merge and filter DataFrames in Pandas 2.0?\n"
+                "- How to accelerate data processing using PyArrow?\n"
+                "- Review and optimize a Python function\n"
                 "<<<END_SUGGESTIONS>>>"
             )
         return (
@@ -212,9 +210,9 @@ class QueryPandasDocsUseCase:
                     "يعني إيه، أبعتهالك دليفري أونلاين ولا إيه ههههه. "
                     "خلينا في عجن الداتا وتظبيط الـ DataFrames أحسن، دي لعبتي وسريعة مع Pandas ومحرك Arrow. شغال على كود إيه النهاردة؟\n\n"
                     "<<<SUGGESTIONS>>>\n"
-                    "- فلترة ودمج الجداول في Pandas\n"
-                    "- تسريع قراءة الملفات بـ PyArrow\n"
-                    "- كتابة دالة بايثون نظيفة\n"
+                    "- How to concatenate DataFrames in Pandas 2.0?\n"
+                    "- Accelerate Parquet and CSV reading with PyArrow\n"
+                    "- Write a clean Python data function\n"
                     "<<<END_SUGGESTIONS>>>"
                 )
             if any(w in q_lower for w in ["كرة", "كورة", "رياضة", "ماتش", "football", "soccer", "ميسي", "رونالدو"]):
@@ -222,18 +220,18 @@ class QueryPandasDocsUseCase:
                     "الماتشات دي بنحلل أرقامها بالبايثون ونطلع منها رسوم بيانية ومقاييس أداء، بس السيرفر ملوش في اللعب برة الـ IDE ههههه. "
                     "لو معاك كود أو داتا فريم محتاجين نظبطهم قولي عليهم.\n\n"
                     "<<<SUGGESTIONS>>>\n"
-                    "- تجميع وإحصائيات GroupBy في Pandas\n"
-                    "- تحليل واستكشاف البيانات ببايثون\n"
-                    "- معالجة القيم المفقودة في الداتا\n"
+                    "- GroupBy aggregations and statistics in Pandas\n"
+                    "- Exploratory data analysis in Python\n"
+                    "- Handling missing data with fillna and dropna\n"
                     "<<<END_SUGGESTIONS>>>"
                 )
             return (
                 "شكلك حبيت تجربني برة الملعب ههههه، بس أنا ملعبي وسكتي لغة Python ومكتبة Pandas وهندسة البيانات. "
                 "سيبك من الكلام ده وقلي واقف معاك إيه في الكود النهاردة أو شغال على مشروع إيه؟\n\n"
                 "<<<SUGGESTIONS>>>\n"
-                "- دمج وفلترة الجداول في Pandas 2.0\n"
-                "- تسريع العمليات وخفض الذاكرة بـ PyArrow\n"
-                "- حل مشكلة أو مراجعة كود بايثون\n"
+                "- How to merge DataFrames in Pandas 2.0 without append?\n"
+                "- Accelerate performance with PyArrow backend\n"
+                "- Review and refactor Python code\n"
                 "<<<END_SUGGESTIONS>>>"
             )
         return (
@@ -345,11 +343,11 @@ class QueryPandasDocsUseCase:
                 f"1. ممنوع نهائياً استخدام أي علامات تعجب (!).\n"
                 f"2. ممنوع سرد قوائم مهاراتك أو ديباجة مسبقة الصنع.\n"
                 f"3. اسأله ببساطة عن الكود أو المشكلة التي يعمل عليها اليوم في بايثون أو داتا فريمز.\n"
-                f"4. في نهاية الرد ضع 2 إلى 3 اقتراحات سريعة في الوسم:\n"
+                f"4. في نهاية الرد ضع 2 إلى 3 اقتراحات تقنية باللغة الإنجليزية في الوسم المخصص وبدون علامات تعجب:\n"
                 f"<<<SUGGESTIONS>>>\n"
-                f"- دمج وفلترة الجداول في Pandas 2.0\n"
-                f"- تسريع العمليات وخفض الذاكرة بـ PyArrow\n"
-                f"- حل مشكلة أو مراجعة كود بايثون\n"
+                f"- How to concatenate DataFrames in Pandas 2.0 without append\n"
+                f"- Accelerate data processing using PyArrow\n"
+                f"- Review and optimize a Python function\n"
                 f"<<<END_SUGGESTIONS>>>"
             )
             try:
@@ -383,11 +381,11 @@ class QueryPandasDocsUseCase:
                 f"1. ممنوع نهائياً استخدام أي علامات تعجب (!).\n"
                 f"2. ممنوع الرد ببرود أو بعبارات خدمة عملاء روبوتية وجافة.\n"
                 f"3. اجعل الرد قصيراً (سطرين) وظريفاً كزميل مبرمج يجلس بجانبه في المكتب.\n"
-                f"4. في نهاية الرد ضع 2 إلى 3 اقتراحات برمجية في الوسم المخصص:\n"
+                f"4. في نهاية الرد ضع 2 إلى 3 اقتراحات برمجية باللغة الإنجليزية في الوسم المخصص وبدون علامات تعجب:\n"
                 f"<<<SUGGESTIONS>>>\n"
-                f"- دمج وفلترة الجداول في Pandas 2.0\n"
-                f"- تسريع العمليات وخفض الذاكرة بـ PyArrow\n"
-                f"- حل مشكلة أو مراجعة كود بايثون\n"
+                f"- How to concatenate DataFrames in Pandas 2.0 without append\n"
+                f"- Accelerate data processing using PyArrow\n"
+                f"- Review and optimize a Python function\n"
                 f"<<<END_SUGGESTIONS>>>"
             )
             try:
@@ -460,10 +458,10 @@ class QueryPandasDocsUseCase:
                 "ممنوع استخدام علامات التعجب (!) نهائياً في أي مكان في الرد، وتحدث بهدوء كمهندس خبير. "
                 "إذا طلب كود بايثون بسيط أو عام، اكتب كود بايثون نظيفاً ومباشراً مع شرح موجز ومفيد ولا تقحم Pandas إلا إذا كان السؤال عن البيانات. "
                 "إذا سأل استفساراً حوارياً، أجب بحوار طبيعي وذكي. "
-                "في نهاية الرد، اقترح 2 إلى 3 أسئلة متابعة ذكية وعفوية بحسب سياق الموضوع في هذا القالب تماماً:\n"
+                "في نهاية الرد، اقترح 2 إلى 3 أسئلة متابعة تقنية ذكية باللغة الإنجليزية وبدون علامات تعجب في هذا القالب تماماً:\n"
                 "<<<SUGGESTIONS>>>\n"
-                "- اقتراح أول\n"
-                "- اقتراح ثاني\n"
+                "- How to merge and filter DataFrames in Pandas 2.0?\n"
+                "- How to optimize memory usage with PyArrow?\n"
                 "<<<END_SUGGESTIONS>>>"
             )
             full_prompt = (
@@ -542,11 +540,11 @@ class QueryPandasDocsUseCase:
                 f"1. ممنوع نهائياً استخدام أي علامات تعجب (!).\n"
                 f"2. ممنوع سرد قوائم مهاراتك أو ديباجة مسبقة الصنع.\n"
                 f"3. اسأله ببساطة عن الكود أو المشكلة التي يعمل عليها اليوم في بايثون أو داتا فريمز.\n"
-                f"4. في نهاية الرد ضع 2 إلى 3 اقتراحات سريعة في الوسم:\n"
+                f"4. في نهاية الرد ضع 2 إلى 3 اقتراحات تقنية باللغة الإنجليزية في الوسم المخصص وبدون علامات تعجب:\n"
                 f"<<<SUGGESTIONS>>>\n"
-                f"- دمج وفلترة الجداول في Pandas 2.0\n"
-                f"- تسريع العمليات وخفض الذاكرة بـ PyArrow\n"
-                f"- حل مشكلة أو مراجعة كود بايثون\n"
+                f"- How to concatenate DataFrames in Pandas 2.0 without append\n"
+                f"- Accelerate data processing using PyArrow\n"
+                f"- Review and optimize a Python function\n"
                 f"<<<END_SUGGESTIONS>>>"
             )
             yield {
@@ -581,11 +579,11 @@ class QueryPandasDocsUseCase:
                 f"1. ممنوع نهائياً استخدام أي علامات تعجب (!).\n"
                 f"2. ممنوع الرد ببرود أو بعبارات خدمة عملاء روبوتية وجافة.\n"
                 f"3. اجعل الرد قصيراً (سطرين) وظريفاً كزميل مبرمج يجلس بجانبه في المكتب.\n"
-                f"4. في نهاية الرد ضع 2 إلى 3 اقتراحات برمجية في الوسم المخصص:\n"
+                f"4. في نهاية الرد ضع 2 إلى 3 اقتراحات برمجية باللغة الإنجليزية في الوسم المخصص وبدون علامات تعجب:\n"
                 f"<<<SUGGESTIONS>>>\n"
-                f"- دمج وفلترة الجداول في Pandas 2.0\n"
-                f"- تسريع العمليات وخفض الذاكرة بـ PyArrow\n"
-                f"- حل مشكلة أو مراجعة كود بايثون\n"
+                f"- How to concatenate DataFrames in Pandas 2.0 without append\n"
+                f"- Accelerate data processing using PyArrow\n"
+                f"- Review and optimize a Python function\n"
                 f"<<<END_SUGGESTIONS>>>"
             )
             yield {
@@ -724,10 +722,10 @@ class QueryPandasDocsUseCase:
                 "ممنوع استخدام علامات التعجب (!) نهائياً في أي مكان في الرد، وتحدث بهدوء كمهندس خبير. "
                 "إذا طلب كود بايثون بسيط أو عام، اكتب كود بايثون نظيفاً ومباشراً مع شرح موجز ومفيد ولا تقحم Pandas إلا إذا كان السؤال عن البيانات. "
                 "إذا سأل استفساراً حوارياً أو متابعة، أجب بشكل حواري طبيعي وذكي دون تكرار أي مقدمات سابقة. "
-                "في نهاية الرد، اقترح 2 إلى 3 أسئلة متابعة ذكية ترتبط بسياق الموضوع في هذا القالب تماماً:\n"
+                "في نهاية الرد، اقترح 2 إلى 3 أسئلة متابعة تقنية ذكية باللغة الإنجليزية ترتبط بسياق الموضوع وبدون علامات تعجب في هذا القالب تماماً:\n"
                 "<<<SUGGESTIONS>>>\n"
-                "- اقتراح أول\n"
-                "- اقتراح ثاني\n"
+                "- How to merge and filter DataFrames in Pandas 2.0?\n"
+                "- How to optimize memory usage with PyArrow?\n"
                 "<<<END_SUGGESTIONS>>>"
             )
             full_prompt = (
