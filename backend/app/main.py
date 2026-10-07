@@ -3,15 +3,17 @@
 import logging
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.application.use_cases import GetStatusUseCase
 from app.core.config import settings
 from app.presentation.dependencies import (
     get_doc_loader,
+    get_status_use_case,
     get_vector_store,
 )
-from app.presentation.routes import router as api_router
+from app.presentation.routes import router as api_router, status_endpoint
 
 logging.basicConfig(
     level=logging.INFO,
@@ -67,6 +69,15 @@ def create_app() -> FastAPI:
 
     # Mount API Router
     app.include_router(api_router)
+
+    # Global status aliases for serverless path flexibility
+    @app.get("/status")
+    @app.get("/v1/status")
+    @app.get("/api/status")
+    async def status_alias(
+        use_case: GetStatusUseCase = Depends(get_status_use_case),
+    ):
+        return await status_endpoint(use_case)
 
     @app.get("/")
     @app.get("/api/index.py")
