@@ -24,9 +24,18 @@ class VercelPathMiddleware:
                 headers.get(b"x-forwarded-uri")
                 or headers.get(b"x-matched-path")
                 or headers.get(b"x-real-path")
+                or headers.get(b"x-vercel-matched-path")
             )
+            path = scope.get("path", "")
             if raw_path:
-                scope["path"] = raw_path.decode("utf-8").split("?")[0]
+                path = raw_path.decode("utf-8").split("?")[0]
+
+            if path in ("/api/index.py", "/api/index", "/api/"):
+                path = "/"
+            elif path.startswith("/v1/"):
+                path = "/api" + path
+
+            scope["path"] = path
         await self.asgi_app(scope, receive, send)
 
 
