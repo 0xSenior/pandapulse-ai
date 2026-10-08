@@ -42,12 +42,15 @@ class GroqProvider(ILLMProvider):
         except Exception:
             return False
 
-    async def generate(self, prompt: str, system_prompt: str, model: str | None = None) -> LLMResponse:
+    async def generate(
+        self, prompt: str, system_prompt: str, model: str | None = None, api_key: str | None = None
+    ) -> LLMResponse:
         """Execute non-streaming completion via Groq."""
         start_time = time.perf_counter()
         target_model = model or self.model_name
+        effective_key = api_key.strip() if api_key else self.api_key
         headers = {
-            "Authorization": f"Bearer {self.api_key}",
+            "Authorization": f"Bearer {effective_key}",
             "Content-Type": "application/json",
         }
         payload = {
@@ -70,7 +73,7 @@ class GroqProvider(ILLMProvider):
                 )
                 if res.status_code == 429:
                     return LLMResponse(
-                        answer="⚠️ تجاوزت معدل الطلبات المسموح به مؤقتاً (Rate Limit). يرجى الانتظار بضع ثوانٍ وإعادة المحاولة.",
+                        answer="⚠️ تم الوصول للحد الأقصى المؤقت لمعدل الطلبات في Groq Cloud (Rate Limit). يمكنك الانتظار بضع ثوانٍ أو إدخال مفتاحك الخاص مجاناً (BYOK) من أيقونة الإعدادات للاستمرار دون توقف.",
                         citations=[],
                         latency_ms=round((time.perf_counter() - start_time) * 1000, 2),
                         cached=False,
@@ -101,11 +104,14 @@ class GroqProvider(ILLMProvider):
                 model_name=f"PandaPulse Neural Engine ({target_model})",
             )
 
-    async def generate_stream(self, prompt: str, system_prompt: str, model: str | None = None) -> AsyncIterator[str]:
+    async def generate_stream(
+        self, prompt: str, system_prompt: str, model: str | None = None, api_key: str | None = None
+    ) -> AsyncIterator[str]:
         """Stream generated tokens via Server-Sent Events from Groq."""
         target_model = model or self.model_name
+        effective_key = api_key.strip() if api_key else self.api_key
         headers = {
-            "Authorization": f"Bearer {self.api_key}",
+            "Authorization": f"Bearer {effective_key}",
             "Content-Type": "application/json",
         }
         payload = {
@@ -128,7 +134,7 @@ class GroqProvider(ILLMProvider):
                     json=payload,
                 ) as response:
                     if response.status_code == 429:
-                        yield "⚠️ المحرك العصبي مشغول حالياً بسبب كثافة الطلبات (Rate Limit). يرجى الانتظار بضع ثوانٍ وإعادة المحاولة."
+                        yield "⚠️ تم الوصول للحد الأقصى المؤقت لمعدل الطلبات في Groq (Rate Limit). يمكنك الانتظار بضع ثوانٍ أو إدخال مفتاحك الخاص مجاناً (BYOK) من أيقونة الإعدادات للاستمرار دون توقف."
                         return
                     response.raise_for_status()
                     async for line in response.aiter_lines():

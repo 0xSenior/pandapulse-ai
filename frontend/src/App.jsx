@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Terminal, Activity, Github, Layers } from 'lucide-react';
+import { Sparkles, Terminal, Activity, Github, Layers, Settings } from 'lucide-react';
 import { FloatingDock } from './components/dock/FloatingDock';
+import { SettingsModal } from './components/settings/SettingsModal';
 import { HomePage } from './pages/HomePage';
 import { ChatPage } from './pages/ChatPage';
 import { DocsPage } from './pages/DocsPage';
@@ -10,12 +11,14 @@ import { EngineerPage } from './pages/EngineerPage';
 import { DataStudio } from './components/studio/DataStudio';
 import { useDock } from './hooks/useDock';
 import { API_BASE_URL } from './config/api';
+import { parseSharedParams } from './services/shareService';
 
 export default function App() {
   const { activeTab, navigateTo } = useDock('home');
   const [systemOnline, setSystemOnline] = useState(false);
   const [chunkCount, setChunkCount] = useState(0);
   const [pendingPrompt, setPendingPrompt] = useState('');
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const isChatTab = activeTab === 'chat' || activeTab === 'studio';
 
@@ -25,6 +28,16 @@ export default function App() {
     }
     navigateTo(tab);
   };
+
+  // Inspect shared URL parameters (?code=... or ?prompt=...)
+  useEffect(() => {
+    const { code, prompt } = parseSharedParams();
+    if (code) {
+      handleNavigate('chat', `Please explain and run this code:\n\`\`\`python\n${code}\n\`\`\``);
+    } else if (prompt) {
+      handleNavigate('chat', prompt);
+    }
+  }, []);
 
   useEffect(() => {
     const checkStatus = async () => {
@@ -91,6 +104,16 @@ export default function App() {
             >
               <Github className="w-4 h-4" />
             </a>
+
+            {/* Settings & BYOK API Keys Button */}
+            <button
+              type="button"
+              onClick={() => setIsSettingsOpen(true)}
+              className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-cyan-300 border border-white/10 transition-colors cursor-pointer"
+              title="API Key Settings (BYOK)"
+            >
+              <Settings className="w-4 h-4" />
+            </button>
           </div>
         </div>
       </header>
@@ -183,6 +206,12 @@ export default function App() {
         activeTab={activeTab}
         onSelectTab={navigateTo}
         orientation={isChatTab ? 'vertical' : 'horizontal'}
+      />
+
+      {/* Settings Modal (BYOK & Privacy) */}
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
       />
     </div>
   );

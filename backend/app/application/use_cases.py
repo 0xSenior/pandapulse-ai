@@ -492,6 +492,8 @@ class QueryPandasDocsUseCase:
 
         # 6. Generate Response from LLM
         gen_kwargs = {"model": request.model} if request.model else {}
+        if request.api_key:
+            gen_kwargs["api_key"] = request.api_key
         try:
             response: LLMResponse = await self.llm_provider.generate(
                 prompt=full_prompt,
@@ -562,6 +564,8 @@ class QueryPandasDocsUseCase:
             try:
                 accumulated = []
                 gen_kwargs = {"model": request.model} if request.model else {}
+                if request.api_key:
+                    gen_kwargs["api_key"] = request.api_key
                 try:
                     stream_gen = self.llm_provider.generate_stream(greeting_prompt, self.SYSTEM_PROMPT, **gen_kwargs)
                 except TypeError:
@@ -607,6 +611,8 @@ class QueryPandasDocsUseCase:
             try:
                 accumulated = []
                 gen_kwargs = {"model": request.model} if request.model else {}
+                if request.api_key:
+                    gen_kwargs["api_key"] = request.api_key
                 try:
                     stream_gen = self.llm_provider.generate_stream(witty_prompt, self.SYSTEM_PROMPT, **gen_kwargs)
                 except TypeError:
@@ -777,6 +783,8 @@ class QueryPandasDocsUseCase:
         accumulated_tokens = []
         token_count = 0
         gen_kwargs = {"model": request.model} if request.model else {}
+        if request.api_key:
+            gen_kwargs["api_key"] = request.api_key
         try:
             stream_gen = self.llm_provider.generate_stream(full_prompt, self.SYSTEM_PROMPT, **gen_kwargs)
         except TypeError:

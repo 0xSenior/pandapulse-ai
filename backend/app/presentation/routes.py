@@ -45,6 +45,7 @@ async def chat_endpoint(
         history=request.history,
         model=request.model,
         provider=request.provider,
+        api_key=request.api_key,
     )
     result = await use_case.execute(dto_in)
 
@@ -72,6 +73,7 @@ async def stream_chat_endpoint(
         history=request.history,
         model=request.model,
         provider=request.provider,
+        api_key=request.api_key,
     )
 
     async def event_generator():

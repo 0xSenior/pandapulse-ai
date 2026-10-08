@@ -14,6 +14,7 @@ class ChatRequest(BaseModel):
     history: list[dict[str, str]] | None = Field(default=None, description="Recent conversation turns for multi-turn context")
     model: str | None = Field(default=None, description="Optional LLM model override")
     provider: str | None = Field(default=None, description="Optional LLM provider override")
+    api_key: str | None = Field(default=None, description="Optional user-provided API key for BYOK mode")
 
 
 class CitationSchema(BaseModel):

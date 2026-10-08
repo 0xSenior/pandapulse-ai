@@ -19,11 +19,13 @@ import {
   History,
   Plus,
   FileCode,
+  Settings,
 } from 'lucide-react';
 import { MessageBubble } from './MessageBubble';
 import { SourceDrawer } from './SourceDrawer';
 import { ModelSelector } from './ModelSelector';
 import { ChatHistoryDrawer } from './ChatHistoryDrawer';
+import { SettingsModal } from '../settings/SettingsModal';
 import { DataStudio } from '../studio/DataStudio';
 import { useChatStream } from '../../hooks/useChatStream';
 import { useChatSessions } from '../../hooks/useChatSessions';
@@ -95,6 +97,7 @@ export const ChatContainer = ({ initialPrompt = '', onClearInitialPrompt }) => {
   const [input, setInput] = useState('');
   const [isStudioOpen, setIsStudioOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [studioCode, setStudioCode] = useState('');
   const [selectedModel, setSelectedModel] = useState(null);
   const [activeDataset, setActiveDataset] = useState(null);
@@ -350,6 +353,17 @@ _j.dumps(schema_summary)
             <span className="hidden sm:inline">.ipynb</span>
           </button>
 
+          {/* Settings & BYOK API Keys */}
+          <button
+            type="button"
+            onClick={() => setIsSettingsOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900/90 text-slate-300 hover:text-white border border-white/10 hover:border-cyan-500/30 transition-all cursor-pointer shadow-sm"
+            title="API Settings & BYOK"
+          >
+            <Settings className="w-3.5 h-3.5 text-slate-400" />
+            <span className="hidden sm:inline">Settings</span>
+          </button>
+
           {/* Split-Screen Studio Toggle */}
           <button
             type="button"
@@ -526,6 +540,13 @@ _j.dumps(schema_summary)
                     {uploadStatus}
                   </span>
                 )}
+                <span
+                  title="Zero Data Retention: Datasets execute locally in browser memory via WebAssembly and are never sent to any server"
+                  className="hidden md:inline-flex items-center gap-1 text-[10px] text-emerald-400 font-mono px-2 py-0.5 rounded-full bg-emerald-950/40 border border-emerald-800/30"
+                >
+                  <ShieldCheck className="w-3 h-3 text-emerald-400" />
+                  <span>Client WASM Safe</span>
+                </span>
               </div>
 
               {/* Right: Send Button */}
@@ -570,6 +591,12 @@ _j.dumps(schema_summary)
         onNewChat={handleNewChat}
         onDeleteSession={deleteSession}
         onClearAll={clearAllSessions}
+      />
+
+      {/* Settings Modal (BYOK & Privacy) */}
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
       />
     </div>
   );

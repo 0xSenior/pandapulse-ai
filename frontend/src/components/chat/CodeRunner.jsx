@@ -14,9 +14,11 @@ import {
   ChevronDown,
   ChevronUp,
   ShieldCheck,
+  Share2,
 } from 'lucide-react';
 import { executePythonCode } from '../../services/pyodideService';
 import { exportAsPythonScript } from '../../services/exportService';
+import { copyShareUrlToClipboard } from '../../services/shareService';
 import { PythonHighlighter } from '../ui/PythonHighlighter';
 
 export const CodeRunner = ({
@@ -26,6 +28,7 @@ export const CodeRunner = ({
   onOpenInStudio,
 }) => {
   const [copied, setCopied] = useState(false);
+  const [shared, setShared] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
   const [result, setResult] = useState(null);
@@ -67,6 +70,13 @@ export const CodeRunner = ({
     navigator.clipboard.writeText(code);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleShare = () => {
+    copyShareUrlToClipboard({ code, title: 'PandaPulse 2.0 Solution' }).then(() => {
+      setShared(true);
+      setTimeout(() => setShared(false), 2000);
+    });
   };
 
   const handleRun = async () => {
@@ -157,6 +167,26 @@ export const CodeRunner = ({
               <>
                 <Copy className="w-3.5 h-3.5" />
                 <span>Copy</span>
+              </>
+            )}
+          </button>
+
+          {/* Share Solution Link */}
+          <button
+            type="button"
+            onClick={handleShare}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-cyan-300 transition-colors cursor-pointer"
+            title="Share runnable code solution link"
+          >
+            {shared ? (
+              <>
+                <Check className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="text-emerald-400">Link Copied</span>
+              </>
+            ) : (
+              <>
+                <Share2 className="w-3.5 h-3.5 text-cyan-400" />
+                <span className="hidden sm:inline">Share</span>
               </>
             )}
           </button>

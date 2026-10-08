@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
 import { API_BASE_URL } from '../config/api';
+import { getCustomApiKey } from '../services/keyStore';
 
 /**
  * Extracts contextual follow-up suggestions from model responses,
@@ -107,9 +108,16 @@ export const useChatStream = () => {
       if (modelOverride?.id) payload.model = modelOverride.id;
       if (modelOverride?.provider) payload.provider = modelOverride.provider;
 
+      const customGroqKey = getCustomApiKey('groq');
+      const headers = { 'Content-Type': 'application/json' };
+      if (customGroqKey) {
+        payload.api_key = customGroqKey;
+        headers['X-Custom-Api-Key'] = customGroqKey;
+      }
+
       const response = await fetch(`${API_BASE_URL}/api/v1/stream-chat`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(payload),
         signal: abortControllerRef.current.signal,
       });

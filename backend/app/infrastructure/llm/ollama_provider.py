@@ -57,7 +57,9 @@ class OllamaProvider(ILLMProvider):
         text = re.sub(r'[\u4E00-\u9FFF]+', '', text)
         return text
 
-    async def generate(self, prompt: str, system_prompt: str, model: str | None = None) -> LLMResponse:
+    async def generate(
+        self, prompt: str, system_prompt: str, model: str | None = None, api_key: str | None = None
+    ) -> LLMResponse:
         """Generate response dynamically using local Ollama model."""
         start_time = time.perf_counter()
         target_model = model or self.model_name
@@ -119,7 +121,9 @@ class OllamaProvider(ILLMProvider):
                 model_name=target_model,
             )
 
-    async def generate_stream(self, prompt: str, system_prompt: str, model: str | None = None) -> AsyncIterator[str]:
+    async def generate_stream(
+        self, prompt: str, system_prompt: str, model: str | None = None, api_key: str | None = None
+    ) -> AsyncIterator[str]:
         """Stream tokens in real-time from Ollama."""
         target_model = model or self.model_name
         has_ollama = await self.is_available()

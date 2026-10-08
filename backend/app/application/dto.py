@@ -14,6 +14,7 @@ class QueryRequestDTO:
     history: list[dict[str, str]] | None = None
     model: str | None = None
     provider: str | None = None
+    api_key: str | None = None
 
 
 @dataclass
