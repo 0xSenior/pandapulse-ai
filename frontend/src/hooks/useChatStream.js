@@ -51,7 +51,7 @@ export const useChatStream = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const abortControllerRef = useRef(null);
 
-  const sendMessage = useCallback(async (queryText, topK = 3) => {
+  const sendMessage = useCallback(async (queryText, topK = 3, modelOverride = null) => {
     if (!queryText.trim() || isStreaming) return;
 
     const userMessage = {
@@ -99,14 +99,18 @@ export const useChatStream = () => {
     abortControllerRef.current = new AbortController();
 
     try {
+      const payload = {
+        query: queryText.trim(),
+        top_k: topK,
+        history: recentHistory,
+      };
+      if (modelOverride?.id) payload.model = modelOverride.id;
+      if (modelOverride?.provider) payload.provider = modelOverride.provider;
+
       const response = await fetch(`${API_BASE_URL}/api/v1/stream-chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          query: queryText.trim(),
-          top_k: topK,
-          history: recentHistory,
-        }),
+        body: JSON.stringify(payload),
         signal: abortControllerRef.current.signal,
       });
 

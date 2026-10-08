@@ -92,6 +92,7 @@ def create_app() -> FastAPI:
                 "chat": "/api/v1/chat",
                 "stream_chat": "/api/v1/stream-chat",
                 "status": "/api/v1/status",
+                "models": "/api/v1/models",
                 "reindex": "/api/v1/reindex",
                 "chunks": "/api/v1/chunks",
             },

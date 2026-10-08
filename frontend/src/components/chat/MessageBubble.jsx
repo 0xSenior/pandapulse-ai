@@ -15,6 +15,7 @@ import {
   Loader2,
   Terminal,
 } from 'lucide-react';
+import { CodeRunner } from './CodeRunner';
 
 /**
  * Minimalist ChatGPT / DeepSeek-style visual thinking component.
@@ -126,15 +127,10 @@ export const MessageBubble = ({
   isLast = false,
   onViewCitations,
   onSelectSuggestion,
+  onAutoFix,
+  onOpenInStudio,
 }) => {
-  const [copiedIndex, setCopiedIndex] = useState(null);
   const isAssistant = message.role === 'assistant';
-
-  const handleCopy = (text, index) => {
-    navigator.clipboard.writeText(text);
-    setCopiedIndex(index);
-    setTimeout(() => setCopiedIndex(null), 2000);
-  };
 
   /**
    * Resilient Streaming Markdown-to-HTML parser.
@@ -165,7 +161,6 @@ export const MessageBubble = ({
             language = firstLine;
             codeText = rawInside.slice(newlineIdx + 1).trim();
           } else if (/^(python|py)\s+/i.test(firstLine)) {
-            // Handle edge case where model merged code on first line e.g. "python import pandas"
             language = 'python';
             const remainder = firstLine.replace(/^(python|py)\s+/i, '');
             codeText = `${remainder}\n${rawInside.slice(newlineIdx + 1)}`.trim();
@@ -173,38 +168,13 @@ export const MessageBubble = ({
         }
 
         return (
-          <div
+          <CodeRunner
             key={index}
-            dir="ltr"
-            className="my-3 rounded-xl overflow-hidden border border-cyan-500/20 bg-slate-950/95 shadow-xl text-left"
-          >
-            <div className="flex items-center justify-between px-4 py-2 bg-slate-900/90 border-b border-white/10 text-xs text-slate-300 font-mono">
-              <span className="flex items-center gap-2">
-                <Terminal className="w-3.5 h-3.5 text-cyan-400" />
-                <span className="text-cyan-300 font-semibold">{language}</span>
-              </span>
-              <button
-                type="button"
-                onClick={() => handleCopy(codeText, index)}
-                className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-white/5 hover:bg-white/10 text-slate-300 hover:text-cyan-300 transition-colors cursor-pointer"
-              >
-                {copiedIndex === index ? (
-                  <>
-                    <Check className="w-3.5 h-3.5 text-emerald-400" />
-                    <span className="text-emerald-400">Copied</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-3.5 h-3.5" />
-                    <span>Copy code</span>
-                  </>
-                )}
-              </button>
-            </div>
-            <pre className="p-4 text-xs sm:text-sm font-mono text-cyan-200/90 overflow-x-auto leading-relaxed selection:bg-cyan-500/30 whitespace-pre">
-              <code>{codeText}</code>
-            </pre>
-          </div>
+            code={codeText}
+            language={language}
+            onAutoFix={onAutoFix}
+            onOpenInStudio={onOpenInStudio}
+          />
         );
       }
 

@@ -9,7 +9,9 @@ import {
   Lock,
   Code2,
   Database,
-  Layers
+  Layers,
+  Play,
+  Cpu,
 } from 'lucide-react';
 import { GlassCard } from '../ui/GlassCard';
 
@@ -73,6 +75,26 @@ const FEATURES = [
     badge: 'Clean Architecture',
     color: 'text-purple-400',
     border: 'border-purple-500/20',
+  },
+  {
+    icon: Play,
+    title: 'Client-Side WebAssembly Execution',
+    subtitle: 'Run Python 3.12 & Pandas in Browser (Pyodide)',
+    description: 'Execute generated Python scripts directly in your browser with zero server latency. Renders live interactive DataFrames, Matplotlib charts, and features 1-click Auto-Fix with AI.',
+    arabicSummary: 'تشغيل أكواد بايثون وبانداس حياً في المتصفح عبر WebAssembly مع جداول تفاعلية ورسوم بيانية.',
+    badge: 'WebAssembly WASM',
+    color: 'text-rose-400',
+    border: 'border-rose-500/20',
+  },
+  {
+    icon: Cpu,
+    title: 'Hybrid Retrieval & Multi-Model Engine',
+    subtitle: 'BM25 Keyword Search + ChromaDB + RRF Re-ranking',
+    description: 'Combines dense vector embeddings with sparse BM25 lexical matching via Reciprocal Rank Fusion (RRF). Seamlessly switch between local private Ollama and ultra-fast Groq Cloud.',
+    arabicSummary: 'بحث هجين يجمع بين المعجمي والمتجهي مع دعم التبديل بين المحرك المحلي والسحابي.',
+    badge: 'Hybrid RRF & Multi-Model',
+    color: 'text-amber-400',
+    border: 'border-amber-500/20',
   },
 ];
 

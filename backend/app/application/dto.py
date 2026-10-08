@@ -12,6 +12,8 @@ class QueryRequestDTO:
     top_k: int = 3
     session_id: str | None = None
     history: list[dict[str, str]] | None = None
+    model: str | None = None
+    provider: str | None = None
 
 
 @dataclass

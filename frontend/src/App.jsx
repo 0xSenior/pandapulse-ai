@@ -7,6 +7,7 @@ import { ChatPage } from './pages/ChatPage';
 import { DocsPage } from './pages/DocsPage';
 import { KnowledgePage } from './pages/KnowledgePage';
 import { EngineerPage } from './pages/EngineerPage';
+import { DataStudio } from './components/studio/DataStudio';
 import { useDock } from './hooks/useDock';
 import { API_BASE_URL } from './config/api';
 
@@ -16,7 +17,7 @@ export default function App() {
   const [chunkCount, setChunkCount] = useState(0);
   const [pendingPrompt, setPendingPrompt] = useState('');
 
-  const isChatTab = activeTab === 'chat';
+  const isChatTab = activeTab === 'chat' || activeTab === 'studio';
 
   const handleNavigate = (tab, prompt = '') => {
     if (prompt) {
@@ -120,6 +121,21 @@ export default function App() {
               <ChatPage
                 initialPrompt={pendingPrompt}
                 onClearInitialPrompt={() => setPendingPrompt('')}
+              />
+            </motion.div>
+          )}
+
+          {activeTab === 'studio' && (
+            <motion.div
+              key="studio"
+              initial={{ opacity: 0, scale: 0.99 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.99 }}
+              transition={{ duration: 0.2 }}
+              className="w-full max-w-[1700px] mx-auto p-3 h-[calc(100vh-85px)]"
+            >
+              <DataStudio
+                onAskAI={(q) => handleNavigate('chat', q)}
               />
             </motion.div>
           )}

@@ -43,6 +43,8 @@ async def chat_endpoint(
         top_k=request.top_k,
         session_id=request.session_id,
         history=request.history,
+        model=request.model,
+        provider=request.provider,
     )
     result = await use_case.execute(dto_in)
 
@@ -68,6 +70,8 @@ async def stream_chat_endpoint(
         top_k=request.top_k,
         session_id=request.session_id,
         history=request.history,
+        model=request.model,
+        provider=request.provider,
     )
 
     async def event_generator():
@@ -158,3 +162,54 @@ async def clear_cache_endpoint(
     """Manually flush the query cache."""
     cache.clear()
     return {"message": "Cache successfully cleared", "stats": cache.get_stats()}
+
+
+@router.get("/models")
+async def get_models_endpoint():
+    """Retrieve available local and cloud LLM models."""
+    from app.core.config import settings
+
+    has_groq = bool(settings.GROQ_API_KEY.strip())
+    active_m = settings.GROQ_MODEL if (settings.LLM_PROVIDER == "groq" or has_groq) else settings.LLM_MODEL
+    return {
+        "active_provider": settings.LLM_PROVIDER,
+        "active_model": active_m,
+        "available_models": [
+            {
+                "id": "qwen2.5-coder:1.5b",
+                "name": "Qwen 2.5 Coder (1.5B)",
+                "provider": "ollama",
+                "type": "local",
+                "description": "Private, offline Python specialist running locally via Ollama",
+                "badge": "Local & Private",
+                "available": True,
+            },
+            {
+                "id": "llama-3.3-70b-versatile",
+                "name": "Llama 3.3 70B Versatile",
+                "provider": "groq",
+                "type": "cloud",
+                "description": "Ultra-fast inference via Groq Cloud (300+ tok/s)",
+                "badge": "High Speed",
+                "available": has_groq,
+            },
+            {
+                "id": "deepseek-r1-distill-llama-70b",
+                "name": "DeepSeek R1 Distill 70B",
+                "provider": "groq",
+                "type": "cloud",
+                "description": "Deep reasoning model for complex algorithms and data pipelines",
+                "badge": "Deep Reasoning",
+                "available": has_groq,
+            },
+            {
+                "id": "qwen-2.5-coder-32b",
+                "name": "Qwen 2.5 Coder 32B Cloud",
+                "provider": "groq",
+                "type": "cloud",
+                "description": "Large coding model with extensive Python & Pandas fluency",
+                "badge": "Advanced Code",
+                "available": has_groq,
+            },
+        ],
+    }

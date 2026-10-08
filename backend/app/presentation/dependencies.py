@@ -27,6 +27,7 @@ from app.infrastructure.vector_db.chroma_manager import (
     ChromaVectorManager,
     HybridEmbeddingProvider,
 )
+from app.infrastructure.vector_db.hybrid_store import HybridVectorManager
 
 # Singleton instances
 _cache_instance = LRUQueryCache(capacity=settings.CACHE_CAPACITY)
@@ -34,10 +35,11 @@ _embedding_instance = HybridEmbeddingProvider(
     ollama_url=settings.OLLAMA_BASE_URL,
     model_name=settings.EMBEDDING_MODEL,
 )
-_vector_store_instance = ChromaVectorManager(
+_chroma_instance = ChromaVectorManager(
     persist_dir=settings.CHROMA_PERSIST_DIRECTORY,
     embedding_provider=_embedding_instance,
 )
+_vector_store_instance = HybridVectorManager(chroma_manager=_chroma_instance)
 
 # Hybrid LLM Selection: Auto-detect Groq API key or use local Ollama
 if settings.LLM_PROVIDER == "groq" or (

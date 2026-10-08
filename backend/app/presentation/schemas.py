@@ -12,6 +12,8 @@ class ChatRequest(BaseModel):
     top_k: int = Field(default=3, ge=1, le=10, description="Top-k similar document chunks to retrieve")
     session_id: str | None = Field(default=None, description="Optional conversational session ID")
     history: list[dict[str, str]] | None = Field(default=None, description="Recent conversation turns for multi-turn context")
+    model: str | None = Field(default=None, description="Optional LLM model override")
+    provider: str | None = Field(default=None, description="Optional LLM provider override")
 
 
 class CitationSchema(BaseModel):
