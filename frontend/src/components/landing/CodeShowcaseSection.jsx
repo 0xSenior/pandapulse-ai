@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Code2, Copy, Check, Terminal, Sparkles, ArrowRight, Zap, Database, ShieldAlert, Cpu } from 'lucide-react';
 import { GlassCard } from '../ui/GlassCard';
+import { PythonHighlighter } from '../ui/PythonHighlighter';
 
 const CODE_TABS = [
   {
@@ -290,10 +291,12 @@ export const CodeShowcaseSection = ({ onTryPrompt }) => {
             </div>
           </div>
 
-          {/* Code Body */}
-          <pre className="p-5 text-xs sm:text-sm font-mono text-cyan-200/90 overflow-x-auto leading-relaxed selection:bg-cyan-500/30 whitespace-pre text-left max-h-[520px] overflow-y-auto">
-            <code>{activeTab.code}</code>
-          </pre>
+          {/* Code Body with VS Code Syntax Highlighting */}
+          <PythonHighlighter
+            code={activeTab.code}
+            showLineNumbers={true}
+            maxHeight="max-h-[520px]"
+          />
         </div>
 
         {/* Right Column: Key Technical Takeaways & PandaPulse AI Action */}

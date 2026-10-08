@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { executePythonCode } from '../../services/pyodideService';
 import { exportAsPythonScript } from '../../services/exportService';
+import { PythonHighlighter } from '../ui/PythonHighlighter';
 
 export const CodeRunner = ({
   code,
@@ -148,10 +149,12 @@ export const CodeRunner = ({
         </div>
       </div>
 
-      {/* Code Body */}
-      <pre className="p-4 text-xs sm:text-sm font-mono text-cyan-200/95 overflow-x-auto leading-relaxed selection:bg-cyan-500/30 whitespace-pre">
-        <code>{code}</code>
-      </pre>
+      {/* Code Body with VS Code Syntax Highlighting */}
+      <PythonHighlighter
+        code={code}
+        showLineNumbers={true}
+        maxHeight="max-h-[450px]"
+      />
 
       {/* Live Loading Indicator */}
       {isRunning && (
