@@ -21,6 +21,7 @@ import {
   exportAsJupyterNotebook,
   exportAsPythonScript,
 } from '../../services/exportService';
+import { VSCodeEditor } from './VSCodeEditor';
 
 const STARTER_SNIPPETS = {
   modern_pandas: `# Modern Pandas 2.0+ Concat & Arrow Types
@@ -296,12 +297,11 @@ export const DataStudio = ({
         {/* TAB 1: Code Editor */}
         {activeTab === 'editor' && (
           <div className="h-full flex flex-col space-y-3">
-            <div className="flex-1 relative rounded-xl border border-white/10 bg-slate-950 overflow-hidden shadow-inner">
-              <textarea
+            <div className="flex-1 min-h-[350px]">
+              <VSCodeEditor
                 value={code}
-                onChange={(e) => setCode(e.target.value)}
-                spellCheck={false}
-                className="w-full h-full p-4 bg-transparent font-mono text-xs sm:text-sm text-cyan-100 placeholder-slate-500 focus:outline-none resize-none leading-relaxed selection:bg-cyan-500/30"
+                onChange={setCode}
+                filename="pipeline.py"
               />
             </div>
 
