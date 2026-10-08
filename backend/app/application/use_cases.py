@@ -491,10 +491,18 @@ class QueryPandasDocsUseCase:
             )
 
         # 6. Generate Response from LLM
-        response: LLMResponse = await self.llm_provider.generate(
-            prompt=full_prompt,
-            system_prompt=self.SYSTEM_PROMPT,
-        )
+        gen_kwargs = {"model": request.model} if request.model else {}
+        try:
+            response: LLMResponse = await self.llm_provider.generate(
+                prompt=full_prompt,
+                system_prompt=self.SYSTEM_PROMPT,
+                **gen_kwargs,
+            )
+        except TypeError:
+            response: LLMResponse = await self.llm_provider.generate(
+                prompt=full_prompt,
+                system_prompt=self.SYSTEM_PROMPT,
+            )
         response.answer = response.answer.replace("!", "")
 
         # 7. Extract Citations
@@ -529,7 +537,7 @@ class QueryPandasDocsUseCase:
         """Stream response tokens via Server-Sent Events (SSE) with Scope Guardrails."""
         start_time = time.perf_counter()
         is_ar = self.contains_arabic(request.query)
-        model_id = getattr(self.llm_provider, "model_name", "qwen2.5-coder:1.5b")
+        model_id = request.model or getattr(self.llm_provider, "model_name", "qwen2.5-coder:1.5b")
 
         # 1. Scope Guardrail: Greeting
         if self.is_greeting(request.query):
@@ -553,7 +561,13 @@ class QueryPandasDocsUseCase:
             }
             try:
                 accumulated = []
-                async for token in self.llm_provider.generate_stream(greeting_prompt, self.SYSTEM_PROMPT):
+                gen_kwargs = {"model": request.model} if request.model else {}
+                try:
+                    stream_gen = self.llm_provider.generate_stream(greeting_prompt, self.SYSTEM_PROMPT, **gen_kwargs)
+                except TypeError:
+                    stream_gen = self.llm_provider.generate_stream(greeting_prompt, self.SYSTEM_PROMPT)
+
+                async for token in stream_gen:
                     clean_tok = token.replace("!", "")
                     accumulated.append(clean_tok)
                     yield {"event": "token", "data": {"token": clean_tok}}
@@ -592,7 +606,13 @@ class QueryPandasDocsUseCase:
             }
             try:
                 accumulated = []
-                async for token in self.llm_provider.generate_stream(witty_prompt, self.SYSTEM_PROMPT):
+                gen_kwargs = {"model": request.model} if request.model else {}
+                try:
+                    stream_gen = self.llm_provider.generate_stream(witty_prompt, self.SYSTEM_PROMPT, **gen_kwargs)
+                except TypeError:
+                    stream_gen = self.llm_provider.generate_stream(witty_prompt, self.SYSTEM_PROMPT)
+
+                async for token in stream_gen:
                     clean_tok = token.replace("!", "")
                     accumulated.append(clean_tok)
                     yield {"event": "token", "data": {"token": clean_tok}}
@@ -756,7 +776,13 @@ class QueryPandasDocsUseCase:
 
         accumulated_tokens = []
         token_count = 0
-        async for token in self.llm_provider.generate_stream(full_prompt, self.SYSTEM_PROMPT):
+        gen_kwargs = {"model": request.model} if request.model else {}
+        try:
+            stream_gen = self.llm_provider.generate_stream(full_prompt, self.SYSTEM_PROMPT, **gen_kwargs)
+        except TypeError:
+            stream_gen = self.llm_provider.generate_stream(full_prompt, self.SYSTEM_PROMPT)
+
+        async for token in stream_gen:
             clean_token = token.replace("!", "")
             accumulated_tokens.append(clean_token)
             token_count += 1

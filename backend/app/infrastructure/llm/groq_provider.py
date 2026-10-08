@@ -42,15 +42,16 @@ class GroqProvider(ILLMProvider):
         except Exception:
             return False
 
-    async def generate(self, prompt: str, system_prompt: str) -> LLMResponse:
+    async def generate(self, prompt: str, system_prompt: str, model: str | None = None) -> LLMResponse:
         """Execute non-streaming completion via Groq."""
         start_time = time.perf_counter()
+        target_model = model or self.model_name
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
         }
         payload = {
-            "model": self.model_name,
+            "model": target_model,
             "messages": [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": prompt},
@@ -74,7 +75,7 @@ class GroqProvider(ILLMProvider):
                         latency_ms=round((time.perf_counter() - start_time) * 1000, 2),
                         cached=False,
                         tokens_generated=10,
-                        model_name=f"PandaPulse Neural Engine ({self.model_name})",
+                        model_name=f"PandaPulse Neural Engine ({target_model})",
                     )
                 res.raise_for_status()
                 data = res.json()
@@ -88,7 +89,7 @@ class GroqProvider(ILLMProvider):
                     latency_ms=round(latency, 2),
                     cached=False,
                     tokens_generated=tokens_generated,
-                    model_name=f"PandaPulse Neural Engine ({self.model_name})",
+                    model_name=f"PandaPulse Neural Engine ({target_model})",
                 )
         except Exception as e:
             return LLMResponse(
@@ -97,17 +98,18 @@ class GroqProvider(ILLMProvider):
                 latency_ms=round((time.perf_counter() - start_time) * 1000, 2),
                 cached=False,
                 tokens_generated=10,
-                model_name=f"PandaPulse Neural Engine ({self.model_name})",
+                model_name=f"PandaPulse Neural Engine ({target_model})",
             )
 
-    async def generate_stream(self, prompt: str, system_prompt: str) -> AsyncIterator[str]:
+    async def generate_stream(self, prompt: str, system_prompt: str, model: str | None = None) -> AsyncIterator[str]:
         """Stream generated tokens via Server-Sent Events from Groq."""
+        target_model = model or self.model_name
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
         }
         payload = {
-            "model": self.model_name,
+            "model": target_model,
             "messages": [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": prompt},

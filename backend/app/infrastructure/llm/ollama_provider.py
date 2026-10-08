@@ -57,9 +57,10 @@ class OllamaProvider(ILLMProvider):
         text = re.sub(r'[\u4E00-\u9FFF]+', '', text)
         return text
 
-    async def generate(self, prompt: str, system_prompt: str) -> LLMResponse:
+    async def generate(self, prompt: str, system_prompt: str, model: str | None = None) -> LLMResponse:
         """Generate response dynamically using local Ollama model."""
         start_time = time.perf_counter()
+        target_model = model or self.model_name
 
         has_ollama = await self.is_available()
         if not has_ollama:
@@ -73,11 +74,11 @@ class OllamaProvider(ILLMProvider):
                 latency_ms=round((time.perf_counter() - start_time) * 1000, 2),
                 cached=False,
                 tokens_generated=len(msg.split()),
-                model_name=self.model_name,
+                model_name=target_model,
             )
 
         payload = {
-            "model": self.model_name,
+            "model": target_model,
             "prompt": prompt,
             "system": system_prompt,
             "stream": False,
@@ -105,7 +106,7 @@ class OllamaProvider(ILLMProvider):
                         latency_ms=round(latency, 2),
                         cached=False,
                         tokens_generated=data.get("eval_count", len(answer.split())),
-                        model_name=self.model_name,
+                        model_name=target_model,
                     )
         except Exception as e:
             err_msg = f"⚠️ حدث خطأ أثناء التوليد من نموذج Ollama: {e!s}"
@@ -115,18 +116,19 @@ class OllamaProvider(ILLMProvider):
                 latency_ms=round((time.perf_counter() - start_time) * 1000, 2),
                 cached=False,
                 tokens_generated=len(err_msg.split()),
-                model_name=self.model_name,
+                model_name=target_model,
             )
 
-    async def generate_stream(self, prompt: str, system_prompt: str) -> AsyncIterator[str]:
+    async def generate_stream(self, prompt: str, system_prompt: str, model: str | None = None) -> AsyncIterator[str]:
         """Stream tokens in real-time from Ollama."""
+        target_model = model or self.model_name
         has_ollama = await self.is_available()
         if not has_ollama:
             yield "⚠️ **تنبيه:** المحرك العصبي غير متصل حالياً. يرجى تفعيل مفتاح الربط السحابي في الإعدادات أو تشغيل المحرك المحلي."
             return
 
         payload = {
-            "model": self.model_name,
+            "model": target_model,
             "prompt": prompt,
             "system": system_prompt,
             "stream": True,
