@@ -7,6 +7,7 @@ import {
   Database,
   UserCheck,
   Code2,
+  Settings,
 } from 'lucide-react';
 
 const DOCK_ITEMS = [
@@ -82,7 +83,7 @@ function DockIcon({ coordinate, item, activeTab, onSelect, isVertical }) {
   );
 }
 
-export const FloatingDock = ({ activeTab, onSelectTab, orientation = 'horizontal' }) => {
+export const FloatingDock = ({ activeTab, onSelectTab, orientation = 'horizontal', onOpenSettings }) => {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -135,6 +136,20 @@ export const FloatingDock = ({ activeTab, onSelectTab, orientation = 'horizontal
             isVertical={isVertical}
           />
         ))}
+
+        {onOpenSettings && (
+          <>
+            <div className={isVertical ? 'w-6 h-[1px] bg-white/10 my-1 self-center' : 'h-6 w-[1px] bg-white/10 mx-1 self-center'} />
+            <DockIcon
+              key="settings"
+              item={{ id: 'settings', label: 'API Settings & BYOK', icon: Settings, color: 'text-slate-300' }}
+              coordinate={isVertical ? mouseY : mouseX}
+              activeTab={activeTab}
+              onSelect={() => onOpenSettings()}
+              isVertical={isVertical}
+            />
+          </>
+        )}
       </motion.nav>
     </div>
   );

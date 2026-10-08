@@ -18,6 +18,7 @@ export default function App() {
   const [systemOnline, setSystemOnline] = useState(false);
   const [chunkCount, setChunkCount] = useState(0);
   const [pendingPrompt, setPendingPrompt] = useState('');
+  const [studioCode, setStudioCode] = useState('');
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const isChatTab = activeTab === 'chat' || activeTab === 'studio';
@@ -29,10 +30,14 @@ export default function App() {
     navigateTo(tab);
   };
 
-  // Inspect shared URL parameters (?code=... or ?prompt=...)
+  // Inspect shared URL parameters (?code=... or ?prompt=... or ?tab=...)
   useEffect(() => {
-    const { code, prompt } = parseSharedParams();
-    if (code) {
+    const { code, prompt, tab } = parseSharedParams();
+    if (tab === 'studio' && code) {
+      setStudioCode(code);
+      navigateTo('studio');
+    } else if (code) {
+      setStudioCode(code);
       handleNavigate('chat', `Please explain and run this code:\n\`\`\`python\n${code}\n\`\`\``);
     } else if (prompt) {
       handleNavigate('chat', prompt);
@@ -158,6 +163,7 @@ export default function App() {
               className="w-full max-w-[1700px] mx-auto p-3 h-[calc(100vh-85px)]"
             >
               <DataStudio
+                initialCode={studioCode}
                 onAskAI={(q) => handleNavigate('chat', q)}
               />
             </motion.div>
@@ -206,6 +212,7 @@ export default function App() {
         activeTab={activeTab}
         onSelectTab={navigateTo}
         orientation={isChatTab ? 'vertical' : 'horizontal'}
+        onOpenSettings={() => setIsSettingsOpen(true)}
       />
 
       {/* Settings Modal (BYOK & Privacy) */}

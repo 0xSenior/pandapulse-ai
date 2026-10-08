@@ -3,8 +3,9 @@
  * Generates viral, lightweight share URLs that load code directly into the Data Studio Canvas.
  */
 
-export function createShareUrl({ code = '', title = '', prompt = '' }) {
+export function createShareUrl({ code = '', title = '', prompt = '', tab = '' }) {
   const url = new URL(window.location.origin);
+  if (tab) url.searchParams.set('tab', tab);
   if (code) {
     url.searchParams.set('code', code);
     if (title) url.searchParams.set('title', title);
@@ -14,8 +15,8 @@ export function createShareUrl({ code = '', title = '', prompt = '' }) {
   return url.toString();
 }
 
-export function copyShareUrlToClipboard({ code = '', title = '', prompt = '' }) {
-  const link = createShareUrl({ code, title, prompt });
+export function copyShareUrlToClipboard({ code = '', title = '', prompt = '', tab = '' }) {
+  const link = createShareUrl({ code, title, prompt, tab });
   return navigator.clipboard.writeText(link).then(() => link);
 }
 
@@ -24,5 +25,6 @@ export function parseSharedParams() {
   const code = params.get('code');
   const title = params.get('title') || 'Shared Solution';
   const prompt = params.get('prompt');
-  return { code, title, prompt };
+  const tab = params.get('tab');
+  return { code, title, prompt, tab };
 }

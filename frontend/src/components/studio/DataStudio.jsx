@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Play,
   Download,
@@ -15,12 +15,14 @@ import {
   Wrench,
   Loader2,
   AlertTriangle,
+  Share2,
 } from 'lucide-react';
 import { executePythonCode } from '../../services/pyodideService';
 import {
   exportAsJupyterNotebook,
   exportAsPythonScript,
 } from '../../services/exportService';
+import { copyShareUrlToClipboard } from '../../services/shareService';
 import { VSCodeEditor } from './VSCodeEditor';
 
 const STARTER_SNIPPETS = {
@@ -106,8 +108,29 @@ export const DataStudio = ({
   const [statusMessage, setStatusMessage] = useState('');
   const [result, setResult] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [isShared, setIsShared] = useState(false);
   const [page, setPage] = useState(0);
   const pageSize = 10;
+
+  useEffect(() => {
+    if (initialCode) {
+      setCode(initialCode);
+    }
+  }, [initialCode]);
+
+  const handleShare = async () => {
+    try {
+      await copyShareUrlToClipboard({
+        code,
+        title: 'Pandas Pipeline',
+        tab: 'studio',
+      });
+      setIsShared(true);
+      setTimeout(() => setIsShared(false), 2200);
+    } catch {
+      // ignore clipboard error
+    }
+  };
 
   const handleRun = async () => {
     if (isRunning) return;
@@ -210,6 +233,17 @@ export const DataStudio = ({
           >
             <Download className="w-3.5 h-3.5 text-blue-400" />
             <span className="hidden sm:inline">.py</span>
+          </button>
+
+          {/* Share Solution */}
+          <button
+            type="button"
+            onClick={handleShare}
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-cyan-300 text-xs transition-colors cursor-pointer"
+            title="Share Studio Pipeline via URL"
+          >
+            {isShared ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Share2 className="w-3.5 h-3.5 text-cyan-400" />}
+            <span className="hidden xl:inline">{isShared ? 'Link Copied' : 'Share'}</span>
           </button>
 
           {/* Run Code Button */}
