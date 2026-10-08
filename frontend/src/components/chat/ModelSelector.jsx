@@ -9,7 +9,6 @@ const DEFAULT_MODELS = [
     provider: 'ollama',
     type: 'local',
     badge: 'Local & Private',
-    description: 'Runs offline on local hardware via Ollama',
   },
   {
     id: 'llama-3.3-70b-versatile',
@@ -17,7 +16,6 @@ const DEFAULT_MODELS = [
     provider: 'groq',
     type: 'cloud',
     badge: 'High Speed',
-    description: 'Ultra-fast token streaming (300+ tok/s)',
   },
   {
     id: 'deepseek-r1-distill-llama-70b',
@@ -25,7 +23,6 @@ const DEFAULT_MODELS = [
     provider: 'groq',
     type: 'cloud',
     badge: 'Deep Reasoning',
-    description: 'Chain-of-thought mathematical and algorithmic reasoning',
   },
 ];
 

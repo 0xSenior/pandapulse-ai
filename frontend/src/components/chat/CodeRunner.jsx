@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Play,
   Check,
@@ -13,6 +13,7 @@ import {
   Loader2,
   ChevronDown,
   ChevronUp,
+  ShieldCheck,
 } from 'lucide-react';
 import { executePythonCode } from '../../services/pyodideService';
 import { exportAsPythonScript } from '../../services/exportService';
@@ -32,6 +33,35 @@ export const CodeRunner = ({
   const [isOutputCollapsed, setIsOutputCollapsed] = useState(false);
   const [page, setPage] = useState(0);
   const pageSize = 8;
+
+  const isPython = language.toLowerCase() === 'python' || language.toLowerCase() === 'py';
+
+  const syntaxCheck = useMemo(() => {
+    if (!isPython || !code) return null;
+    const hasDeprecatedAppend = /\.append\s*\(/.test(code);
+    const hasDeprecatedIx = /\.ix\[/.test(code);
+    const hasSettingWithCopy = /inplace\s*=\s*True/.test(code);
+    const hasModernConcat = /pd\.concat/.test(code);
+    const hasModernLoc = /\.loc\[|\.iloc\[/.test(code);
+    const hasCopyOnWrite = /copy_on_write|mode\.copy_on_write/.test(code);
+    const hasPyArrow = /pyarrow|ArrowDtype/i.test(code);
+
+    if (hasDeprecatedAppend || hasDeprecatedIx) {
+      return {
+        isModern: false,
+        label: 'Deprecated API Found',
+        color: 'text-amber-400 bg-amber-950/60 border-amber-800/40',
+      };
+    }
+    if (hasModernConcat || hasModernLoc || hasCopyOnWrite || hasPyArrow || /pd\.|pandas/i.test(code)) {
+      return {
+        isModern: true,
+        label: 'Pandas 2.0+ Compliant',
+        color: 'text-emerald-400 bg-emerald-950/60 border-emerald-800/40',
+      };
+    }
+    return null;
+  }, [code, isPython]);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(code);
@@ -78,8 +108,6 @@ export const CodeRunner = ({
     onAutoFix(code, errorDetails);
   };
 
-  const isPython = language.toLowerCase() === 'python' || language.toLowerCase() === 'py';
-
   return (
     <div
       dir="ltr"
@@ -90,6 +118,14 @@ export const CodeRunner = ({
         <div className="flex items-center gap-2">
           <Terminal className="w-3.5 h-3.5 text-cyan-400" />
           <span className="text-cyan-300 font-semibold uppercase">{language}</span>
+          {syntaxCheck && (
+            <span
+              className={`hidden sm:inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border font-mono ${syntaxCheck.color}`}
+            >
+              <ShieldCheck className="w-3 h-3" />
+              <span>{syntaxCheck.label}</span>
+            </span>
+          )}
         </div>
 
         <div className="flex items-center gap-2">

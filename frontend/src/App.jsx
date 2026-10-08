@@ -96,7 +96,7 @@ export default function App() {
       </header>
 
       {/* Main View Router */}
-      <main className={`relative z-10 transition-all duration-300 ${isChatTab ? 'pl-20 sm:pl-24 pr-4 sm:pr-8' : ''}`}>
+      <main className={`relative z-10 transition-all duration-300 ${isChatTab ? 'px-1 sm:px-2 pb-24 md:pb-0 md:pl-24 md:pr-8' : 'px-3 pb-24 md:pb-16'}`}>
         <AnimatePresence mode="wait">
           {activeTab === 'home' && (
             <motion.div

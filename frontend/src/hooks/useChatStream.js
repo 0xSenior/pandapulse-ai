@@ -285,6 +285,12 @@ export const useChatStream = () => {
     ]);
   }, []);
 
+  const loadMessages = useCallback((newMessages) => {
+    if (Array.isArray(newMessages)) {
+      setMessages(newMessages);
+    }
+  }, []);
+
   return {
     messages,
     isStreaming,
@@ -294,5 +300,6 @@ export const useChatStream = () => {
     viewCitations,
     closeDrawer,
     clearChat,
+    loadMessages,
   };
 };

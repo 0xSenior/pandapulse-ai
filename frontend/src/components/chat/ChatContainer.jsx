@@ -16,13 +16,19 @@ import {
   Paperclip,
   X,
   Loader2,
+  History,
+  Plus,
+  FileCode,
 } from 'lucide-react';
 import { MessageBubble } from './MessageBubble';
 import { SourceDrawer } from './SourceDrawer';
 import { ModelSelector } from './ModelSelector';
+import { ChatHistoryDrawer } from './ChatHistoryDrawer';
 import { DataStudio } from '../studio/DataStudio';
 import { useChatStream } from '../../hooks/useChatStream';
+import { useChatSessions } from '../../hooks/useChatSessions';
 import { mountDataset, executePythonCode } from '../../services/pyodideService';
+import { exportChatAsJupyterNotebook } from '../../services/exportService';
 
 const QUICK_PROMPTS = [
   {
@@ -73,10 +79,22 @@ export const ChatContainer = ({ initialPrompt = '', onClearInitialPrompt }) => {
     viewCitations,
     closeDrawer,
     clearChat,
+    loadMessages,
   } = useChatStream();
+
+  const {
+    sessions,
+    activeSessionId,
+    setActiveSessionId,
+    saveSession,
+    createNewSession,
+    deleteSession,
+    clearAllSessions,
+  } = useChatSessions();
 
   const [input, setInput] = useState('');
   const [isStudioOpen, setIsStudioOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [studioCode, setStudioCode] = useState('');
   const [selectedModel, setSelectedModel] = useState(null);
   const [activeDataset, setActiveDataset] = useState(null);
@@ -111,6 +129,13 @@ export const ChatContainer = ({ initialPrompt = '', onClearInitialPrompt }) => {
     }
   }, [input]);
 
+  // Persist session automatically on response completion
+  useEffect(() => {
+    if (!isStreaming && messages.length > 1) {
+      saveSession(messages, selectedModel);
+    }
+  }, [messages, isStreaming, selectedModel, saveSession]);
+
   const processFile = async (file) => {
     if (!file) return;
 
@@ -120,12 +145,26 @@ export const ChatContainer = ({ initialPrompt = '', onClearInitialPrompt }) => {
     try {
       const mounted = await mountDataset(file, (p) => setUploadStatus(p.message));
 
-      setUploadStatus('Profiling schema...');
+      setUploadStatus('Profiling schema with Pandas...');
       const profileCode = `
 import pandas as pd
 import json
 
-df = pd.read_csv('/data/${mounted.name}')
+file_name = '${mounted.name}'.lower()
+try:
+    if file_name.endswith('.parquet'):
+        df = pd.read_parquet('/data/${mounted.name}')
+    elif file_name.endswith('.xlsx') or file_name.endswith('.xls'):
+        df = pd.read_excel('/data/${mounted.name}')
+    elif file_name.endswith('.json'):
+        df = pd.read_json('/data/${mounted.name}')
+    elif file_name.endswith('.tsv'):
+        df = pd.read_csv('/data/${mounted.name}', sep='\\t')
+    else:
+        df = pd.read_csv('/data/${mounted.name}')
+except Exception:
+    df = pd.read_csv('/data/${mounted.name}')
+
 schema_summary = {
     "rows": int(len(df)),
     "cols": int(len(df.columns)),
@@ -234,6 +273,24 @@ _j.dumps(schema_summary)
     setIsStudioOpen(true);
   };
 
+  const handleNewChat = () => {
+    createNewSession();
+    clearChat();
+    setActiveDataset(null);
+    setInput('');
+  };
+
+  const handleSelectSession = (session) => {
+    setActiveSessionId(session.id);
+    if (loadMessages && session.messages) {
+      loadMessages(session.messages);
+    }
+  };
+
+  const handleExportJupyter = () => {
+    exportChatAsJupyterNotebook(messages, 'pandapulse_chat.ipynb');
+  };
+
   return (
     <div className="flex flex-col h-[calc(100vh-85px)] w-full max-w-[1850px] mx-auto px-2 sm:px-4 pb-2 font-sans">
       {/* Top Header & Actions */}
@@ -253,8 +310,46 @@ _j.dumps(schema_summary)
           />
         </div>
 
-        {/* Right Header Toolbar: Studio Split Toggle & Clear */}
+        {/* Right Header Toolbar */}
         <div className="flex items-center gap-2">
+          {/* New Chat Button */}
+          <button
+            type="button"
+            onClick={handleNewChat}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-cyan-600/90 hover:bg-cyan-500 text-white shadow-sm shadow-cyan-900/30 transition-all cursor-pointer"
+            title="Start fresh conversation"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">New Chat</span>
+          </button>
+
+          {/* History Sessions Drawer Toggle */}
+          <button
+            type="button"
+            onClick={() => setIsHistoryOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900/90 text-slate-300 hover:text-white border border-white/10 hover:border-cyan-500/30 transition-all cursor-pointer shadow-sm"
+            title="Open Chat History"
+          >
+            <History className="w-3.5 h-3.5 text-cyan-400" />
+            <span className="hidden sm:inline">History</span>
+            {sessions.length > 0 && (
+              <span className="px-1.5 py-0.2 rounded-full bg-cyan-950 text-cyan-400 text-[10px] font-mono border border-cyan-800/40">
+                {sessions.length}
+              </span>
+            )}
+          </button>
+
+          {/* Export to Jupyter Notebook */}
+          <button
+            type="button"
+            onClick={handleExportJupyter}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900/90 text-slate-300 hover:text-white border border-white/10 hover:border-cyan-500/30 transition-all cursor-pointer shadow-sm"
+            title="Export full session as Jupyter Notebook (.ipynb)"
+          >
+            <FileCode className="w-3.5 h-3.5 text-amber-400" />
+            <span className="hidden sm:inline">.ipynb</span>
+          </button>
+
           {/* Split-Screen Studio Toggle */}
           <button
             type="button"
@@ -267,7 +362,7 @@ _j.dumps(schema_summary)
             title="Toggle Split-Screen Canvas Studio"
           >
             <Columns className="w-3.5 h-3.5 text-cyan-400" />
-            <span>{isStudioOpen ? 'Close Studio' : 'Split Studio Canvas'}</span>
+            <span className="hidden md:inline">{isStudioOpen ? 'Close Studio' : 'Split Canvas'}</span>
           </button>
 
           {/* Clear Session */}
@@ -407,7 +502,7 @@ _j.dumps(schema_summary)
                   type="file"
                   ref={fileInputRef}
                   onChange={handleFileChange}
-                  accept=".csv,.tsv,.json,.txt"
+                  accept=".csv,.tsv,.json,.txt,.parquet,.xlsx,.xls"
                   className="hidden"
                 />
                 <button
@@ -415,7 +510,7 @@ _j.dumps(schema_summary)
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isUploading}
                   className="group flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-cyan-300 hover:bg-white/5 border border-transparent hover:border-white/10 transition-all cursor-pointer disabled:opacity-50"
-                  title="Attach CSV / Dataset"
+                  title="Attach CSV, Parquet, TSV, or Excel dataset"
                 >
                   {isUploading ? (
                     <Loader2 className="w-4 h-4 animate-spin text-cyan-400" />
@@ -423,7 +518,7 @@ _j.dumps(schema_summary)
                     <Paperclip className="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform" />
                   )}
                   <span className="hidden sm:inline">
-                    {isUploading ? uploadStatus : 'Attach CSV'}
+                    {isUploading ? uploadStatus : 'Attach Dataset'}
                   </span>
                 </button>
                 {isUploading && (
@@ -463,6 +558,18 @@ _j.dumps(schema_summary)
         isOpen={isDrawerOpen}
         onClose={closeDrawer}
         citations={activeCitations}
+      />
+
+      {/* Chat History Sessions Drawer */}
+      <ChatHistoryDrawer
+        isOpen={isHistoryOpen}
+        onClose={() => setIsHistoryOpen(false)}
+        sessions={sessions}
+        activeSessionId={activeSessionId}
+        onSelectSession={handleSelectSession}
+        onNewChat={handleNewChat}
+        onDeleteSession={deleteSession}
+        onClearAll={clearAllSessions}
       />
     </div>
   );

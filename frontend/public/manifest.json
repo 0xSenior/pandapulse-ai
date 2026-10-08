@@ -1,0 +1,18 @@
+{
+  "short_name": "PandaPulse",
+  "name": "PandaPulse AI - Modern Python & Pandas 2.0+ Studio",
+  "description": "Production AI Engine for Python 3.x and Modern Pandas 2.0+ Data Engineering",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192 512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#030712",
+  "theme_color": "#030712",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "categories": ["productivity", "developer", "utilities"]
+}

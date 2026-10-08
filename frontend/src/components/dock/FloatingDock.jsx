@@ -83,7 +83,16 @@ function DockIcon({ coordinate, item, activeTab, onSelect, isVertical }) {
 }
 
 export const FloatingDock = ({ activeTab, onSelectTab, orientation = 'horizontal' }) => {
-  const isVertical = orientation === 'vertical';
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const isVertical = orientation === 'vertical' && !isMobile;
   const mouseX = useMotionValue(Infinity);
   const mouseY = useMotionValue(Infinity);
 
@@ -92,7 +101,7 @@ export const FloatingDock = ({ activeTab, onSelectTab, orientation = 'horizontal
       className={
         isVertical
           ? 'fixed left-4 top-1/2 -translate-y-1/2 z-50'
-          : 'fixed bottom-6 left-1/2 -translate-x-1/2 z-50'
+          : 'fixed bottom-3 md:bottom-6 left-1/2 -translate-x-1/2 z-50 max-w-[calc(100vw-20px)]'
       }
     >
       <motion.nav
@@ -110,7 +119,7 @@ export const FloatingDock = ({ activeTab, onSelectTab, orientation = 'horizontal
           mouseX.set(Infinity);
           mouseY.set(Infinity);
         }}
-        className={`flex ${isVertical ? 'flex-col gap-3 px-3 py-4' : 'flex-row items-center gap-3 px-4 py-2.5'
+        className={`flex ${isVertical ? 'flex-col gap-3 px-3 py-4' : 'flex-row items-center gap-2 md:gap-3 px-3 md:px-4 py-2 md:py-2.5 overflow-x-auto no-scrollbar'
           } rounded-3xl bg-slate-950/85 backdrop-blur-2xl border border-white/10 shadow-2xl shadow-black/70 relative`}
       >
         {/* Subtle glowing underlay */}
