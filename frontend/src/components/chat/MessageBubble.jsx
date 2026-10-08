@@ -14,6 +14,8 @@ import {
   CheckCircle2,
   Loader2,
   Terminal,
+  ThumbsUp,
+  ThumbsDown,
 } from 'lucide-react';
 import { CodeRunner } from './CodeRunner';
 
@@ -131,6 +133,15 @@ export const MessageBubble = ({
   onOpenInStudio,
 }) => {
   const isAssistant = message.role === 'assistant';
+  const [copiedMessage, setCopiedMessage] = useState(false);
+  const [feedback, setFeedback] = useState(null);
+
+  const handleCopyMessage = () => {
+    if (!message.content) return;
+    navigator.clipboard.writeText(message.content);
+    setCopiedMessage(true);
+    setTimeout(() => setCopiedMessage(false), 2000);
+  };
 
   /**
    * Resilient Streaming Markdown-to-HTML parser.
@@ -331,6 +342,49 @@ export const MessageBubble = ({
             <span className="inline-block w-2 h-4 ml-1 bg-cyan-400 animate-pulse align-middle" />
           )}
         </div>
+
+        {/* Assistant Bottom Utility Bar */}
+        {isAssistant && Boolean(message.content) && !isStreaming && (
+          <div className="mt-2.5 pt-2 flex items-center justify-between text-[11px] text-slate-400 select-none border-t border-white/5">
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={handleCopyMessage}
+                className="flex items-center gap-1 px-2 py-0.5 rounded-md hover:bg-white/5 hover:text-cyan-300 transition-colors cursor-pointer"
+                title="Copy response"
+              >
+                {copiedMessage ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                <span>{copiedMessage ? 'Copied' : 'Copy'}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setFeedback(feedback === 'like' ? null : 'like')}
+                className={`p-1 rounded-md hover:bg-white/5 transition-colors cursor-pointer ${
+                  feedback === 'like' ? 'text-emerald-400' : 'hover:text-slate-200'
+                }`}
+                title="Helpful response"
+              >
+                <ThumbsUp className="w-3 h-3" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setFeedback(feedback === 'dislike' ? null : 'dislike')}
+                className={`p-1 rounded-md hover:bg-white/5 transition-colors cursor-pointer ${
+                  feedback === 'dislike' ? 'text-rose-400' : 'hover:text-slate-200'
+                }`}
+                title="Report issue"
+              >
+                <ThumbsDown className="w-3 h-3" />
+              </button>
+            </div>
+
+            {message.model && (
+              <span className="font-mono text-[10px] text-slate-500">
+                {message.model}
+              </span>
+            )}
+          </div>
+        )}
 
         {/* Dynamic Contextual Suggestions (ChatGPT-style) */}
         {isAssistant && message.suggestions && message.suggestions.length > 0 && !message.isThinking && (

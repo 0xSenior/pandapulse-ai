@@ -12,6 +12,8 @@ import {
   Layers,
   Play,
   Cpu,
+  Wrench,
+  CheckCircle2,
 } from 'lucide-react';
 import { GlassCard } from '../ui/GlassCard';
 
@@ -19,82 +21,114 @@ const FEATURES = [
   {
     icon: Code2,
     title: 'Python Core & Data Structures',
-    subtitle: 'Collections, Generators, OOP & Typing',
-    description: 'Generates clean, production-grade Python code: Big-O optimized collections (list, dict, set, deque), lazy generators with yield, immutable dataclasses(slots=True), and strict type hints.',
-    arabicSummary: 'هياكل بيانات متقدمة، مولدات كسولة لتوفير الذاكرة، وأنماط كائنية OOP حديثة.',
-    badge: 'Python 3.12+ Core',
+    subtitle: 'Big-O Optimized Foundations',
+    summary: 'Generates clean, idiomatic Python with Big-O optimal collections, lazy evaluation, and strict typing.',
+    badge: 'Python 3.12+',
     color: 'text-cyan-400',
     border: 'border-cyan-500/20',
+    specs: [
+      { icon: Zap, label: 'Big-O Optimal Collections' },
+      { icon: Cpu, label: 'Lazy Yield Generators' },
+      { icon: ShieldCheck, label: 'Slots Dataclasses' },
+    ],
   },
   {
     icon: Database,
     title: 'Modern Pandas 2.0+ & PyArrow',
-    subtitle: 'Apache Arrow Engine & 70% Less Memory',
-    description: 'Harness native PyArrow-backed DataFrames: eliminate string memory bloat by up to 70%, utilize native nulls (pd.NA), and benefit from SIMD vector acceleration on multi-core CPUs.',
-    arabicSummary: 'محرك Apache Arrow المدمج وتوفير الذاكرة والتعامل مع القيم الفارغة pd.NA.',
-    badge: 'Pandas 2.0+ Arrow',
+    subtitle: 'Apache Arrow Accelerated',
+    summary: 'Native PyArrow-backed DataFrames with SIMD vector acceleration and native null handling.',
+    badge: 'Arrow Engine',
     color: 'text-amber-400',
     border: 'border-amber-500/20',
+    specs: [
+      { icon: Zap, label: '70% Memory Reduction' },
+      { icon: Database, label: 'Native pd.NA Support' },
+      { icon: Cpu, label: 'SIMD Multi-Core Vector' },
+    ],
   },
   {
     icon: ShieldCheck,
     title: 'Strict Deprecation Shield',
-    subtitle: 'Zero df.append() & Zero .ix Indexing',
-    description: 'Enforces modern APIs: replaces removed df.append() with vectorized pd.concat(), eliminates removed .ix with explicit .loc/.iloc, and prevents SettingWithCopyWarning via Copy-on-Write.',
-    arabicSummary: 'منع الدوال الملغية نهائياً والاعتماد على pd.concat و .loc وحماية CoW.',
-    badge: 'Zero Deprecated APIs',
+    subtitle: 'Zero Legacy Syntax',
+    summary: 'Permanently eliminates removed methods, enforcing modern vector alternatives and copy safety.',
+    badge: 'Zero Deprecations',
     color: 'text-blue-400',
     border: 'border-blue-500/20',
+    specs: [
+      { icon: ShieldCheck, label: 'No df.append or .ix' },
+      { icon: Layers, label: 'Vectorized pd.concat' },
+      { icon: Lock, label: 'Copy-on-Write (CoW)' },
+    ],
   },
   {
     icon: BookCheck,
-    title: 'Grounded Neural RAG (ChromaDB)',
-    subtitle: 'Verified Citations & Semantic Retrieval',
-    description: 'Semantic vector retrieval against authoritative Python and Pandas documentation chunks ensures every code pattern is verifiable with zero hallucinated methods or parameters.',
-    arabicSummary: 'استرجاع متجهي دقيق عبر ChromaDB واستشهادات رسمية بالوثائق الفنية.',
+    title: 'Grounded Neural RAG',
+    subtitle: 'ChromaDB Vector Retrieval',
+    summary: 'Authoritative documentation chunks ground every code snippet with verifiable source citations.',
     badge: 'Verified Citations',
     color: 'text-indigo-400',
     border: 'border-indigo-500/20',
+    specs: [
+      { icon: BookCheck, label: 'ChromaDB Vector Store' },
+      { icon: Sparkles, label: 'Zero Hallucinations' },
+      { icon: Layers, label: 'Official Doc Sources' },
+    ],
   },
   {
     icon: Radio,
-    title: 'Real-Time Streaming & Deep Reasoning',
-    subtitle: 'Low-Latency SSE with Chain-of-Thought',
-    description: 'FastAPI Server-Sent Events stream tokens in real-time, displaying intellectual step-by-step thinking (ChatGPT / DeepSeek style) with syntax-highlighted code blocks.',
-    arabicSummary: 'بث تدفقي فوري عبر SSE مع إظهار خطوات التفكير والتحليل المنطقي.',
-    badge: 'Real-time SSE',
+    title: 'Real-Time Streaming Engine',
+    subtitle: 'Low-Latency SSE Pipeline',
+    summary: 'FastAPI Server-Sent Events stream tokens in real time with transparent step-by-step reasoning.',
+    badge: 'SSE Streaming',
     color: 'text-emerald-400',
     border: 'border-emerald-500/20',
+    specs: [
+      { icon: Radio, label: 'FastAPI Event Stream' },
+      { icon: Cpu, label: 'Chain-of-Thought Trace' },
+      { icon: Zap, label: 'Token by Token Feed' },
+    ],
   },
   {
     icon: Layers,
-    title: 'Clean Architecture & O(1) Cache',
-    subtitle: 'SOLID Decoupling with SHA-256 LRU Cache',
-    description: 'Clean Architecture guarantees pure Python domain isolation, while deterministic SHA-256 query caching delivers instantaneous <0.8ms sub-millisecond responses on cache hits.',
-    arabicSummary: 'بنية برمجية معمارية نظيفة (SOLID) وذاكرة كاش سريعة دون أجزاء وهمية.',
-    badge: 'Clean Architecture',
+    title: 'Clean Architecture & Cache',
+    subtitle: 'SOLID Decoupled Domain',
+    summary: 'Pure Python domain isolation paired with deterministic SHA-256 query caching for sub-millisecond lookups.',
+    badge: 'Clean SOLID',
     color: 'text-purple-400',
     border: 'border-purple-500/20',
+    specs: [
+      { icon: Layers, label: 'Decoupled Interfaces' },
+      { icon: Zap, label: 'SHA-256 LRU Cache' },
+      { icon: Cpu, label: '<0.8ms Lookup Speed' },
+    ],
   },
   {
     icon: Play,
     title: 'Client-Side WebAssembly Execution',
-    subtitle: 'Run Python 3.12 & Pandas in Browser (Pyodide)',
-    description: 'Execute generated Python scripts directly in your browser with zero server latency. Renders live interactive DataFrames, Matplotlib charts, and features 1-click Auto-Fix with AI.',
-    arabicSummary: 'تشغيل أكواد بايثون وبانداس حياً في المتصفح عبر WebAssembly مع جداول تفاعلية ورسوم بيانية.',
-    badge: 'WebAssembly WASM',
+    subtitle: 'In-Browser Pyodide Runtime',
+    summary: 'Run Python 3.12 and Pandas directly in browser sandboxes with live interactive DataFrames and charts.',
+    badge: 'Pyodide WASM',
     color: 'text-rose-400',
     border: 'border-rose-500/20',
+    specs: [
+      { icon: Play, label: 'Zero Server Execution' },
+      { icon: Database, label: 'Interactive DataFrames' },
+      { icon: Wrench, label: '1-Click Auto-Fix' },
+    ],
   },
   {
     icon: Cpu,
-    title: 'Hybrid Retrieval & Multi-Model Engine',
-    subtitle: 'BM25 Keyword Search + ChromaDB + RRF Re-ranking',
-    description: 'Combines dense vector embeddings with sparse BM25 lexical matching via Reciprocal Rank Fusion (RRF). Seamlessly switch between local private Ollama and ultra-fast Groq Cloud.',
-    arabicSummary: 'بحث هجين يجمع بين المعجمي والمتجهي مع دعم التبديل بين المحرك المحلي والسحابي.',
-    badge: 'Hybrid RRF & Multi-Model',
+    title: 'Hybrid Retrieval & Multi-Model',
+    subtitle: 'Lexical + Semantic RRF',
+    summary: 'Combines dense embeddings with sparse BM25 lexical matching, switching between local Ollama and Groq Cloud.',
+    badge: 'Hybrid RRF',
     color: 'text-amber-400',
     border: 'border-amber-500/20',
+    specs: [
+      { icon: Database, label: 'BM25 + ChromaDB' },
+      { icon: Layers, label: 'RRF Rank Fusion' },
+      { icon: Cpu, label: 'Multi-Model Switcher' },
+    ],
   },
 ];
 
@@ -102,15 +136,19 @@ export const FeatureGrid = () => {
   return (
     <section className="py-16 px-6 max-w-7xl mx-auto">
       <div className="text-center mb-14">
-        <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-4">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-xs font-mono text-cyan-300 mb-3">
+          <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+          <span>Verified Engineering Standards</span>
+        </div>
+        <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-3">
           Core Capabilities for <span className="text-gradient-cyan">Python & Modern Pandas</span>
         </h2>
-        <p className="text-slate-400 max-w-2xl mx-auto text-base">
-          معلومات تقنية حقيقية ومعايير هندسية معتمدة: من كتابة أكواد بايثون النظيفة والخوارزميات إلى بناء خطوط معالجة البيانات الضخمة في Pandas 2.0+ بكفاءة وأمان تام.
+        <p className="text-slate-400 max-w-2xl mx-auto text-sm sm:text-base">
+          معايير برمجية وهندسية دقيقة: من كتابة خوارزميات بايثون النظيفة إلى خطوط معالجة البيانات الضخمة في Pandas 2.0+ بكفاءة وأمان كامل.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         {FEATURES.map((feat, idx) => {
           const Icon = feat.icon;
           return (
@@ -119,35 +157,44 @@ export const FeatureGrid = () => {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: idx * 0.08 }}
+              transition={{ duration: 0.35, delay: idx * 0.05 }}
             >
-              <GlassCard className="h-full flex flex-col justify-between hover:border-cyan-400/30">
+              <GlassCard className="h-full flex flex-col justify-between p-5 hover:border-cyan-400/40 transition-colors">
                 <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className={`p-3 rounded-xl bg-white/[0.05] border ${feat.border}`}>
-                      <Icon className={`w-6 h-6 ${feat.color}`} />
+                  <div className="flex items-center justify-between mb-3.5">
+                    <div className={`p-2.5 rounded-xl bg-white/[0.05] border ${feat.border}`}>
+                      <Icon className={`w-5 h-5 ${feat.color}`} />
                     </div>
-                    <span className="text-[11px] font-sans font-medium px-2.5 py-1 rounded-full bg-white/[0.04] text-slate-300 border border-white/10">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/[0.04] text-slate-300 border border-white/10">
                       {feat.badge}
                     </span>
                   </div>
 
-                  <h3 className="text-xl font-bold text-white mb-1 font-sans">
+                  <h3 className="text-base font-bold text-white mb-0.5 font-sans">
                     {feat.title}
                   </h3>
-                  <p className="text-xs text-cyan-400/90 font-medium mb-3">
+                  <p className="text-xs text-cyan-400/90 font-medium mb-2.5">
                     {feat.subtitle}
                   </p>
-                  <p className="text-sm text-slate-300 leading-relaxed mb-3">
-                    {feat.description}
+                  <p className="text-xs text-slate-300 leading-relaxed mb-4">
+                    {feat.summary}
                   </p>
-                  {feat.arabicSummary && (
-                    <div className="pt-2.5 mt-2 border-t border-white/5">
-                      <p className="text-xs text-cyan-300/80 font-sans leading-relaxed text-right" dir="rtl">
-                        {feat.arabicSummary}
-                      </p>
-                    </div>
-                  )}
+                </div>
+
+                {/* Technical Specs Tags with SVG Icons */}
+                <div className="pt-3 border-t border-white/5 space-y-1.5">
+                  {feat.specs.map((spec, sIdx) => {
+                    const SpecIcon = spec.icon;
+                    return (
+                      <div
+                        key={sIdx}
+                        className="flex items-center gap-2 px-2.5 py-1 rounded-lg bg-slate-900/60 border border-white/5 text-[11px] text-slate-300"
+                      >
+                        <SpecIcon className={`w-3.5 h-3.5 shrink-0 ${feat.color}`} />
+                        <span className="font-mono text-[11px] truncate">{spec.label}</span>
+                      </div>
+                    );
+                  })}
                 </div>
               </GlassCard>
             </motion.div>

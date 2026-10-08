@@ -7,6 +7,12 @@ import {
   Maximize2,
   Minimize2,
   FileSpreadsheet,
+  Code2,
+  Layers,
+  ShieldCheck,
+  Cpu,
+  Zap,
+  Database,
 } from 'lucide-react';
 import { MessageBubble } from './MessageBubble';
 import { SourceDrawer } from './SourceDrawer';
@@ -16,12 +22,42 @@ import { DataStudio } from '../studio/DataStudio';
 import { useChatStream } from '../../hooks/useChatStream';
 
 const QUICK_PROMPTS = [
-  'Write clean Python functions with type hints and exception handling',
-  'Concatenate DataFrames without deprecated append in Pandas 2.0+',
-  'Enable Copy-on-Write to eliminate SettingWithCopyWarning',
-  'Compare memory overhead: List vs. Generator in Python',
-  'Accelerate Pandas queries with PyArrow and ArrowDtype',
-  'Perform Named Aggregations in GroupBy with custom metric names',
+  {
+    icon: Code2,
+    color: 'text-cyan-400',
+    label: 'Functions & Typing',
+    prompt: 'Write clean Python functions with type hints and exception handling',
+  },
+  {
+    icon: Layers,
+    color: 'text-amber-400',
+    label: 'Pandas 2.0 Concat',
+    prompt: 'Concatenate DataFrames without deprecated append in Pandas 2.0+',
+  },
+  {
+    icon: ShieldCheck,
+    color: 'text-emerald-400',
+    label: 'Copy-on-Write Safe',
+    prompt: 'Enable Copy-on-Write to eliminate SettingWithCopyWarning',
+  },
+  {
+    icon: Cpu,
+    color: 'text-purple-400',
+    label: 'List vs Generator RAM',
+    prompt: 'Compare memory overhead: List vs. Generator in Python',
+  },
+  {
+    icon: Zap,
+    color: 'text-blue-400',
+    label: 'PyArrow SIMD Speed',
+    prompt: 'Accelerate Pandas queries with PyArrow and ArrowDtype',
+  },
+  {
+    icon: Database,
+    color: 'text-rose-400',
+    label: 'GroupBy Named Agg',
+    prompt: 'Perform Named Aggregations in GroupBy with custom metric names',
+  },
 ];
 
 export const ChatContainer = ({ initialPrompt = '', onClearInitialPrompt }) => {
@@ -157,20 +193,27 @@ export const ChatContainer = ({ initialPrompt = '', onClearInitialPrompt }) => {
           </div>
 
           {/* Suggested Quick Prompts */}
-          <div className="pt-2 pb-1.5 flex items-center gap-2 overflow-x-auto no-scrollbar shrink-0">
-            <Sparkles className="w-4 h-4 text-cyan-400 shrink-0" />
-            <span className="text-xs text-slate-400 shrink-0 font-medium">Quick Prompts:</span>
-            {QUICK_PROMPTS.map((prompt) => (
-              <button
-                key={prompt}
-                type="button"
-                onClick={() => handleQuickPrompt(prompt)}
-                disabled={isStreaming}
-                className="text-xs whitespace-nowrap px-3 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 hover:text-cyan-300 border border-white/10 hover:border-cyan-400/40 transition-all cursor-pointer disabled:opacity-50"
-              >
-                {prompt}
-              </button>
-            ))}
+          <div className="pt-2 pb-1.5 flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0">
+            <span className="flex items-center gap-1 text-[11px] text-slate-400 shrink-0 font-medium font-mono px-2 py-1 rounded-md bg-white/[0.03] border border-white/5">
+              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+              <span className="hidden sm:inline">Shortcuts</span>
+            </span>
+            {QUICK_PROMPTS.map((item) => {
+              const PromptIcon = item.icon;
+              return (
+                <button
+                  key={item.label}
+                  type="button"
+                  onClick={() => handleQuickPrompt(item.prompt)}
+                  disabled={isStreaming}
+                  title={item.prompt}
+                  className="group flex items-center gap-1.5 text-xs whitespace-nowrap px-2.5 py-1.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-white/10 hover:border-cyan-400/40 transition-all cursor-pointer disabled:opacity-50 shadow-sm"
+                >
+                  <PromptIcon className={`w-3.5 h-3.5 ${item.color} group-hover:scale-110 transition-transform`} />
+                  <span className="font-sans text-[12px]">{item.label}</span>
+                </button>
+              );
+            })}
           </div>
 
           {/* Dataset Drag & Drop Bar */}

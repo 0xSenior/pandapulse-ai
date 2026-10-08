@@ -3,6 +3,28 @@ import { motion } from 'framer-motion';
 import { Layers, Database, Code2, CheckCircle2, XCircle, AlertTriangle, ArrowRight, Table, Cpu, ShieldCheck } from 'lucide-react';
 import { GlassCard } from '../ui/GlassCard';
 
+const BigOBadge = ({ value }) => {
+  if (value.includes('O(1)')) {
+    return (
+      <span className="inline-flex items-center px-2 py-0.5 rounded font-mono text-[11px] font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+        {value}
+      </span>
+    );
+  }
+  if (value.includes('O(n)')) {
+    return (
+      <span className="inline-flex items-center px-2 py-0.5 rounded font-mono text-[11px] font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30">
+        {value}
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center px-2 py-0.5 rounded font-mono text-[11px] text-slate-400 bg-white/5 border border-white/10">
+      {value}
+    </span>
+  );
+};
+
 export const TechnicalSpecsSection = ({ onTryPrompt }) => {
   const [activeSpec, setActiveSpec] = useState('pandas-matrix'); // 'pandas-matrix' | 'python-matrix'
 
@@ -224,10 +246,10 @@ export const TechnicalSpecsSection = ({ onTryPrompt }) => {
                   <td className="py-4 px-6 font-mono font-semibold text-cyan-300">
                     list
                   </td>
-                  <td className="py-4 px-4 font-mono text-emerald-400 font-bold">$O(1)$</td>
-                  <td className="py-4 px-4 font-mono text-amber-400">$O(n)$</td>
-                  <td className="py-4 px-4 font-mono text-emerald-400 font-bold">$O(1)$ amortized</td>
-                  <td className="py-4 px-4 font-mono text-rose-400">$O(n)$</td>
+                  <td className="py-4 px-4 font-mono"><BigOBadge value="O(1)" /></td>
+                  <td className="py-4 px-4 font-mono"><BigOBadge value="O(n)" /></td>
+                  <td className="py-4 px-4 font-mono"><BigOBadge value="O(1) amortized" /></td>
+                  <td className="py-4 px-4 font-mono"><BigOBadge value="O(n)" /></td>
                   <td className="py-4 px-6 text-xs text-slate-300">
                     Sequential access, ordered collections where index position matters.
                   </td>
@@ -237,10 +259,10 @@ export const TechnicalSpecsSection = ({ onTryPrompt }) => {
                   <td className="py-4 px-6 font-mono font-semibold text-cyan-300">
                     dict (Hash Table)
                   </td>
-                  <td className="py-4 px-4 font-mono text-slate-400">N/A (Key $O(1)$)</td>
-                  <td className="py-4 px-4 font-mono text-emerald-400 font-bold">$O(1)$ average</td>
-                  <td className="py-4 px-4 font-mono text-emerald-400 font-bold">$O(1)$ average</td>
-                  <td className="py-4 px-4 font-mono text-emerald-400 font-bold">$O(1)$ average</td>
+                  <td className="py-4 px-4 font-mono text-slate-400"><BigOBadge value="Key O(1)" /></td>
+                  <td className="py-4 px-4 font-mono"><BigOBadge value="O(1) avg" /></td>
+                  <td className="py-4 px-4 font-mono"><BigOBadge value="O(1) avg" /></td>
+                  <td className="py-4 px-4 font-mono"><BigOBadge value="O(1) avg" /></td>
                   <td className="py-4 px-6 text-xs text-slate-300">
                     High-frequency key lookups, hash mapping, caching, fast entity retrieval.
                   </td>
@@ -250,10 +272,10 @@ export const TechnicalSpecsSection = ({ onTryPrompt }) => {
                   <td className="py-4 px-6 font-mono font-semibold text-cyan-300">
                     set (Hash Set)
                   </td>
-                  <td className="py-4 px-4 font-mono text-slate-400">N/A</td>
-                  <td className="py-4 px-4 font-mono text-emerald-400 font-bold">$O(1)$ average</td>
-                  <td className="py-4 px-4 font-mono text-emerald-400 font-bold">$O(1)$ average</td>
-                  <td className="py-4 px-4 font-mono text-emerald-400 font-bold">$O(1)$ average</td>
+                  <td className="py-4 px-4 font-mono text-slate-400"><BigOBadge value="N/A" /></td>
+                  <td className="py-4 px-4 font-mono"><BigOBadge value="O(1) avg" /></td>
+                  <td className="py-4 px-4 font-mono"><BigOBadge value="O(1) avg" /></td>
+                  <td className="py-4 px-4 font-mono"><BigOBadge value="O(1) avg" /></td>
                   <td className="py-4 px-6 text-xs text-slate-300">
                     Deduplication, membership verification, mathematical union/intersection.
                   </td>
@@ -263,10 +285,10 @@ export const TechnicalSpecsSection = ({ onTryPrompt }) => {
                   <td className="py-4 px-6 font-mono font-semibold text-cyan-300">
                     collections.deque
                   </td>
-                  <td className="py-4 px-4 font-mono text-amber-400">$O(n)$</td>
-                  <td className="py-4 px-4 font-mono text-amber-400">$O(n)$</td>
-                  <td className="py-4 px-4 font-mono text-emerald-400 font-bold">$O(1)$ (Both ends)</td>
-                  <td className="py-4 px-4 font-mono text-rose-400">$O(n)$</td>
+                  <td className="py-4 px-4 font-mono"><BigOBadge value="O(n)" /></td>
+                  <td className="py-4 px-4 font-mono"><BigOBadge value="O(n)" /></td>
+                  <td className="py-4 px-4 font-mono"><BigOBadge value="O(1) ends" /></td>
+                  <td className="py-4 px-4 font-mono"><BigOBadge value="O(n)" /></td>
                   <td className="py-4 px-6 text-xs text-slate-300">
                     Sliding window buffers (<code className="text-cyan-400">maxlen</code>), FIFO queues, double-ended stacks.
                   </td>
@@ -276,10 +298,10 @@ export const TechnicalSpecsSection = ({ onTryPrompt }) => {
                   <td className="py-4 px-6 font-mono font-semibold text-cyan-300">
                     tuple
                   </td>
-                  <td className="py-4 px-4 font-mono text-emerald-400 font-bold">$O(1)$</td>
-                  <td className="py-4 px-4 font-mono text-amber-400">$O(n)$</td>
-                  <td className="py-4 px-4 font-mono text-slate-400">Immutable</td>
-                  <td className="py-4 px-4 font-mono text-slate-400">Immutable</td>
+                  <td className="py-4 px-4 font-mono"><BigOBadge value="O(1)" /></td>
+                  <td className="py-4 px-4 font-mono"><BigOBadge value="O(n)" /></td>
+                  <td className="py-4 px-4 font-mono"><BigOBadge value="Immutable" /></td>
+                  <td className="py-4 px-4 font-mono"><BigOBadge value="Immutable" /></td>
                   <td className="py-4 px-6 text-xs text-slate-300">
                     Immutable records, dictionary keys, defensive data passing across threads.
                   </td>
