@@ -62,30 +62,15 @@ def dispatch_action(metric: DataMetric) -> str:
     code: `import pandas as pd
 import numpy as np
 
-# ==============================================================
-# ❌ DEPRECATED / REMOVED in Pandas 2.0+    | ✅ MODERN PRODUCTION IDIOM
-# ==============================================================
-
-# 1. Row Concatenation (df.append was COMPLETELY REMOVED!)
-# ❌ df = df.append(new_row, ignore_index=True)  # Raises AttributeError!
-# ✅ Use vectorized pd.concat:
 df = pd.concat([df_existing, df_new_batch], ignore_index=True)
 
-# 2. Indexing (.ix was COMPLETELY REMOVED!)
-# ❌ df.ix[0:5, 'price']                         # Raises AttributeError!
-# ✅ Explicit distinction between label and integer position:
 label_subset = df.loc[df['price'] > 100.0, ['ticker', 'volume']]
 position_subset = df.iloc[0:5, 0:2]
 
-# 3. Array Extraction (df.values is discouraged!)
-# ❌ matrix = df.values                          # Inconsistent dtype conversions
-# ✅ Modern clean conversion:
 matrix = df.to_numpy()
 
-# 4. Global Copy-on-Write (Eliminates SettingWithCopyWarning entirely)
 pd.options.mode.copy_on_write = True
 view_slice = df[df['status'] == 'ACTIVE']
-# Under CoW, modifying view_slice is 100% safe and will NEVER corrupt df!
 view_slice.loc[:, 'status'] = 'PROCESSED'`,
     highlights: [
         'df.append() is permanently removed. pd.concat is vectorized and O(n) linear.',
