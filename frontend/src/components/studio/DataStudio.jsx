@@ -149,23 +149,21 @@ export const DataStudio = ({
   return (
     <div className="flex flex-col h-full bg-slate-950/95 border border-cyan-500/20 rounded-2xl shadow-2xl overflow-hidden font-sans">
       {/* Studio Header Toolbar */}
-      <div className="flex items-center justify-between px-4 py-3 bg-slate-900/90 border-b border-white/10 select-none">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-cyan-500/20 text-cyan-300 flex items-center justify-center">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-3.5 py-2.5 bg-slate-900/90 border-b border-white/10 select-none min-w-0">
+        <div className="flex items-center gap-2 shrink-0">
+          <div className="w-7 h-7 rounded-lg bg-cyan-500/20 text-cyan-300 flex items-center justify-center shrink-0">
             <FileCode className="w-4 h-4" />
           </div>
-          <div>
-            <h3 className="text-sm font-bold text-white tracking-tight flex items-center gap-2">
-              <span>PandaPulse Studio Canvas</span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-400 font-mono border border-cyan-800/40">
-                WASM Python 3.12
-              </span>
-            </h3>
-          </div>
+          <span className="text-sm font-bold text-white tracking-tight whitespace-nowrap">
+            Studio Canvas
+          </span>
+          <span className="hidden sm:inline-block text-[10px] px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-400 font-mono border border-cyan-800/40 whitespace-nowrap">
+            Python 3.12
+          </span>
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 shrink-0 ml-auto">
           {/* Quick Snippets Dropdown */}
           <select
             onChange={(e) => {
@@ -173,44 +171,44 @@ export const DataStudio = ({
                 setCode(STARTER_SNIPPETS[e.target.value]);
               }
             }}
-            className="hidden sm:block text-xs bg-slate-800 text-slate-300 border border-white/10 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-cyan-500/50 cursor-pointer"
+            className="text-xs bg-slate-800 text-slate-300 border border-white/10 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-cyan-500/50 cursor-pointer max-w-[130px] sm:max-w-[170px] truncate"
           >
-            <option value="modern_pandas">Template: Pandas 2.0 Concat</option>
-            <option value="pyarrow_perf">Template: PyArrow High Speed</option>
-            <option value="visualization">Template: Matplotlib Chart</option>
+            <option value="modern_pandas">Pandas 2.0 Concat</option>
+            <option value="pyarrow_perf">PyArrow Speed</option>
+            <option value="visualization">Matplotlib Chart</option>
           </select>
 
           {/* Copy Button */}
           <button
             type="button"
             onClick={handleCopy}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white text-xs transition-colors cursor-pointer"
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white text-xs transition-colors cursor-pointer"
             title="Copy Code"
           >
             {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-            <span className="hidden md:inline">{copied ? 'Copied' : 'Copy'}</span>
+            <span className="hidden xl:inline">{copied ? 'Copied' : 'Copy'}</span>
           </button>
 
           {/* Export Jupyter */}
           <button
             type="button"
             onClick={handleExportNotebook}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-cyan-300 text-xs transition-colors cursor-pointer"
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-cyan-300 text-xs transition-colors cursor-pointer"
             title="Export as Jupyter Notebook (.ipynb)"
           >
             <Download className="w-3.5 h-3.5 text-cyan-400" />
-            <span className="hidden md:inline">.ipynb</span>
+            <span className="hidden sm:inline">.ipynb</span>
           </button>
 
           {/* Export Python */}
           <button
             type="button"
             onClick={handleExportScript}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-cyan-300 text-xs transition-colors cursor-pointer"
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-blue-400 text-xs transition-colors cursor-pointer"
             title="Export as Python Script (.py)"
           >
             <Download className="w-3.5 h-3.5 text-blue-400" />
-            <span className="hidden md:inline">.py</span>
+            <span className="hidden sm:inline">.py</span>
           </button>
 
           {/* Run Code Button */}
@@ -218,7 +216,7 @@ export const DataStudio = ({
             type="button"
             onClick={handleRun}
             disabled={isRunning}
-            className="flex items-center gap-2 px-4 py-1.5 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-semibold text-xs shadow-lg shadow-cyan-900/40 transition-all cursor-pointer disabled:opacity-50"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-semibold text-xs shadow-lg shadow-cyan-900/40 transition-all cursor-pointer disabled:opacity-50 whitespace-nowrap"
           >
             {isRunning ? (
               <>
@@ -228,7 +226,7 @@ export const DataStudio = ({
             ) : (
               <>
                 <Play className="w-3.5 h-3.5 fill-current" />
-                <span>Run Pipeline</span>
+                <span>Run</span>
               </>
             )}
           </button>
@@ -236,8 +234,8 @@ export const DataStudio = ({
       </div>
 
       {/* Tabs Bar */}
-      <div className="flex items-center justify-between px-4 py-1.5 bg-slate-900/60 border-b border-white/5 text-xs font-mono">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-3.5 py-1.5 bg-slate-900/60 border-b border-white/5 text-xs font-mono">
+        <div className="flex items-center gap-1.5">
           <button
             type="button"
             onClick={() => setActiveTab('editor')}
@@ -286,11 +284,12 @@ export const DataStudio = ({
 
         {/* Runtime Status */}
         {result?.durationMs !== undefined && (
-          <span className="text-[11px] text-slate-400">
+          <span className="text-[11px] text-slate-400 font-mono">
             Last run: {result.durationMs}ms
           </span>
         )}
       </div>
+
 
       {/* Main Workspace Area */}
       <div className="flex-1 overflow-auto p-3">

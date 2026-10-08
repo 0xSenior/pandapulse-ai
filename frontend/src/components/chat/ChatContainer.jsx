@@ -135,7 +135,7 @@ export const ChatContainer = ({ initialPrompt = '', onClearInitialPrompt }) => {
       <div className="flex-1 flex overflow-hidden gap-3">
         {/* Left Column: Chat Assistant */}
         <div
-          className={`flex flex-col h-full transition-all duration-300 ${
+          className={`flex flex-col h-full min-w-0 transition-all duration-300 ${
             isStudioOpen ? 'w-full lg:w-1/2' : 'w-full max-w-4xl mx-auto'
           }`}
         >
@@ -216,7 +216,7 @@ export const ChatContainer = ({ initialPrompt = '', onClearInitialPrompt }) => {
 
         {/* Right Column: Split-Screen Data Studio Canvas */}
         {isStudioOpen && (
-          <div className="hidden lg:block w-1/2 h-full">
+          <div className="hidden lg:block w-1/2 h-full min-w-0">
             <DataStudio
               initialCode={studioCode}
               onAskAI={(q) => sendMessage(q, 3, selectedModel)}
