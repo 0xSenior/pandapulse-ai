@@ -13,13 +13,16 @@ import {
   Cpu,
   Zap,
   Database,
+  Paperclip,
+  X,
+  Loader2,
 } from 'lucide-react';
 import { MessageBubble } from './MessageBubble';
 import { SourceDrawer } from './SourceDrawer';
 import { ModelSelector } from './ModelSelector';
-import { DatasetUploader } from './DatasetUploader';
 import { DataStudio } from '../studio/DataStudio';
 import { useChatStream } from '../../hooks/useChatStream';
+import { mountDataset, executePythonCode } from '../../services/pyodideService';
 
 const QUICK_PROMPTS = [
   {
@@ -77,7 +80,12 @@ export const ChatContainer = ({ initialPrompt = '', onClearInitialPrompt }) => {
   const [studioCode, setStudioCode] = useState('');
   const [selectedModel, setSelectedModel] = useState(null);
   const [activeDataset, setActiveDataset] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState('');
+
   const messagesEndRef = useRef(null);
+  const textareaRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   // If initialPrompt was provided from Landing Page
   useEffect(() => {
@@ -95,11 +103,119 @@ export const ChatContainer = ({ initialPrompt = '', onClearInitialPrompt }) => {
     scrollToBottom();
   }, [messages]);
 
+  // Dynamic textarea height adjustment
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 160)}px`;
+    }
+  }, [input]);
+
+  const processFile = async (file) => {
+    if (!file) return;
+
+    setIsUploading(true);
+    setUploadStatus('Mounting dataset...');
+
+    try {
+      const mounted = await mountDataset(file, (p) => setUploadStatus(p.message));
+
+      setUploadStatus('Profiling schema...');
+      const profileCode = `
+import pandas as pd
+import json
+
+df = pd.read_csv('/data/${mounted.name}')
+schema_summary = {
+    "rows": int(len(df)),
+    "cols": int(len(df.columns)),
+    "columns": list(df.columns),
+    "dtypes": {c: str(d) for c, d in df.dtypes.items()},
+    "memory_kb": round(df.memory_usage(deep=True).sum() / 1024, 1),
+    "sample": json.loads(df.head(3).to_json(orient='records', default_handler=str))
+}
+import json as _j
+_j.dumps(schema_summary)
+`;
+      const execRes = await executePythonCode(profileCode);
+      let profile = {
+        rows: '?',
+        cols: '?',
+        columns: [],
+        dtypes: {},
+        memory_kb: 0,
+      };
+
+      if (execRes.success && execRes.stdout) {
+        try {
+          profile = JSON.parse(execRes.stdout.trim());
+        } catch {
+          // fallback schema
+        }
+      }
+
+      const datasetInfo = {
+        name: mounted.name,
+        path: `/data/${mounted.name}`,
+        sizeKb: Math.round(file.size / 1024),
+        rows: profile.rows,
+        cols: profile.cols,
+        columns: profile.columns,
+        dtypes: profile.dtypes,
+        memoryKb: profile.memory_kb,
+      };
+
+      setActiveDataset(datasetInfo);
+    } catch (err) {
+      console.error('Dataset loading failed:', err);
+      const basicInfo = {
+        name: file.name.replace(/\s+/g, '_'),
+        path: `/data/${file.name.replace(/\s+/g, '_')}`,
+        sizeKb: Math.round(file.size / 1024),
+        rows: 'N/A',
+        cols: 'N/A',
+        columns: [],
+        dtypes: {},
+      };
+      setActiveDataset(basicInfo);
+    } finally {
+      setIsUploading(false);
+      setUploadStatus('');
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) processFile(file);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files?.[0];
+    if (file) processFile(file);
+  };
+
+  const clearDataset = () => {
+    setActiveDataset(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
   const handleSubmit = (e) => {
     e?.preventDefault();
-    if (!input.trim() || isStreaming) return;
-    sendMessage(input, 3, selectedModel);
+    if (isStreaming) return;
+    const trimmed = input.trim();
+    if (!trimmed && !activeDataset) return;
+
+    const messageText = trimmed || (activeDataset
+      ? `Analyze dataset '${activeDataset.path}' with ${activeDataset.rows} rows and ${activeDataset.cols} columns. Columns: [${(activeDataset.columns || []).join(', ')}]. Provide an overview and modern Pandas 2.0+ operations.`
+      : '');
+
+    if (!messageText) return;
+    sendMessage(messageText, 3, selectedModel);
     setInput('');
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+    }
   };
 
   const handleQuickPrompt = (promptText) => {
@@ -216,40 +332,113 @@ export const ChatContainer = ({ initialPrompt = '', onClearInitialPrompt }) => {
             })}
           </div>
 
-          {/* Dataset Drag & Drop Bar */}
-          <div className="pb-1.5 shrink-0">
-            <DatasetUploader
-              onDatasetLoaded={(ds) => {
-                setActiveDataset(ds);
-                const dsPrompt = `I loaded dataset '/data/${ds.name}' (${ds.rows} rows, ${ds.cols} columns). Columns: [${(ds.columns || []).join(', ')}]. Provide an overview of this dataset and suggest the best modern Pandas 2.0+ operations for it.`;
-                handleQuickPrompt(dsPrompt);
+          {/* Unified ChatGPT Input Box */}
+          <form
+            onSubmit={handleSubmit}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={handleDrop}
+            className="relative mt-1 shrink-0 rounded-2xl sm:rounded-3xl bg-slate-900/90 border border-white/10 hover:border-white/15 focus-within:border-cyan-500/40 focus-within:ring-2 focus-within:ring-cyan-500/10 shadow-2xl transition-all p-2.5 sm:p-3 backdrop-blur-xl"
+          >
+            {/* Embedded Attached Dataset Card */}
+            {activeDataset && (
+              <div className="mb-2 p-2 sm:p-2.5 rounded-xl bg-slate-800/80 border border-cyan-500/30 flex items-center justify-between gap-3 text-xs">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="w-8 h-8 rounded-lg bg-cyan-500/15 text-cyan-300 flex items-center justify-center shrink-0 border border-cyan-500/20">
+                    <FileSpreadsheet className="w-4 h-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-slate-100 truncate text-xs">{activeDataset.name}</span>
+                      <span className="px-1.5 py-0.5 rounded-md bg-cyan-950/80 text-cyan-300 font-mono text-[10px] border border-cyan-800/40 shrink-0">
+                        {activeDataset.rows} rows × {activeDataset.cols} cols
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 font-mono mt-0.5 truncate">
+                      {activeDataset.path} • {activeDataset.sizeKb} KB
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setInput(`Analyze dataset '${activeDataset.path}' with columns: [${(activeDataset.columns || []).slice(0, 8).join(', ')}]. Provide summary statistics, missing values, and modern Pandas 2.0+ operations.`);
+                    }}
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/20 transition-all cursor-pointer text-xs"
+                  >
+                    <Sparkles className="w-3 h-3 text-cyan-400" />
+                    <span className="hidden sm:inline">Auto-Analyze</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={clearDataset}
+                    className="p-1 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                    title="Remove dataset"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Seamless Textarea */}
+            <textarea
+              ref={textareaRef}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSubmit();
+                }
               }}
-              onInsertPrompt={(prompt) => setInput(prompt)}
+              placeholder="Ask anything about Python 3.x, modern Pandas 2.0+, or data engineering..."
+              rows={1}
+              disabled={isStreaming}
+              className="w-full bg-transparent px-2 py-1 text-sm sm:text-base text-slate-100 placeholder-slate-400/80 focus:outline-none resize-none font-sans min-h-[44px] max-h-40 leading-relaxed"
             />
-          </div>
 
-          {/* User Input Form */}
-          <form onSubmit={handleSubmit} className="relative mt-1 shrink-0">
-            <div className="relative flex items-center rounded-2xl glass-panel border border-white/15 focus-within:border-cyan-400/60 transition-all shadow-2xl bg-slate-900/85">
-              <textarea
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSubmit();
-                  }
-                }}
-                placeholder="Ask anything about Python 3.x, modern Pandas 2.0+, or data engineering..."
-                rows={1}
-                disabled={isStreaming}
-                className="w-full bg-transparent px-5 py-4 text-sm text-slate-100 placeholder-slate-400 focus:outline-none resize-none font-sans"
-              />
+            {/* Bottom Action Toolbar */}
+            <div className="flex items-center justify-between pt-1.5 border-t border-white/5">
+              {/* Left: Attach File & Status */}
+              <div className="flex items-center gap-2">
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  accept=".csv,.tsv,.json,.txt"
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploading}
+                  className="group flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-cyan-300 hover:bg-white/5 border border-transparent hover:border-white/10 transition-all cursor-pointer disabled:opacity-50"
+                  title="Attach CSV / Dataset"
+                >
+                  {isUploading ? (
+                    <Loader2 className="w-4 h-4 animate-spin text-cyan-400" />
+                  ) : (
+                    <Paperclip className="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform" />
+                  )}
+                  <span className="hidden sm:inline">
+                    {isUploading ? uploadStatus : 'Attach CSV'}
+                  </span>
+                </button>
+                {isUploading && (
+                  <span className="sm:hidden text-[11px] text-cyan-300 animate-pulse font-mono truncate max-w-[150px]">
+                    {uploadStatus}
+                  </span>
+                )}
+              </div>
 
+              {/* Right: Send Button */}
               <button
                 type="submit"
-                disabled={!input.trim() || isStreaming}
-                className="m-2 p-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold transition-all shadow-lg shadow-cyan-500/20 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shrink-0"
+                disabled={(!input.trim() && !activeDataset) || isStreaming}
+                className="p-2 sm:p-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold transition-all shadow-lg shadow-cyan-500/20 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer shrink-0"
+                title="Send prompt"
               >
                 <Send className="w-4 h-4" />
               </button>
