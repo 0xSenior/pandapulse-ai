@@ -89,23 +89,18 @@ export const ModelSelector = ({ selectedModel, onSelectModel }) => {
                       onSelectModel(model);
                       setIsOpen(false);
                     }}
-                    className={`w-full flex items-start justify-between p-2.5 rounded-xl text-left transition-colors cursor-pointer ${
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-left transition-colors cursor-pointer ${
                       isSelected ? 'bg-cyan-500/15 text-cyan-200' : 'hover:bg-slate-800/60 text-slate-300'
                     }`}
                   >
-                    <div className="space-y-0.5">
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-xs text-white">{model.name}</span>
-                        <span className="text-[10px] px-1.5 py-0.2 rounded bg-slate-800 text-cyan-400 font-mono border border-white/10">
-                          {model.badge || model.type}
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-slate-400 leading-tight">
-                        {model.description}
-                      </p>
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="font-semibold text-xs text-white truncate">{model.name}</span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-cyan-400 font-mono border border-white/10 shrink-0">
+                        {model.badge || model.type}
+                      </span>
                     </div>
 
-                    {isSelected && <Check className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />}
+                    {isSelected && <Check className="w-4 h-4 text-cyan-400 shrink-0 ml-2" />}
                   </button>
                 );
               })}
