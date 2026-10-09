@@ -93,7 +93,7 @@ export default function App() {
     <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-[#6799fe] selection:text-white font-sans antialiased relative">
       {/* DeepSeek Harness Top Navigation Bar */}
       <header className="sticky top-0 z-40 w-full backdrop-blur-xl bg-[#0a0a0a]/85 border-b border-white/[0.08] transition-all">
-        <div className="max-w-[1400px] w-full mx-auto px-4 sm:px-8 py-3 flex items-center justify-between gap-4">
+        <div className="max-w-[1800px] w-full mx-auto px-4 sm:px-8 py-2.5 flex items-center justify-between gap-4">
           {/* Brand Logo with Whale mascot + inverted HARNESS chip */}
           <div className="shrink-0 flex items-center">
             <BrandLogo onClick={() => handleNavigate('home')} />
@@ -256,7 +256,7 @@ export default function App() {
       <main
         className={`relative z-10 transition-all duration-300 ${
           isChatTab
-            ? 'px-2 sm:px-4 pb-24 md:pb-6 md:pl-24 max-w-[1600px] mx-auto'
+            ? 'w-full px-3 sm:px-6 md:pl-24 md:pr-6 h-[calc(100vh-58px)] overflow-hidden flex flex-col'
             : 'pb-24 md:pb-16'
         }`}
       >

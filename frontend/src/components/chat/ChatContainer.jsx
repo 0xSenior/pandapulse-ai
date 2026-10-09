@@ -295,9 +295,9 @@ _j.dumps(schema_summary)
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-85px)] w-full max-w-[1850px] mx-auto px-2 sm:px-4 pb-2 font-sans">
+    <div className="flex flex-col h-full w-full font-sans">
       {/* Top Header & Actions */}
-      <div className="flex flex-wrap items-center justify-between gap-3 py-2.5 mb-2 border-b border-white/[0.08] shrink-0">
+      <div className="flex flex-wrap items-center justify-between gap-3 py-2 px-1 mb-2 border-b border-white/[0.08] shrink-0">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]" />
@@ -392,11 +392,11 @@ _j.dumps(schema_summary)
       </div>
 
       {/* Main Workspace: Single Chat or Split-Screen Grid */}
-      <div className="flex-1 flex overflow-hidden gap-3">
+      <div className="flex-1 flex overflow-hidden gap-3 min-h-0">
         {/* Left Column: Chat Assistant */}
         <div
           className={`flex flex-col h-full min-w-0 transition-all duration-300 ${
-            isStudioOpen ? 'w-full lg:w-1/2' : 'w-full max-w-4xl mx-auto'
+            isStudioOpen ? 'w-full lg:w-1/2' : 'w-full max-w-5xl xl:max-w-6xl 2xl:max-w-[1360px] mx-auto'
           }`}
         >
           {/* Messages Stream Container */}
