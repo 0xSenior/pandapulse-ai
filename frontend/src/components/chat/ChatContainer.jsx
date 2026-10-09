@@ -295,7 +295,7 @@ _j.dumps(schema_summary)
   };
 
   return (
-    <div className="flex flex-col h-full w-full font-sans">
+    <div className="flex flex-col h-full w-full font-sans flex-1 min-h-0">
       {/* Top Header & Actions */}
       <div className="flex flex-wrap items-center justify-between gap-3 py-2 px-1 mb-2 border-b border-white/[0.08] shrink-0">
         <div className="flex items-center gap-3">
@@ -400,7 +400,7 @@ _j.dumps(schema_summary)
           }`}
         >
           {/* Messages Stream Container */}
-          <div className="flex-1 overflow-y-auto pr-2 space-y-4">
+          <div className="flex-1 overflow-y-auto pr-2 space-y-4 pb-4 min-h-0">
             {messages.map((msg, index) => (
               <MessageBubble
                 key={msg.id}
@@ -445,7 +445,7 @@ _j.dumps(schema_summary)
             onSubmit={handleSubmit}
             onDragOver={(e) => e.preventDefault()}
             onDrop={handleDrop}
-            className="relative mt-1 shrink-0 rounded-2xl bg-[#111111]/90 border border-white/[0.1] hover:border-white/20 focus-within:border-white/30 transition-all p-3 backdrop-blur-xl"
+            className="relative shrink-0 rounded-2xl bg-[#111111]/90 border border-white/[0.1] hover:border-white/20 focus-within:border-white/30 transition-all p-3 backdrop-blur-xl mb-1"
             style={{
               boxShadow: 'inset 0 1px 0 0 rgba(255, 255, 255, 0.1), 0 12px 30px rgba(0, 0, 0, 0.5)',
             }}

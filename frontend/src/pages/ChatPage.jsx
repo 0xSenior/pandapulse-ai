@@ -3,7 +3,7 @@ import { ChatContainer } from '../components/chat/ChatContainer';
 
 export const ChatPage = ({ initialPrompt = '', onClearInitialPrompt }) => {
   return (
-    <div className="w-full h-full flex flex-col py-1">
+    <div className="w-full h-full flex-1 flex flex-col min-h-0">
       <ChatContainer initialPrompt={initialPrompt} onClearInitialPrompt={onClearInitialPrompt} />
     </div>
   );

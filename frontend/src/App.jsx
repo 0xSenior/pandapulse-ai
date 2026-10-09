@@ -256,7 +256,7 @@ export default function App() {
       <main
         className={`relative z-10 transition-all duration-300 ${
           isChatTab
-            ? 'w-full px-3 sm:px-6 md:pl-24 md:pr-6 h-[calc(100vh-58px)] overflow-hidden flex flex-col'
+            ? 'w-full px-3 sm:px-6 md:pl-24 md:pr-6 h-[calc(100vh-58px)] pb-20 md:pb-2 overflow-hidden flex flex-col'
             : 'pb-24 md:pb-16'
         }`}
       >
@@ -280,6 +280,7 @@ export default function App() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.99 }}
               transition={{ duration: 0.2 }}
+              className="w-full h-full flex-1 flex flex-col min-h-0"
             >
               <ChatPage
                 initialPrompt={pendingPrompt}
