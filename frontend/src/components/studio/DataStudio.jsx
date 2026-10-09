@@ -336,6 +336,7 @@ export const DataStudio = ({
                 value={code}
                 onChange={setCode}
                 filename="pipeline.py"
+                onRun={handleRun}
               />
             </div>
 

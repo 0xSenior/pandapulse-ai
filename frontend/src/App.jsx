@@ -148,7 +148,7 @@ export default function App() {
                 }`}
                 title="العربية"
               >
-                عربي
+                AR
               </button>
               <button
                 type="button"
