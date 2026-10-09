@@ -115,7 +115,7 @@ export const ChatHistoryDrawer = ({
             </div>
 
             {/* Session List */}
-            <div className="flex-1 overflow-y-auto space-y-2 pr-1 min-h-0">
+            <div className="flex-1 overflow-y-auto no-scrollbar space-y-2 pr-1 min-h-0">
               {filteredSessions.length === 0 ? (
                 <div className="text-center py-16 text-white/40 text-xs">
                   <MessageSquare className="w-8 h-8 mx-auto mb-2 text-white/20" />

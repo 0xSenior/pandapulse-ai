@@ -400,7 +400,7 @@ _j.dumps(schema_summary)
           }`}
         >
           {/* Messages Stream Container */}
-          <div className="flex-1 overflow-y-auto pr-2 space-y-4 pb-4 min-h-0">
+          <div className="flex-1 overflow-y-auto no-scrollbar space-y-4 pb-4 min-h-0">
             {messages.map((msg, index) => (
               <MessageBubble
                 key={msg.id}

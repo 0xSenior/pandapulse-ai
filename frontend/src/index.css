@@ -47,20 +47,15 @@
     color: #ffffff;
   }
 
-  /* DeepSeek Sleek minimal scrollbar */
-  ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+  /* Clean, hidden scrollbars for sleek aesthetics while preserving smooth scrolling */
+  * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 9999px;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.3);
+  *::-webkit-scrollbar {
+    display: none;
+    width: 0px;
+    height: 0px;
   }
 }
 
@@ -138,5 +133,16 @@
 
   .ds-glow-brand {
     box-shadow: 0 0 40px -10px rgba(103, 153, 254, 0.25);
+  }
+
+  /* Explicit utility to ensure scrollbar is completely hidden across all browsers */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none !important;
+    width: 0px !important;
+    height: 0px !important;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none !important;
+    scrollbar-width: none !important;
   }
 }

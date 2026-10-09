@@ -50,7 +50,7 @@ export const SourceDrawer = ({
             </div>
 
             {/* Citations List */}
-            <div className="flex-1 overflow-y-auto space-y-4 pr-1">
+            <div className="flex-1 overflow-y-auto no-scrollbar space-y-4 pr-1">
               {citations.length === 0 ? (
                 <div className="text-center py-12 text-white/40 text-sm">
                   No citations available for this response.
