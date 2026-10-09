@@ -24,20 +24,17 @@ import { DataStudio } from './components/studio/DataStudio';
 import { useDock } from './hooks/useDock';
 import { API_BASE_URL } from './config/api';
 import { parseSharedParams } from './services/shareService';
+import { useLanguage } from './context/LanguageContext';
 
 export default function App() {
   const { activeTab, navigateTo } = useDock('home');
+  const { locale, setLocale, isRTL, t } = useLanguage();
   const [systemOnline, setSystemOnline] = useState(false);
   const [chunkCount, setChunkCount] = useState(0);
   const [pendingPrompt, setPendingPrompt] = useState('');
   const [studioCode, setStudioCode] = useState('');
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [locale, setLocale] = useState('EN');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    document.documentElement.lang = locale === 'AR' ? 'ar' : 'en';
-  }, [locale]);
 
   const isChatTab = activeTab === 'chat' || activeTab === 'studio';
 
@@ -85,16 +82,16 @@ export default function App() {
   }, []);
 
   const navItems = [
-    { id: 'home', label: 'Overview' },
-    { id: 'chat', label: 'Chat' },
-    { id: 'studio', label: 'Data Studio' },
-    { id: 'docs', label: 'Architecture' },
-    { id: 'knowledge', label: 'Knowledge Base' },
-    { id: 'engineer', label: 'Engineer' },
+    { id: 'home', label: t('overview') },
+    { id: 'chat', label: t('chat') },
+    { id: 'studio', label: t('dataStudio') },
+    { id: 'docs', label: t('architecture') },
+    { id: 'knowledge', label: t('knowledgeBase') },
+    { id: 'engineer', label: t('engineer') },
   ];
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-[#6799fe] selection:text-white font-sans antialiased relative">
+    <div className={`min-h-screen bg-[#0a0a0a] text-white selection:bg-[#6799fe] selection:text-white font-sans antialiased relative ${isRTL ? 'rtl' : ''}`}>
       {/* DeepSeek Harness Top Navigation Bar */}
       <header className="sticky top-0 z-40 w-full backdrop-blur-xl bg-[#0a0a0a]/85 border-b border-white/[0.08] transition-all">
         <div className="max-w-[1800px] w-full mx-auto px-4 sm:px-8 py-2.5 flex items-center justify-between gap-4">
@@ -133,7 +130,7 @@ export default function App() {
                   systemOnline ? 'bg-emerald-400 shadow-[0_0_8px_#34d399]' : 'bg-amber-400'
                 }`}
               />
-              <span>{systemOnline ? 'Python 3.14 · Ready' : 'Connecting...'}</span>
+              <span>{systemOnline ? t('readyStatus') : t('connectingStatus')}</span>
             </div>
 
             {/* Language Toggle: Arabic & English */}
@@ -143,19 +140,19 @@ export default function App() {
                 onClick={() => setLocale('AR')}
                 className={`px-2.5 py-1 text-[11px] font-medium rounded-full transition-all cursor-pointer whitespace-nowrap ${
                   locale === 'AR'
-                    ? 'bg-white text-[#0a0a0a] shadow-sm'
+                    ? 'bg-white text-[#0a0a0a] shadow-sm font-semibold'
                     : 'text-white/60 hover:text-white'
                 }`}
                 title="العربية"
               >
-                AR
+                عربي
               </button>
               <button
                 type="button"
                 onClick={() => setLocale('EN')}
                 className={`px-2.5 py-1 text-[11px] font-medium rounded-full transition-all cursor-pointer whitespace-nowrap ${
                   locale === 'EN'
-                    ? 'bg-white text-[#0a0a0a] shadow-sm'
+                    ? 'bg-white text-[#0a0a0a] shadow-sm font-semibold'
                     : 'text-white/60 hover:text-white'
                 }`}
                 title="English"
@@ -170,7 +167,7 @@ export default function App() {
               target="_blank"
               rel="noreferrer"
               className="p-2 rounded-full text-white/60 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer shrink-0"
-              title="GitHub Repository"
+              title={t('github')}
             >
               <Github className="w-4 h-4" />
             </a>
@@ -180,7 +177,7 @@ export default function App() {
               type="button"
               onClick={() => setIsSettingsOpen(true)}
               className="p-2 rounded-full text-white/60 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer shrink-0"
-              title="API Key Settings (BYOK)"
+              title={t('apiSettings')}
             >
               <Settings className="w-4 h-4" />
             </button>
@@ -191,7 +188,7 @@ export default function App() {
               onClick={() => handleNavigate(activeTab === 'chat' ? 'studio' : 'chat')}
               className="hidden sm:inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[13px] font-medium bg-white text-[#0a0a0a] hover:bg-white/90 active:scale-[0.98] transition-all cursor-pointer shadow-sm select-none shrink-0 whitespace-nowrap"
             >
-              <span>{activeTab === 'chat' ? 'Open Studio' : 'Launch Studio'}</span>
+              <span>{activeTab === 'chat' ? t('openStudio') : t('launchStudio')}</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
             </button>
 
@@ -221,7 +218,7 @@ export default function App() {
                   key={item.id}
                   type="button"
                   onClick={() => handleNavigate(item.id)}
-                  className={`text-left py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
+                  className={`text-left rtl:text-right py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
                     activeTab === item.id
                       ? 'text-white bg-white/10'
                       : 'text-white/60 hover:text-white hover:bg-white/[0.05]'
@@ -231,13 +228,13 @@ export default function App() {
                 </button>
               ))}
               <div className="pt-2 border-t border-white/[0.08] flex items-center justify-between">
-                <span className="text-xs text-white/50">Language</span>
+                <span className="text-xs text-white/50">{t('language')}</span>
                 <div className="inline-flex items-center p-0.5 rounded-full bg-white/[0.06] border border-white/10">
                   <button
                     type="button"
                     onClick={() => setLocale('AR')}
                     className={`px-2.5 py-0.5 text-xs rounded-full ${
-                      locale === 'AR' ? 'bg-white text-black font-medium' : 'text-white/60'
+                      locale === 'AR' ? 'bg-white text-black font-semibold' : 'text-white/60'
                     }`}
                   >
                     عربي
@@ -246,7 +243,7 @@ export default function App() {
                     type="button"
                     onClick={() => setLocale('EN')}
                     className={`px-2.5 py-0.5 text-xs rounded-full ${
-                      locale === 'EN' ? 'bg-white text-black font-medium' : 'text-white/60'
+                      locale === 'EN' ? 'bg-white text-black font-semibold' : 'text-white/60'
                     }`}
                   >
                     EN

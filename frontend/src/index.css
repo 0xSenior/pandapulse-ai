@@ -42,6 +42,20 @@
     font-family: var(--ds-font-mono);
   }
 
+  html[lang="ar"],
+  body.rtl,
+  [dir="rtl"] {
+    font-family: 'Cairo', var(--ds-font-body);
+  }
+
+  [dir="rtl"] code,
+  [dir="rtl"] pre,
+  [dir="rtl"] .font-mono,
+  [dir="rtl"] .code-viewport {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
   ::selection {
     background-color: var(--ds-color-brand);
     color: #ffffff;

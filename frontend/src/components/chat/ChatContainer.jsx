@@ -31,47 +31,10 @@ import { useChatStream } from '../../hooks/useChatStream';
 import { useChatSessions } from '../../hooks/useChatSessions';
 import { mountDataset, executePythonCode } from '../../services/pyodideService';
 import { exportChatAsJupyterNotebook } from '../../services/exportService';
-
-const QUICK_PROMPTS = [
-  {
-    icon: Code2,
-    color: 'text-cyan-400',
-    label: 'Functions & Typing',
-    prompt: 'Write clean Python functions with type hints and exception handling',
-  },
-  {
-    icon: Layers,
-    color: 'text-amber-400',
-    label: 'Pandas 2.0 Concat',
-    prompt: 'Concatenate DataFrames without deprecated append in Pandas 2.0+',
-  },
-  {
-    icon: ShieldCheck,
-    color: 'text-emerald-400',
-    label: 'Copy-on-Write Safe',
-    prompt: 'Enable Copy-on-Write to eliminate SettingWithCopyWarning',
-  },
-  {
-    icon: Cpu,
-    color: 'text-purple-400',
-    label: 'List vs Generator RAM',
-    prompt: 'Compare memory overhead: List vs. Generator in Python',
-  },
-  {
-    icon: Zap,
-    color: 'text-blue-400',
-    label: 'PyArrow SIMD Speed',
-    prompt: 'Accelerate Pandas queries with PyArrow and ArrowDtype',
-  },
-  {
-    icon: Database,
-    color: 'text-rose-400',
-    label: 'GroupBy Named Agg',
-    prompt: 'Perform Named Aggregations in GroupBy with custom metric names',
-  },
-];
+import { useLanguage } from '../../context/LanguageContext';
 
 export const ChatContainer = ({ initialPrompt = '', onClearInitialPrompt }) => {
+  const { locale, isRTL, t } = useLanguage();
   const {
     messages,
     isStreaming,
@@ -82,7 +45,7 @@ export const ChatContainer = ({ initialPrompt = '', onClearInitialPrompt }) => {
     closeDrawer,
     clearChat,
     loadMessages,
-  } = useChatStream();
+  } = useChatStream(locale);
 
   const {
     sessions,
@@ -294,15 +257,24 @@ _j.dumps(schema_summary)
     exportChatAsJupyterNotebook(messages, 'pandapulse_chat.ipynb');
   };
 
+  const quickPrompts = [
+    { icon: Code2, label: t('qp1Label'), prompt: t('qp1Prompt') },
+    { icon: Layers, label: t('qp2Label'), prompt: t('qp2Prompt') },
+    { icon: ShieldCheck, label: t('qp3Label'), prompt: t('qp3Prompt') },
+    { icon: Cpu, label: t('qp4Label'), prompt: t('qp4Prompt') },
+    { icon: Zap, label: t('qp5Label'), prompt: t('qp5Prompt') },
+    { icon: Database, label: t('qp6Label'), prompt: t('qp6Prompt') },
+  ];
+
   return (
-    <div className="flex flex-col h-full w-full font-sans flex-1 min-h-0">
+    <div className={`flex flex-col h-full w-full font-sans flex-1 min-h-0 ${isRTL ? 'rtl' : ''}`}>
       {/* Top Header & Actions */}
       <div className="flex flex-wrap items-center justify-between gap-3 py-2 px-1 mb-2 border-b border-white/[0.08] shrink-0">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]" />
             <h2 className="text-sm sm:text-base font-display font-medium text-white tracking-tight">
-              PandaPulse Chat
+              {isRTL ? 'محادثة PandaPulse' : 'PandaPulse Chat'}
             </h2>
           </div>
 
@@ -320,10 +292,10 @@ _j.dumps(schema_summary)
             type="button"
             onClick={handleNewChat}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-white text-[#0a0a0a] hover:bg-white/90 shadow-sm transition-all cursor-pointer"
-            title="Start fresh conversation"
+            title={t('newChat')}
           >
             <Plus className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">New Session</span>
+            <span className="hidden sm:inline">{t('newChat')}</span>
           </button>
 
           {/* History Sessions Drawer Toggle */}
@@ -331,10 +303,10 @@ _j.dumps(schema_summary)
             type="button"
             onClick={() => setIsHistoryOpen(true)}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-white/[0.06] hover:bg-white/[0.12] text-white/80 hover:text-white border border-white/10 transition-all cursor-pointer"
-            title="Open Chat History"
+            title={t('history')}
           >
             <History className="w-3.5 h-3.5 text-white/60" />
-            <span className="hidden sm:inline">History</span>
+            <span className="hidden sm:inline">{t('history')}</span>
             {sessions.length > 0 && (
               <span className="px-1.5 py-0.2 rounded-full bg-white/10 text-white text-[10px] font-mono">
                 {sessions.length}
@@ -347,7 +319,7 @@ _j.dumps(schema_summary)
             type="button"
             onClick={handleExportJupyter}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-white/[0.06] hover:bg-white/[0.12] text-white/80 hover:text-white border border-white/10 transition-all cursor-pointer"
-            title="Export full session as Jupyter Notebook (.ipynb)"
+            title={t('exportNotebook')}
           >
             <FileCode className="w-3.5 h-3.5 text-amber-400" />
             <span className="hidden sm:inline">.ipynb</span>
@@ -358,10 +330,10 @@ _j.dumps(schema_summary)
             type="button"
             onClick={() => setIsSettingsOpen(true)}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-white/[0.06] hover:bg-white/[0.12] text-white/80 hover:text-white border border-white/10 transition-all cursor-pointer"
-            title="API Settings & BYOK"
+            title={t('settings')}
           >
             <Settings className="w-3.5 h-3.5 text-white/60" />
-            <span className="hidden sm:inline">Settings</span>
+            <span className="hidden sm:inline">{t('settings')}</span>
           </button>
 
           {/* Split-Screen Studio Toggle */}
@@ -373,10 +345,12 @@ _j.dumps(schema_summary)
                 ? 'bg-white text-[#0a0a0a] border-transparent shadow-sm'
                 : 'bg-white/[0.06] hover:bg-white/[0.12] text-white/80 hover:text-white border-white/10'
             }`}
-            title="Toggle Split-Screen Canvas Studio"
+            title={isStudioOpen ? (isRTL ? 'إغلاق الاستوديو' : 'Close Studio') : (isRTL ? 'تقسيم الشاشة' : 'Split Canvas')}
           >
             <Columns className="w-3.5 h-3.5" />
-            <span className="hidden md:inline">{isStudioOpen ? 'Close Studio' : 'Split Canvas'}</span>
+            <span className="hidden md:inline">
+              {isStudioOpen ? (isRTL ? 'إغلاق الاستوديو' : 'Close Studio') : (isRTL ? 'تقسيم الشاشة' : 'Split Canvas')}
+            </span>
           </button>
 
           {/* Clear Session */}
@@ -384,7 +358,7 @@ _j.dumps(schema_summary)
             type="button"
             onClick={clearChat}
             className="p-1.5 rounded-full text-white/40 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
-            title="Clear Chat Session"
+            title={t('clearChat')}
           >
             <Trash2 className="w-3.5 h-3.5" />
           </button>
@@ -420,9 +394,9 @@ _j.dumps(schema_summary)
           <div className="pt-2 pb-1.5 flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0">
             <span className="flex items-center gap-1 text-[11px] text-white/40 shrink-0 font-medium font-mono px-2 py-1 rounded-md bg-white/[0.03] border border-white/[0.06]">
               <Sparkles className="w-3.5 h-3.5 text-[#6799fe]" />
-              <span className="hidden sm:inline">Shortcuts</span>
+              <span className="hidden sm:inline">{isRTL ? 'اختصارات' : 'Shortcuts'}</span>
             </span>
-            {QUICK_PROMPTS.map((item) => {
+            {quickPrompts.map((item) => {
               const PromptIcon = item.icon;
               return (
                 <button
@@ -504,9 +478,10 @@ _j.dumps(schema_summary)
                   handleSubmit();
                 }
               }}
-              placeholder="Ask anything about Python 3.x, modern Pandas 2.0+, or data engineering..."
+              placeholder={t('inputPlaceholder')}
               rows={1}
               disabled={isStreaming}
+              dir={isRTL ? 'rtl' : 'ltr'}
               className="w-full bg-transparent px-2 py-1 text-sm sm:text-[14.5px] text-white placeholder-white/40 focus:outline-none resize-none font-sans min-h-[44px] max-h-40 leading-relaxed"
             />
 
@@ -526,7 +501,7 @@ _j.dumps(schema_summary)
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isUploading}
                   className="group flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium text-white/60 hover:text-white hover:bg-white/[0.06] border border-white/[0.06] transition-all cursor-pointer disabled:opacity-50"
-                  title="Attach CSV, Parquet, TSV, or Excel dataset"
+                  title={isRTL ? 'إرفاق ملف بيانات CSV أو Parquet' : 'Attach CSV, Parquet, TSV, or Excel dataset'}
                 >
                   {isUploading ? (
                     <Loader2 className="w-3.5 h-3.5 animate-spin text-[#6799fe]" />
@@ -534,7 +509,7 @@ _j.dumps(schema_summary)
                     <Paperclip className="w-3.5 h-3.5 text-white/60 group-hover:text-white transition-colors" />
                   )}
                   <span className="hidden sm:inline">
-                    {isUploading ? uploadStatus : 'Attach Dataset'}
+                    {isUploading ? uploadStatus : (isRTL ? 'إرفاق بيانات' : 'Attach Dataset')}
                   </span>
                 </button>
                 {isUploading && (
@@ -543,11 +518,11 @@ _j.dumps(schema_summary)
                   </span>
                 )}
                 <span
-                  title="Zero Data Retention: Datasets execute locally in browser memory via WebAssembly and are never sent to any server"
+                  title={isRTL ? 'تنفيذ محلي آمن في المتصفح عبر WebAssembly' : 'Zero Data Retention: Datasets execute locally in browser memory via WebAssembly'}
                   className="hidden md:inline-flex items-center gap-1 text-[10px] text-emerald-400 font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20"
                 >
                   <ShieldCheck className="w-3 h-3 text-emerald-400" />
-                  <span>Client WASM Safe</span>
+                  <span>{isRTL ? 'تنفيذ آمن WASM' : 'Client WASM Safe'}</span>
                 </span>
               </div>
 
@@ -556,9 +531,9 @@ _j.dumps(schema_summary)
                 type="submit"
                 disabled={(!input.trim() && !activeDataset) || isStreaming}
                 className="w-8 h-8 rounded-full bg-white text-[#0a0a0a] flex items-center justify-center hover:bg-white/90 active:scale-95 transition-all shadow-sm disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer shrink-0"
-                title="Send prompt"
+                title={t('send')}
               >
-                <Send className="w-3.5 h-3.5" />
+                <Send className={`w-3.5 h-3.5 ${isRTL ? 'rotate-180' : ''}`} />
               </button>
             </div>
           </form>

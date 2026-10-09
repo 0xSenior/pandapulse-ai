@@ -9,14 +9,15 @@ import {
   Code2,
   Settings,
 } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
-const DOCK_ITEMS = [
-  { id: 'home', label: 'Overview', icon: Sparkles },
-  { id: 'chat', label: 'Chat Workspace', icon: MessageSquareCode },
-  { id: 'studio', label: 'Data Studio Canvas', icon: Code2 },
-  { id: 'docs', label: 'Architecture & Docs', icon: Layers },
-  { id: 'knowledge', label: 'Knowledge Base', icon: Database },
-  { id: 'engineer', label: 'Engineer Profile', icon: UserCheck },
+const BASE_DOCK_ITEMS = [
+  { id: 'home', key: 'dockOverview', icon: Sparkles },
+  { id: 'chat', key: 'dockChat', icon: MessageSquareCode },
+  { id: 'studio', key: 'dockStudio', icon: Code2 },
+  { id: 'docs', key: 'dockDocs', icon: Layers },
+  { id: 'knowledge', key: 'dockKnowledge', icon: Database },
+  { id: 'engineer', key: 'dockEngineer', icon: UserCheck },
 ];
 
 function DockIcon({ coordinate, item, activeTab, onSelect, isVertical }) {
@@ -86,6 +87,7 @@ function DockIcon({ coordinate, item, activeTab, onSelect, isVertical }) {
 }
 
 export const FloatingDock = ({ activeTab, onSelectTab, orientation = 'horizontal', onOpenSettings }) => {
+  const { t } = useLanguage();
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -99,11 +101,16 @@ export const FloatingDock = ({ activeTab, onSelectTab, orientation = 'horizontal
   const mouseX = useMotionValue(Infinity);
   const mouseY = useMotionValue(Infinity);
 
+  const dockItems = BASE_DOCK_ITEMS.map((item) => ({
+    ...item,
+    label: t(item.key),
+  }));
+
   return (
     <div
       className={
         isVertical
-          ? 'fixed left-4 top-1/2 -translate-y-1/2 z-50'
+          ? 'fixed left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 z-50'
           : 'fixed bottom-4 left-1/2 -translate-x-1/2 z-50 max-w-[calc(100vw-24px)]'
       }
     >
@@ -129,7 +136,7 @@ export const FloatingDock = ({ activeTab, onSelectTab, orientation = 'horizontal
           boxShadow: 'inset 0 1px 0 0 rgba(255, 255, 255, 0.1), 0 12px 30px rgba(0, 0, 0, 0.6)',
         }}
       >
-        {DOCK_ITEMS.map((item) => (
+        {dockItems.map((item) => (
           <DockIcon
             key={item.id}
             item={item}

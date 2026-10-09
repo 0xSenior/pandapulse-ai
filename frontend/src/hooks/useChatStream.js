@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { API_BASE_URL } from '../config/api';
 import { getCustomApiKey } from '../services/keyStore';
 
@@ -28,29 +28,59 @@ export const parseContentAndSuggestions = (rawText) => {
   return { cleanText, suggestions };
 };
 
-export const useChatStream = () => {
-  const [messages, setMessages] = useState([
-    {
+export const getWelcomeMessage = (locale = 'AR') => {
+  if (locale === 'AR') {
+    return {
       id: 'welcome',
       role: 'assistant',
       content:
-        'Welcome to **PandaPulse AI** — your specialized engineering workspace for **Python 3.x** and modern **Pandas 2.0+** data pipelines.\n\n' +
-        'What code, pipeline, or data challenge are you working on today?',
+        'مرحباً بك في **PandaPulse AI** — مساحة العمل الهندسية المتخصصة في لغة **بايثون** ومكتبة **Pandas 2.0+** الحديثة وهندسة البيانات.\n\n' +
+        'ما هو الكود أو التحليل أو خط أنابيب البيانات الذي تعمل عليه اليوم؟',
       suggestions: [
-        'How to concatenate DataFrames in Pandas 2.0 without deprecated append?',
-        'How to accelerate reading large datasets using Apache Arrow?',
-        'What is Copy-on-Write and how does it optimize memory in Pandas 2.x?',
+        'كيف أدمج الـ DataFrames في بانداس 2.0 بدون استخدام append المهملة؟',
+        'كيف أسرع قراءة ومعالجة البيانات الضخمة باستخدام Apache Arrow؟',
+        'ما هو مفهوم Copy-on-Write وكيف يوفر استهلاك الذاكرة في بانداس 2؟',
       ],
       citations: [],
       latency_ms: 0.2,
       cached: true,
       timestamp: new Date().toISOString(),
-    },
-  ]);
+    };
+  }
+  return {
+    id: 'welcome',
+    role: 'assistant',
+    content:
+      'Welcome to **PandaPulse AI** — your specialized engineering workspace for **Python 3.x** and modern **Pandas 2.0+** data pipelines.\n\n' +
+      'What code, pipeline, or data challenge are you working on today?',
+    suggestions: [
+      'How to concatenate DataFrames in Pandas 2.0 without deprecated append?',
+      'How to accelerate reading large datasets using Apache Arrow?',
+      'What is Copy-on-Write and how does it optimize memory in Pandas 2.x?',
+    ],
+    citations: [],
+    latency_ms: 0.2,
+    cached: true,
+    timestamp: new Date().toISOString(),
+  };
+};
+
+export const useChatStream = (locale = 'AR') => {
+  const [messages, setMessages] = useState(() => [getWelcomeMessage(locale)]);
   const [isStreaming, setIsStreaming] = useState(false);
   const [activeCitations, setActiveCitations] = useState([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const abortControllerRef = useRef(null);
+
+  // Sync initial welcome message when locale changes
+  useEffect(() => {
+    setMessages((prev) => {
+      if (prev.length === 1 && prev[0].id === 'welcome') {
+        return [getWelcomeMessage(locale)];
+      }
+      return prev;
+    });
+  }, [locale]);
 
   const sendMessage = useCallback(async (queryText, topK = 3, modelOverride = null) => {
     if (!queryText.trim() || isStreaming) return;
@@ -274,24 +304,8 @@ export const useChatStream = () => {
   }, []);
 
   const clearChat = useCallback(() => {
-    setMessages([
-      {
-        id: 'welcome',
-        role: 'assistant',
-        content:
-          'Session cleared. I am PandaPulse AI, ready for your next Python or Pandas engineering challenge.',
-        suggestions: [
-          'How to concatenate DataFrames in Pandas 2.0 without deprecated append?',
-          'How to accelerate reading large datasets using Apache Arrow?',
-          'What is Copy-on-Write and how does it optimize memory in Pandas 2.x?',
-        ],
-        citations: [],
-        latency_ms: 0.1,
-        cached: true,
-        timestamp: new Date().toISOString(),
-      },
-    ]);
-  }, []);
+    setMessages([getWelcomeMessage(locale)]);
+  }, [locale]);
 
   const loadMessages = useCallback((newMessages) => {
     if (Array.isArray(newMessages)) {

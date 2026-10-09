@@ -16,8 +16,10 @@ import {
   CheckCircle2,
   Cpu,
 } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
 export const HarnessHero = ({ onNavigate }) => {
+  const { isRTL, t } = useLanguage();
   const [isThoughtExpanded, setIsThoughtExpanded] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
   const [composerText, setComposerText] = useState('');
@@ -64,22 +66,19 @@ print(df)`;
             <path d="M9 6C10.53 9.82 13.68 12.97 17.5 14.5C13.68 16.03 10.53 19.18 9 23C7.47 19.18 4.32 16.03 0.5 14.5C4.32 12.97 7.47 9.82 9 6Z" />
             <path d="M19.5 1C20.22 2.8 21.7 4.28 23.5 5C21.7 5.72 20.22 7.2 19.5 9C18.78 7.2 17.3 5.72 15.5 5C17.3 4.28 18.78 2.8 19.5 1Z" />
           </svg>
-          <span>Preview</span>
+          <span>{t('previewBadge')}</span>
         </div>
 
         {/* Headline */}
         <h1 className="font-display font-medium text-white text-[38px] sm:text-[54px] md:text-[66px] tracking-tight leading-[1.08]">
-          <span>PandaPulse</span>
+          <span>{t('heroTitle1')}</span>
           <br />
-          <span className="text-white/90">Ready to use. Right now.</span>
+          <span className="text-white/90">{t('heroTitle2')}</span>
         </h1>
 
         {/* Subtitle */}
         <div className="max-w-[620px] mx-auto flex flex-col gap-1 text-[15px] sm:text-[16.5px] text-white/60 font-sans leading-relaxed">
-          <p>Everyday data tasks, pandas pipelines, or your own analytical workspace—it starts here.</p>
-          <p className="text-white/45">
-            PandaPulse is now in public preview worldwide and open source, with composable plugins that extend what agents can do.
-          </p>
+          <p>{t('heroSubtitle')}</p>
         </div>
 
         {/* Action CTAs */}
@@ -90,7 +89,7 @@ print(df)`;
             className="ds-btn-primary px-6 py-3 text-[14.5px]"
           >
             <Download className="w-4 h-4" />
-            <span>Launch Studio</span>
+            <span>{t('launchStudio')}</span>
           </button>
 
           <button
@@ -98,8 +97,8 @@ print(df)`;
             onClick={() => onNavigate('chat')}
             className="ds-btn-secondary px-6 py-3 text-[14.5px]"
           >
-            <span>Open Chat Workspace</span>
-            <ArrowUpRight className="w-4 h-4 text-white/60" />
+            <span>{isRTL ? 'فتح مساحة المحادثة' : 'Open Chat Workspace'}</span>
+            <ArrowUpRight className={`w-4 h-4 text-white/60 ${isRTL ? 'rotate-180' : ''}`} />
           </button>
         </div>
       </div>
@@ -293,7 +292,8 @@ print(df)`;
                     type="text"
                     value={composerText}
                     onChange={(e) => setComposerText(e.target.value)}
-                    placeholder="Ask anything about your data, models, or pipelines..."
+                    placeholder={t('heroInputPlaceholder')}
+                    dir={isRTL ? 'rtl' : 'ltr'}
                     className="w-full bg-transparent px-2 py-1 text-[13.5px] text-white placeholder-white/35 focus:outline-none"
                   />
 
