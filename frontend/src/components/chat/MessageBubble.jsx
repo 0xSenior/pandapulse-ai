@@ -55,6 +55,17 @@ export const MessageBubble = ({
   const [copiedMessage, setCopiedMessage] = useState(false);
   const [feedback, setFeedback] = useState(null);
 
+  // Dynamically adapt bubble width: compact for short notes/errors, expansive for code & long essays
+  const isWideContent = useMemo(() => {
+    if (!message.content) return false;
+    return (
+      message.content.includes('```') ||
+      message.content.includes('|') ||
+      message.content.length > 280 ||
+      (message.suggestions && message.suggestions.length > 1)
+    );
+  }, [message.content, message.suggestions]);
+
   const handleCopyMessage = () => {
     if (!message.content) return;
     navigator.clipboard.writeText(message.content);
@@ -113,7 +124,7 @@ export const MessageBubble = ({
         <div
           key={index}
           dir="auto"
-          className="space-y-2.5 text-slate-200 leading-relaxed text-sm sm:text-base text-right"
+          className="space-y-2 text-white/90 leading-relaxed text-[13.5px] sm:text-sm"
         >
           {part.split('\n\n').map((paragraph, pIdx) => {
             const trimmed = paragraph.trim();
@@ -128,7 +139,7 @@ export const MessageBubble = ({
             }
             if (trimmed.startsWith('## ')) {
               return (
-                <h3 key={pIdx} className="text-lg sm:text-xl font-bold text-cyan-300 pt-3 pb-1 border-b border-white/10">
+                <h3 key={pIdx} className="text-base sm:text-lg font-bold text-white pt-2 pb-1 border-b border-white/10">
                   {trimmed.replace('## ', '')}
                 </h3>
               );
@@ -155,7 +166,7 @@ export const MessageBubble = ({
                       <code
                         key={cIdx}
                         dir="ltr"
-                        className="inline-block px-1.5 py-0.5 mx-0.5 rounded bg-white/10 text-cyan-300 font-mono text-xs font-semibold"
+                        className="inline-block px-1.5 py-0.5 mx-0.5 rounded bg-white/10 text-[#88b0ff] font-mono text-xs font-semibold"
                       >
                         {chunk}
                       </code>
@@ -182,10 +193,10 @@ export const MessageBubble = ({
   };
 
     return (
-    <div className={`flex gap-3.5 my-3 ${isAssistant ? 'justify-start w-full' : 'justify-end'}`}>
+    <div className={`flex gap-3 my-2.5 items-start ${isAssistant ? 'justify-start' : 'justify-end'}`}>
       {/* Assistant Avatar */}
       {isAssistant && (
-        <div className="w-9 h-9 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center shrink-0 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] text-[#6799fe]">
+        <div className="w-8 h-8 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center shrink-0 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] text-[#6799fe] mt-0.5">
           <Bot className="w-4 h-4" />
         </div>
       )}
@@ -194,8 +205,8 @@ export const MessageBubble = ({
       <div
         className={`${
           isAssistant
-            ? 'w-full ds-card px-5 py-4 text-white/90 shadow-md'
-            : 'max-w-[85%] sm:max-w-[75%] rounded-2xl px-4 py-2.5 bg-white text-[#0a0a0a] font-medium shadow-sm text-sm'
+            ? `${isWideContent ? 'w-full' : 'w-fit min-w-[240px] max-w-[94%]'} ds-card px-4 sm:px-5 py-3 text-white/90 shadow-md transition-all duration-200`
+            : 'w-fit max-w-[85%] sm:max-w-[75%] rounded-2xl px-4 py-2 bg-white text-[#0a0a0a] font-medium shadow-sm text-sm'
         }`}
       >
         {/* Assistant Header Metadata */}
