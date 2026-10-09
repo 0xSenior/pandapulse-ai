@@ -55,16 +55,15 @@ export const MessageBubble = ({
   const [copiedMessage, setCopiedMessage] = useState(false);
   const [feedback, setFeedback] = useState(null);
 
-  // Dynamically adapt bubble width: compact for short notes/errors, expansive for code & long essays
+  // Dynamically adapt bubble width: compact for conversational messages, wide only for code blocks, tables, or very long text
   const isWideContent = useMemo(() => {
     if (!message.content) return false;
     return (
       message.content.includes('```') ||
       message.content.includes('|') ||
-      message.content.length > 280 ||
-      (message.suggestions && message.suggestions.length > 1)
+      message.content.length > 500
     );
-  }, [message.content, message.suggestions]);
+  }, [message.content]);
 
   const handleCopyMessage = () => {
     if (!message.content) return;
@@ -201,117 +200,128 @@ export const MessageBubble = ({
         </div>
       )}
 
-      {/* Bubble Container */}
+      {/* Message Column: accommodates bubble and external suggestions without bloating the bubble */}
       <div
-        className={`${
+        className={`flex flex-col min-w-0 ${
           isAssistant
-            ? `${isWideContent ? 'w-full' : 'w-fit min-w-[240px] max-w-[94%]'} ds-card px-4 sm:px-5 py-3 text-white/90 shadow-md transition-all duration-200`
-            : 'w-fit max-w-[85%] sm:max-w-[75%] rounded-2xl px-4 py-2 bg-white text-[#0a0a0a] font-medium shadow-sm text-sm'
+            ? isWideContent
+              ? 'w-full max-w-full items-start'
+              : 'w-fit max-w-[92%] sm:max-w-[720px] items-start'
+            : 'w-fit max-w-[85%] sm:max-w-[75%] items-end'
         }`}
       >
-        {/* Assistant Header Metadata */}
-        {isAssistant && (
-          <div className="flex flex-wrap items-center justify-between gap-2 pb-2 mb-2 border-b border-white/[0.06] text-[11px] text-white/50 font-sans">
-            <span className="font-semibold text-white/90 flex items-center gap-1.5">
-              <span>PandaPulse AI</span>
-              {message.cached && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#6799fe]/15 text-[#88b0ff] border border-[#6799fe]/25 text-[10px]">
-                  <Zap className="w-3 h-3 text-[#6799fe]" />
-                  Instant Response
-                </span>
-              )}
-            </span>
+        {/* Main Card Bubble */}
+        <div
+          className={`${
+            isAssistant
+              ? `${isWideContent ? 'w-full' : 'w-fit max-w-full'} ds-card px-4 sm:px-5 py-3 text-white/90 shadow-md transition-all duration-200`
+              : 'w-fit max-w-full rounded-2xl px-4 py-2 bg-white text-[#0a0a0a] font-medium shadow-sm text-sm'
+          }`}
+        >
+          {/* Assistant Header Metadata */}
+          {isAssistant && (
+            <div className="flex flex-wrap items-center justify-between gap-3 pb-2 mb-2 border-b border-white/[0.06] text-[11px] text-white/50 font-sans">
+              <span className="font-semibold text-white/90 flex items-center gap-1.5">
+                <span>PandaPulse AI</span>
+                {message.cached && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#6799fe]/15 text-[#88b0ff] border border-[#6799fe]/25 text-[10px]">
+                    <Zap className="w-3 h-3 text-[#6799fe]" />
+                    Instant Response
+                  </span>
+                )}
+              </span>
 
-            <div className="flex items-center gap-2.5">
-              {message.latency_ms !== null && (
-                <span className="flex items-center gap-1 text-white/40 text-[11px]">
-                  <Clock className="w-3 h-3 text-white/40" />
-                  {message.latency_ms < 50 ? 'Sub-second' : `${(message.latency_ms / 1000).toFixed(2)}s`}
-                </span>
-              )}
+              <div className="flex items-center gap-2.5">
+                {message.latency_ms !== null && (
+                  <span className="flex items-center gap-1 text-white/40 text-[11px]">
+                    <Clock className="w-3 h-3 text-white/40" />
+                    {message.latency_ms < 50 ? 'Sub-second' : `${(message.latency_ms / 1000).toFixed(2)}s`}
+                  </span>
+                )}
 
-              {message.citations && message.citations.length > 0 && (
+                {message.citations && message.citations.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => onViewCitations(message.citations)}
+                    className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#6799fe]/15 text-[#88b0ff] hover:bg-[#6799fe]/25 border border-[#6799fe]/30 transition-colors cursor-pointer"
+                  >
+                    <BookOpen className="w-3 h-3" />
+                    <span>{message.citations.length} Verified Sources</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Visual Thinking Loading State (Pure Visual, No Text Logs) */}
+          {isAssistant && (message.isThinking || (isStreaming && isLast && !message.content)) && !message.content && (
+            <VisualThinkingLoader />
+          )}
+
+          {/* Message Content */}
+          {Boolean(message.content) && (
+            <div className="relative">
+              {renderFormattedContent(message.content)}
+
+              {/* Real-time Streaming Cursor */}
+              {isStreaming && isLast && isAssistant && (
+                <span className="inline-block w-2 h-4 ml-1 bg-[#6799fe] animate-pulse align-middle" />
+              )}
+            </div>
+          )}
+
+          {/* Assistant Bottom Utility Bar */}
+          {isAssistant && Boolean(message.content) && !isStreaming && (
+            <div className="mt-2.5 pt-2 flex items-center justify-between gap-3 text-[11px] text-white/40 select-none border-t border-white/[0.06]">
+              <div className="flex items-center gap-1.5">
                 <button
                   type="button"
-                  onClick={() => onViewCitations(message.citations)}
-                  className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#6799fe]/15 text-[#88b0ff] hover:bg-[#6799fe]/25 border border-[#6799fe]/30 transition-colors cursor-pointer"
+                  onClick={handleCopyMessage}
+                  className="flex items-center gap-1 px-2 py-0.5 rounded-md hover:bg-white/5 hover:text-[#6799fe] transition-colors cursor-pointer"
+                  title="Copy response"
                 >
-                  <BookOpen className="w-3 h-3" />
-                  <span>{message.citations.length} Verified Sources</span>
+                  {copiedMessage ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                  <span>{copiedMessage ? 'Copied' : 'Copy'}</span>
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setFeedback(feedback === 'like' ? null : 'like')}
+                  className={`p-1 rounded-md hover:bg-white/5 transition-colors cursor-pointer ${
+                    feedback === 'like' ? 'text-emerald-400' : 'hover:text-white/80'
+                  }`}
+                  title="Helpful response"
+                >
+                  <ThumbsUp className="w-3 h-3" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFeedback(feedback === 'dislike' ? null : 'dislike')}
+                  className={`p-1 rounded-md hover:bg-white/5 transition-colors cursor-pointer ${
+                    feedback === 'dislike' ? 'text-rose-400' : 'hover:text-white/80'
+                  }`}
+                  title="Report issue"
+                >
+                  <ThumbsDown className="w-3 h-3" />
+                </button>
+              </div>
+
+              {message.model && (
+                <span className="font-mono text-[10px] text-white/40">
+                  {message.model}
+                </span>
               )}
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
-        {/* Visual Thinking Loading State (Pure Visual, No Text Logs) */}
-        {isAssistant && (message.isThinking || (isStreaming && isLast && !message.content)) && !message.content && (
-          <VisualThinkingLoader />
-        )}
-
-        {/* Message Content */}
-        {Boolean(message.content) && (
-          <div className="relative">
-            {renderFormattedContent(message.content)}
-
-            {/* Real-time Streaming Cursor */}
-            {isStreaming && isLast && isAssistant && (
-              <span className="inline-block w-2 h-4 ml-1 bg-[#6799fe] animate-pulse align-middle" />
-            )}
-          </div>
-        )}
-
-        {/* Assistant Bottom Utility Bar */}
-        {isAssistant && Boolean(message.content) && !isStreaming && (
-          <div className="mt-2.5 pt-2 flex items-center justify-between text-[11px] text-white/40 select-none border-t border-white/[0.06]">
-            <div className="flex items-center gap-1.5">
-              <button
-                type="button"
-                onClick={handleCopyMessage}
-                className="flex items-center gap-1 px-2 py-0.5 rounded-md hover:bg-white/5 hover:text-[#6799fe] transition-colors cursor-pointer"
-                title="Copy response"
-              >
-                {copiedMessage ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                <span>{copiedMessage ? 'Copied' : 'Copy'}</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setFeedback(feedback === 'like' ? null : 'like')}
-                className={`p-1 rounded-md hover:bg-white/5 transition-colors cursor-pointer ${
-                  feedback === 'like' ? 'text-emerald-400' : 'hover:text-white/80'
-                }`}
-                title="Helpful response"
-              >
-                <ThumbsUp className="w-3 h-3" />
-              </button>
-              <button
-                type="button"
-                onClick={() => setFeedback(feedback === 'dislike' ? null : 'dislike')}
-                className={`p-1 rounded-md hover:bg-white/5 transition-colors cursor-pointer ${
-                  feedback === 'dislike' ? 'text-rose-400' : 'hover:text-white/80'
-                }`}
-                title="Report issue"
-              >
-                <ThumbsDown className="w-3 h-3" />
-              </button>
-            </div>
-
-            {message.model && (
-              <span className="font-mono text-[10px] text-white/40">
-                {message.model}
-              </span>
-            )}
-          </div>
-        )}
-
-        {/* Dynamic Contextual Suggestions */}
+        {/* Dynamic Contextual Suggestions (Separated from speech bubble so bubble stays neat & compact) */}
         {isAssistant && message.suggestions && message.suggestions.length > 0 && !message.isThinking && (
-          <div className="mt-3.5 pt-3 border-t border-white/[0.08] select-none" dir="ltr">
-            <div className="flex items-center gap-1.5 mb-2 text-xs text-white/50 font-medium font-sans">
-              <Sparkles className="w-3.5 h-3.5 text-[#6799fe]" />
+          <div className="mt-2.5 select-none max-w-full" dir="ltr">
+            <div className="flex items-center gap-1.5 mb-1.5 text-[11px] text-white/40 font-medium font-sans">
+              <Sparkles className="w-3 h-3 text-[#6799fe]" />
               <span>Suggested Follow-ups:</span>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
               {message.suggestions.map((suggestion, sIdx) => (
                 <button
                   key={sIdx}
@@ -319,7 +329,7 @@ export const MessageBubble = ({
                   dir="ltr"
                   disabled={isStreaming}
                   onClick={() => onSelectSuggestion && onSelectSuggestion(suggestion)}
-                  className="group inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-white/[0.15] text-xs sm:text-[13px] text-white/80 hover:text-white transition-all cursor-pointer shadow-sm disabled:opacity-50 disabled:cursor-not-allowed text-left font-sans"
+                  className="group inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-[#6799fe]/40 text-xs sm:text-[13px] text-white/80 hover:text-white transition-all cursor-pointer shadow-sm disabled:opacity-50 disabled:cursor-not-allowed text-left font-sans"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-[#6799fe] group-hover:scale-125 transition-transform shrink-0" />
                   <span>{suggestion}</span>
@@ -332,7 +342,7 @@ export const MessageBubble = ({
 
       {/* User Avatar */}
       {!isAssistant && (
-        <div className="w-9 h-9 rounded-xl bg-white/[0.06] border border-white/[0.08] flex items-center justify-center shrink-0 text-white/70">
+        <div className="w-8 h-8 rounded-xl bg-white/[0.06] border border-white/[0.08] flex items-center justify-center shrink-0 text-white/70 mt-0.5">
           <User className="w-4 h-4" />
         </div>
       )}
