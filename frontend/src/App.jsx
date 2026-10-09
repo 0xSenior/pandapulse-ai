@@ -35,6 +35,10 @@ export default function App() {
   const [locale, setLocale] = useState('EN');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  useEffect(() => {
+    document.documentElement.lang = locale === 'AR' ? 'ar' : 'en';
+  }, [locale]);
+
   const isChatTab = activeTab === 'chat' || activeTab === 'studio';
 
   const handleNavigate = (tab, prompt = '') => {
@@ -132,18 +136,19 @@ export default function App() {
               <span>{systemOnline ? 'Python 3.14 · Ready' : 'Connecting...'}</span>
             </div>
 
-            {/* DeepSeek Signature Locale Toggle */}
+            {/* Language Toggle: Arabic & English */}
             <div className="hidden sm:inline-flex items-center p-0.5 rounded-full bg-white/[0.06] border border-white/10 select-none shrink-0">
               <button
                 type="button"
-                onClick={() => setLocale('CN')}
+                onClick={() => setLocale('AR')}
                 className={`px-2.5 py-1 text-[11px] font-medium rounded-full transition-all cursor-pointer whitespace-nowrap ${
-                  locale === 'CN'
+                  locale === 'AR'
                     ? 'bg-white text-[#0a0a0a] shadow-sm'
                     : 'text-white/60 hover:text-white'
                 }`}
+                title="العربية"
               >
-                中文
+                عربي
               </button>
               <button
                 type="button"
@@ -153,6 +158,7 @@ export default function App() {
                     ? 'bg-white text-[#0a0a0a] shadow-sm'
                     : 'text-white/60 hover:text-white'
                 }`}
+                title="English"
               >
                 EN
               </button>
@@ -229,18 +235,18 @@ export default function App() {
                 <div className="inline-flex items-center p-0.5 rounded-full bg-white/[0.06] border border-white/10">
                   <button
                     type="button"
-                    onClick={() => setLocale('CN')}
-                    className={`px-2 py-0.5 text-xs rounded-full ${
-                      locale === 'CN' ? 'bg-white text-black' : 'text-white/60'
+                    onClick={() => setLocale('AR')}
+                    className={`px-2.5 py-0.5 text-xs rounded-full ${
+                      locale === 'AR' ? 'bg-white text-black font-medium' : 'text-white/60'
                     }`}
                   >
-                    中文
+                    عربي
                   </button>
                   <button
                     type="button"
                     onClick={() => setLocale('EN')}
-                    className={`px-2 py-0.5 text-xs rounded-full ${
-                      locale === 'EN' ? 'bg-white text-black' : 'text-white/60'
+                    className={`px-2.5 py-0.5 text-xs rounded-full ${
+                      locale === 'EN' ? 'bg-white text-black font-medium' : 'text-white/60'
                     }`}
                   >
                     EN
