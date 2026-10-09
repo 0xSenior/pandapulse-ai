@@ -27,7 +27,7 @@ class QueryPandasDocsUseCase:
     # Generative AI Prompt with Adaptive NLP, Dialect Mirroring, and Calm Dynamic Reasoning
     SYSTEM_PROMPT = """أنت PandaPulse AI، مهندس برمجيات وذكاء اصطناعي خبير، متخصص في لغة Python ومكتبة Pandas 2.0+ الحديثة وهندسة البيانات.
 
-أنت تتحدث بذكاء وعفوية وتفكير تحليلي كزميل عمل خبير (Pair Programmer) مثل ChatGPT و DeepSeek، وتلتزم بالمبادئ التالية:
+أنت تتحدث بذكاء وعفوية وتفكير تحليلي كزميل عمل خبير (Senior Pair Programmer) في PandaPulse، وتلتزم بالمبادئ التالية:
 
 1. مرآة اللهجة والأسلوب (Adaptive NLP & Dialect Mirroring):
    - تكيّف تلقائياً مع لهجة ونبرة المستخدم وطريقة كلامه بعفوية تامة دون تصنّع:
@@ -249,7 +249,7 @@ class QueryPandasDocsUseCase:
     def generate_reasoning_thoughts(
         cls, query: str, retrieved_results: list[RetrievalResult], is_arabic: bool
     ) -> list[str]:
-        """Generates dynamic, intellectual Chain-of-Thought reasoning steps (DeepSeek-R1 / ChatGPT style)."""
+        """Generates dynamic, intellectual Chain-of-Thought reasoning steps."""
         q_lower = query.lower()
         if is_arabic:
             # 1. General Python queries (basics, scripts, code, functions, loops)
@@ -266,7 +266,7 @@ class QueryPandasDocsUseCase:
             if words_count <= 4 and not any(k in q_lower for k in ["pandas", "بانداس", "بيانات", "جدول", "dataframe", "series"]):
                 return [
                     f"المستخدم يطرح استفساراً حوارياً: '{query.strip()}'.",
-                    "دعني أتفاعل معه بذكاء وأسلوب حواري طبيعي ولبق مثل ChatGPT.",
+                    "دعني أتفاعل معه بذكاء وأسلوب حواري طبيعي ولبق وودود.",
                     "سأجيب بتلقائية دون أي تكلف أو قوالب مسبقة، مع إمكانية توجيه الحديث برمجياً.",
                     "الآن، سأصيغ الرد المباشر..."
                 ]
@@ -699,7 +699,7 @@ class QueryPandasDocsUseCase:
             },
         }
 
-        # 5. DeepSeek-R1 / ChatGPT Active Thinking Phase
+        # 5. Active Thinking Phase
         yield {
             "event": "status",
             "data": {

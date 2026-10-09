@@ -20,103 +20,24 @@ import {
 import { CodeRunner } from './CodeRunner';
 
 /**
- * Minimalist ChatGPT / DeepSeek-style visual thinking component.
- * Displays clean gray internal monologue with subtle timer and collapses seamlessly without boxy containers.
+ * Elegant neural thinking & loading visual effect.
+ * Purely visual pulse and subtle glowing shimmer, without text logs.
  */
-const ThinkingProcess = ({
-  isThinking,
-  thoughtDurationMs,
-  statusMessage,
-  thoughts = [],
-  isStreaming,
-  hasContent,
-}) => {
-  const [isExpanded, setIsExpanded] = useState(isThinking);
-  const [elapsedSec, setElapsedSec] = useState('0.0');
-
-  // Live timer while actively thinking
-  useEffect(() => {
-    if (!isThinking) return;
-    const start = Date.now();
-    const interval = setInterval(() => {
-      setElapsedSec(((Date.now() - start) / 1000).toFixed(1));
-    }, 100);
-    return () => clearInterval(interval);
-  }, [isThinking]);
-
-  // When real answer starts streaming and thinking finishes, auto-collapse
-  useEffect(() => {
-    if (hasContent && !isThinking) {
-      setIsExpanded(false);
-    }
-  }, [hasContent, isThinking]);
-
-  // Keep expanded while actively thinking
-  useEffect(() => {
-    if (isThinking) {
-      setIsExpanded(true);
-    }
-  }, [isThinking]);
-
-  const durationText = thoughtDurationMs
-    ? `${(thoughtDurationMs / 1000).toFixed(1)} ثانية`
-    : `${elapsedSec} ثانية`;
-
+const VisualThinkingLoader = () => {
   return (
-    <div className="mb-3 select-none font-sans">
-      {/* DeepSeek Harness Style Reasoning Button */}
-      <button
-        type="button"
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="group inline-flex items-center gap-2 py-1 text-xs text-white/50 hover:text-white/80 transition-colors cursor-pointer select-none"
-      >
-        {isThinking ? (
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#6799fe] opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#6799fe]"></span>
-          </span>
-        ) : (
-          <Clock className="w-3.5 h-3.5 text-white/40 group-hover:text-white/60 transition-colors shrink-0" />
-        )}
-
-        <span className="font-medium text-white/60 group-hover:text-white transition-colors">
-          {isThinking ? 'Thinking...' : 'Thought for a while'}
+    <div className="flex items-center gap-2.5 py-2 px-1 select-none">
+      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]">
+        <span className="relative flex h-2 w-2">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#6799fe] opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-[#6799fe]"></span>
         </span>
-
-        <span className="text-[11px] text-white/40 font-mono">
-          {isThinking ? `${elapsedSec}s` : `(${durationText})`}
-        </span>
-
-        <ChevronDown
-          className={`w-3.5 h-3.5 text-white/40 group-hover:text-white/60 transition-transform duration-200 ${
-            isExpanded ? 'rotate-180' : ''
-          }`}
-        />
-      </button>
-
-      {/* DeepSeek Reasoning Trace Stream */}
-      {isExpanded && (
-        <div className="mt-2 pl-4 border-l-2 border-white/10 space-y-2 text-xs text-white/50 leading-relaxed font-mono transition-all">
-          {thoughts && thoughts.length > 0 ? (
-            thoughts.map((thought, tIdx) => (
-              <p key={tIdx} className="text-white/55 leading-relaxed font-mono">
-                {thought}
-              </p>
-            ))
-          ) : (
-            <p className="text-white/40 italic font-mono">
-              {statusMessage || 'Analyzing runtime context and synthesizing pipeline...'}
-            </p>
-          )}
-
-          {isThinking && (
-            <div className="flex items-center gap-1.5 text-[#6799fe] text-xs font-mono pt-1">
-              <span className="inline-block w-1.5 h-3 bg-[#6799fe] animate-pulse" />
-              <span>Deep diving...</span>
-            </div>
-          )}
+        <div className="flex items-center gap-1.5 px-0.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#6799fe] animate-bounce [animation-delay:-0.3s]"></span>
+          <span className="w-1.5 h-1.5 rounded-full bg-[#6799fe]/80 animate-bounce [animation-delay:-0.15s]"></span>
+          <span className="w-1.5 h-1.5 rounded-full bg-[#6799fe]/60 animate-bounce"></span>
         </div>
-      )}
+      </div>
+      <div className="h-1.5 w-20 rounded-full bg-gradient-to-r from-[#6799fe]/30 via-white/20 to-transparent animate-pulse" />
     </div>
   );
 };
@@ -260,12 +181,6 @@ export const MessageBubble = ({
     });
   };
 
-  const showThinkingWidget =
-    isAssistant &&
-    (message.isThinking ||
-      Boolean(message.thoughtDurationMs) ||
-      (isStreaming && isLast && !message.content));
-
     return (
     <div className={`flex gap-3.5 my-3 ${isAssistant ? 'justify-start w-full' : 'justify-end'}`}>
       {/* Assistant Avatar */}
@@ -318,28 +233,22 @@ export const MessageBubble = ({
           </div>
         )}
 
-        {/* ChatGPT / DeepSeek Visual Thinking Accordion */}
-        {showThinkingWidget && (
-          <ThinkingProcess
-            isThinking={message.isThinking || (isStreaming && isLast && !message.content)}
-            thoughtDurationMs={message.thoughtDurationMs}
-            statusMessage={message.statusMessage}
-            thoughts={message.thoughts || []}
-            steps={message.steps}
-            isStreaming={isStreaming}
-            hasContent={Boolean(message.content)}
-          />
+        {/* Visual Thinking Loading State (Pure Visual, No Text Logs) */}
+        {isAssistant && (message.isThinking || (isStreaming && isLast && !message.content)) && !message.content && (
+          <VisualThinkingLoader />
         )}
 
         {/* Message Content */}
-        <div className="relative">
-          {renderFormattedContent(message.content)}
+        {Boolean(message.content) && (
+          <div className="relative">
+            {renderFormattedContent(message.content)}
 
-          {/* Real-time Streaming Cursor */}
-          {isStreaming && isLast && isAssistant && Boolean(message.content) && (
-            <span className="inline-block w-2 h-4 ml-1 bg-[#6799fe] animate-pulse align-middle" />
-          )}
-        </div>
+            {/* Real-time Streaming Cursor */}
+            {isStreaming && isLast && isAssistant && (
+              <span className="inline-block w-2 h-4 ml-1 bg-[#6799fe] animate-pulse align-middle" />
+            )}
+          </div>
+        )}
 
         {/* Assistant Bottom Utility Bar */}
         {isAssistant && Boolean(message.content) && !isStreaming && (
@@ -384,7 +293,7 @@ export const MessageBubble = ({
           </div>
         )}
 
-        {/* Dynamic Contextual Suggestions (ChatGPT-style) */}
+        {/* Dynamic Contextual Suggestions */}
         {isAssistant && message.suggestions && message.suggestions.length > 0 && !message.isThinking && (
           <div className="mt-3.5 pt-3 border-t border-white/[0.08] select-none" dir="ltr">
             <div className="flex items-center gap-1.5 mb-2 text-xs text-white/50 font-medium font-sans">
