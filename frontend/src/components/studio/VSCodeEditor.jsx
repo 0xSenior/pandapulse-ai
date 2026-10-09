@@ -765,11 +765,11 @@ export const VSCodeEditor = ({
       className="relative flex flex-col h-full rounded-xl overflow-hidden border border-[#2b2b2b] bg-[#1e1e1e] shadow-2xl font-mono text-xs sm:text-[13px]"
     >
       {/* VS Code Tab Bar & Toolbar */}
-      <div className="flex items-center justify-between px-3 py-1.5 bg-[#252526] border-b border-[#333333] select-none text-xs">
+      <div className="flex items-center justify-between px-3 py-1.5 bg-[#141721] border-b border-white/[0.08] select-none text-xs">
         <div className="flex items-center gap-2">
           {/* Active File Tab */}
-          <div className="flex items-center gap-2 px-3 py-1 rounded-t-md bg-[#1e1e1e] text-[#cccccc] border-t-2 border-cyan-400 font-medium shadow-sm">
-            <span className="text-cyan-400 font-bold">🐍</span>
+          <div className="flex items-center gap-2 px-3 py-1 rounded-t-md bg-[#1e1e1e] text-[#cccccc] border-t-2 border-[#6799fe] font-medium shadow-sm">
+            <span className="text-[#6799fe] font-bold">🐍</span>
             <span>{filename}</span>
           </div>
 
@@ -786,17 +786,17 @@ export const VSCodeEditor = ({
             <button
               type="button"
               onClick={() => setShowSnippetsMenu(!showSnippetsMenu)}
-              className="flex items-center gap-1 px-2.5 py-1 rounded bg-[#2d2d2d] hover:bg-[#383838] text-white/80 hover:text-white transition-colors cursor-pointer"
+              className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-white/80 hover:text-white border border-white/[0.06] transition-colors cursor-pointer"
               title="Insert Python Snippet"
             >
-              <Sparkles className="w-3 h-3 text-cyan-400" />
+              <Sparkles className="w-3 h-3 text-[#6799fe]" />
               <span>Snippets</span>
             </button>
 
             {/* Snippets Dropdown */}
             {showSnippetsMenu && (
-              <div className="absolute right-0 top-full mt-1.5 w-64 max-h-60 overflow-y-auto no-scrollbar rounded-lg bg-[#252526] border border-[#454545] shadow-2xl z-40 p-1">
-                <div className="px-2 py-1 text-[10px] text-white/50 border-b border-[#333] font-sans">
+              <div className="absolute right-0 top-full mt-1.5 w-64 max-h-60 overflow-y-auto no-scrollbar rounded-lg bg-[#141721] border border-white/[0.12] shadow-2xl z-40 p-1">
+                <div className="px-2 py-1 text-[10px] text-white/50 border-b border-white/[0.06] font-sans">
                   Click to insert Python snippet
                 </div>
                 {PYTHON_SNIPPETS.map((snippet, idx) => (
@@ -804,7 +804,7 @@ export const VSCodeEditor = ({
                     key={idx}
                     type="button"
                     onClick={() => applySnippet(snippet)}
-                    className="w-full text-left px-2 py-1.5 rounded hover:bg-[#04395e] text-white/90 hover:text-white flex items-center justify-between group transition-colors"
+                    className="w-full text-left px-2 py-1.5 rounded hover:bg-[#6799fe]/20 text-white/90 hover:text-white flex items-center justify-between group transition-colors"
                   >
                     <span className="font-mono text-xs">{snippet.prefix}</span>
                     <span className="text-[10px] text-white/40 group-hover:text-white/70 truncate ml-2">
@@ -820,7 +820,7 @@ export const VSCodeEditor = ({
           <button
             type="button"
             onClick={() => setShowShortcutsModal(true)}
-            className="flex items-center gap-1 px-2 py-1 rounded bg-[#2d2d2d] hover:bg-[#383838] text-white/80 hover:text-white transition-colors cursor-pointer"
+            className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-white/80 hover:text-white border border-white/[0.06] transition-colors cursor-pointer"
             title="Keyboard Shortcuts Cheat-sheet"
           >
             <Keyboard className="w-3 h-3 text-amber-400" />
@@ -832,7 +832,7 @@ export const VSCodeEditor = ({
             <button
               type="button"
               onClick={onRun}
-              className="flex items-center gap-1 px-2.5 py-1 rounded bg-emerald-600/80 hover:bg-emerald-500 text-white font-medium transition-colors cursor-pointer"
+              className="flex items-center gap-1 px-3 py-1 rounded-lg bg-[#6799fe] hover:bg-[#5287f5] text-white font-medium shadow-md shadow-[#6799fe]/20 hover:shadow-[#6799fe]/35 transition-all cursor-pointer active:scale-95"
               title="Run Python Script (Ctrl + Enter)"
             >
               <Play className="w-3 h-3 fill-current" />
@@ -895,7 +895,7 @@ export const VSCodeEditor = ({
             spellCheck={false}
             autoCapitalize="off"
             autoComplete="off"
-            className="absolute inset-0 w-full h-full p-3.5 m-0 bg-transparent text-transparent caret-cyan-400 font-mono text-xs sm:text-[13px] leading-[22px] resize-none focus:outline-none overflow-auto selection:bg-[#264f78] selection:text-transparent whitespace-pre"
+            className="absolute inset-0 w-full h-full p-3.5 m-0 bg-transparent text-transparent caret-[#6799fe] font-mono text-xs sm:text-[13px] leading-[22px] resize-none focus:outline-none overflow-auto selection:bg-[#6799fe]/30 selection:text-transparent whitespace-pre"
           />
 
           {/* Floating VS Code IntelliSense Suggestions Dropdown */}
@@ -911,11 +911,11 @@ export const VSCodeEditor = ({
                   (textareaRef.current?.clientWidth || 500) - 260
                 ),
               }}
-              className="absolute z-30 w-64 max-h-52 overflow-y-auto no-scrollbar rounded-md bg-[#252526] border border-[#454545] shadow-2xl text-xs font-mono select-none"
+              className="absolute z-30 w-64 max-h-52 overflow-y-auto no-scrollbar rounded-xl bg-[#141721] border border-white/[0.12] shadow-2xl text-xs font-mono select-none"
             >
-              <div className="px-2 py-1 text-[10px] text-[#858585] border-b border-[#333333] flex items-center justify-between bg-[#1e1e1e]">
-                <span>IntelliSense Suggestions</span>
-                <span className="text-[9px]">Tab / ↵ to insert</span>
+              <div className="px-2.5 py-1 text-[10px] text-white/50 border-b border-white/[0.06] flex items-center justify-between bg-[#0e111a]">
+                <span className="font-sans">IntelliSense Suggestions</span>
+                <span className="text-[9px] text-[#88b0ff]">Tab / ↵ to insert</span>
               </div>
               <div className="py-0.5">
                 {suggestions.map((item, idx) => (
@@ -925,10 +925,10 @@ export const VSCodeEditor = ({
                       e.preventDefault();
                       applySnippet(item);
                     }}
-                    className={`px-2.5 py-1 flex items-center justify-between cursor-pointer transition-colors ${
+                    className={`px-2.5 py-1.5 flex items-center justify-between cursor-pointer transition-colors ${
                       idx === activeSuggestionIdx
-                        ? 'bg-[#04395e] text-white font-semibold'
-                        : 'text-[#cccccc] hover:bg-[#2a2d2e]'
+                        ? 'bg-[#6799fe]/20 text-white font-semibold'
+                        : 'text-white/70 hover:bg-white/[0.05] hover:text-white'
                     }`}
                   >
                     <div className="flex items-center gap-1.5 truncate">
@@ -936,14 +936,14 @@ export const VSCodeEditor = ({
                         item.kind === 'snippet'
                           ? 'text-amber-400'
                           : item.kind === 'module'
-                          ? 'text-[#4ec9b0]'
+                          ? 'text-[#6799fe]'
                           : 'text-[#dcdcaa]'
                       }`}>
                         {item.kind === 'snippet' ? '⧉' : item.kind === 'module' ? '✦' : 'λ'}
                       </span>
                       <span className="truncate">{item.label}</span>
                     </div>
-                    <span className="text-[9px] text-[#858585] capitalize shrink-0 ml-1">
+                    <span className="text-[9px] text-white/40 capitalize shrink-0 ml-1">
                       {item.kind}
                     </span>
                   </div>
@@ -955,31 +955,31 @@ export const VSCodeEditor = ({
       </div>
 
       {/* VS Code Bottom Status Bar */}
-      <div className="flex flex-wrap items-center justify-between px-3 py-1 bg-[#007acc]/90 text-white text-[11px] select-none font-sans gap-2">
+      <div className="flex flex-wrap items-center justify-between px-3 py-1.5 bg-[#0c0e14] border-t border-white/[0.08] text-white/70 text-[11px] select-none font-sans gap-2">
         <div className="flex items-center gap-3">
-          <span className="font-semibold flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="font-semibold flex items-center gap-1.5 text-white">
+            <span className="w-2 h-2 rounded-full bg-[#6799fe] animate-pulse" />
             <span>PandaPulse Editor</span>
           </span>
-          <span>•</span>
-          <span className="text-white/80 hidden sm:inline">Ctrl+Enter Run · Ctrl+/ Comment · Tab Snippet</span>
+          <span className="text-white/20">•</span>
+          <span className="text-white/50 hidden sm:inline">Ctrl+Enter Run · Ctrl+/ Comment · Tab Snippet</span>
         </div>
 
-        <div className="flex items-center gap-3 font-mono text-[10px]">
+        <div className="flex items-center gap-3 font-mono text-[10px] text-white/50">
           <span>Ln {cursorPos.line}, Col {cursorPos.col}</span>
           <span>Spaces: 4</span>
-          <span>Python (WASM)</span>
+          <span className="text-[#88b0ff]">Python (WASM)</span>
         </div>
       </div>
 
       {/* Keyboard Shortcuts Cheat-sheet Modal */}
       {showShortcutsModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-2xl bg-[#1e1e1e] border border-[#333333] shadow-2xl p-5 text-white font-sans">
-            <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-2xl bg-[#0c0e14] border border-white/[0.1] shadow-2xl p-5 text-white font-sans">
+            <div className="flex items-center justify-between pb-3 border-b border-white/[0.08] mb-4">
               <div className="flex items-center gap-2">
-                <Keyboard className="w-5 h-5 text-cyan-400" />
-                <h3 className="font-bold text-sm">VS Code Shortcuts & Snippets</h3>
+                <Keyboard className="w-5 h-5 text-[#6799fe]" />
+                <h3 className="font-bold text-sm text-white">VS Code Shortcuts & Snippets</h3>
               </div>
               <button
                 type="button"
@@ -993,32 +993,32 @@ export const VSCodeEditor = ({
             <div className="space-y-2 text-xs">
               <div className="flex items-center justify-between p-2 rounded-lg bg-white/[0.04] border border-white/[0.06]">
                 <span className="text-white/80">تشغيل الكود (Run Script)</span>
-                <kbd className="px-2 py-0.5 rounded bg-white/10 font-mono text-[11px] text-cyan-300">Ctrl + Enter</kbd>
+                <kbd className="px-2 py-0.5 rounded bg-white/10 font-mono text-[11px] text-[#88b0ff] border border-white/10">Ctrl + Enter</kbd>
               </div>
 
               <div className="flex items-center justify-between p-2 rounded-lg bg-white/[0.04] border border-white/[0.06]">
                 <span className="text-white/80">تعليق / فك التعليق (Toggle Comment)</span>
-                <kbd className="px-2 py-0.5 rounded bg-white/10 font-mono text-[11px] text-cyan-300">Ctrl + /</kbd>
+                <kbd className="px-2 py-0.5 rounded bg-white/10 font-mono text-[11px] text-[#88b0ff] border border-white/10">Ctrl + /</kbd>
               </div>
 
               <div className="flex items-center justify-between p-2 rounded-lg bg-white/[0.04] border border-white/[0.06]">
                 <span className="text-white/80">إكمال القصاصات والمحاذاة (Snippets & Indent)</span>
-                <kbd className="px-2 py-0.5 rounded bg-white/10 font-mono text-[11px] text-cyan-300">Tab</kbd>
+                <kbd className="px-2 py-0.5 rounded bg-white/10 font-mono text-[11px] text-[#88b0ff] border border-white/10">Tab</kbd>
               </div>
 
               <div className="flex items-center justify-between p-2 rounded-lg bg-white/[0.04] border border-white/[0.06]">
                 <span className="text-white/80">قائمة الاقتراحات الذكية (IntelliSense)</span>
-                <kbd className="px-2 py-0.5 rounded bg-white/10 font-mono text-[11px] text-cyan-300">Ctrl + Space</kbd>
+                <kbd className="px-2 py-0.5 rounded bg-white/10 font-mono text-[11px] text-[#88b0ff] border border-white/10">Ctrl + Space</kbd>
               </div>
 
               <div className="flex items-center justify-between p-2 rounded-lg bg-white/[0.04] border border-white/[0.06]">
                 <span className="text-white/80">تكرار السطر الحالي (Duplicate Line)</span>
-                <kbd className="px-2 py-0.5 rounded bg-white/10 font-mono text-[11px] text-cyan-300">Ctrl + D</kbd>
+                <kbd className="px-2 py-0.5 rounded bg-white/10 font-mono text-[11px] text-[#88b0ff] border border-white/10">Ctrl + D</kbd>
               </div>
 
               <div className="flex items-center justify-between p-2 rounded-lg bg-white/[0.04] border border-white/[0.06]">
                 <span className="text-white/80">تحريك السطر للأعلى / للأسفل</span>
-                <kbd className="px-2 py-0.5 rounded bg-white/10 font-mono text-[11px] text-cyan-300">Alt + ↑ / ↓</kbd>
+                <kbd className="px-2 py-0.5 rounded bg-white/10 font-mono text-[11px] text-[#88b0ff] border border-white/10">Alt + ↑ / ↓</kbd>
               </div>
 
               <div className="flex items-center justify-between p-2 rounded-lg bg-white/[0.04] border border-white/[0.06]">
@@ -1027,11 +1027,11 @@ export const VSCodeEditor = ({
               </div>
             </div>
 
-            <div className="mt-4 pt-3 border-t border-white/10 flex justify-end">
+            <div className="mt-4 pt-3 border-t border-white/[0.08] flex justify-end">
               <button
                 type="button"
                 onClick={() => setShowShortcutsModal(false)}
-                className="px-4 py-1.5 rounded-full bg-white text-[#0a0a0a] text-xs font-semibold hover:bg-white/90 transition-colors cursor-pointer"
+                className="px-4 py-1.5 rounded-full bg-[#6799fe] hover:bg-[#5287f5] text-white text-xs font-semibold shadow-md shadow-[#6799fe]/20 transition-all cursor-pointer active:scale-95"
               >
                 حسناً، فهمت
               </button>

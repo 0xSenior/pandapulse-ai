@@ -205,17 +205,17 @@ export const PythonHighlighter = ({
   return (
     <div
       dir="ltr"
-      className={`relative w-full font-mono text-xs sm:text-[13px] leading-relaxed overflow-x-auto text-left selection:bg-[#264f78] selection:text-white ${className}`}
+      className={`relative w-full font-mono text-xs sm:text-[13px] leading-relaxed overflow-x-auto text-left selection:bg-[#6799fe]/30 selection:text-white ${className}`}
     >
-      <div className={`p-4 ${maxHeight} overflow-y-auto`}>
+      <div className={`p-4 ${maxHeight} overflow-y-auto no-scrollbar`}>
         <table className="w-full border-collapse">
           <tbody>
             {lines.map((line, idx) => (
-              <tr key={idx} className="hover:bg-white/[0.02] transition-colors">
+              <tr key={idx} className="hover:bg-white/[0.03] transition-colors">
                 {/* Line Number Gutter (Non-selectable) */}
                 {showLineNumbers && (
                   <td
-                    className="select-none pr-4 text-right align-top text-slate-600 font-mono text-[11px] w-9 border-r border-white/5 whitespace-nowrap"
+                    className="select-none pr-4 text-right align-top text-white/30 font-mono text-[11px] w-9 border-r border-white/[0.06] whitespace-nowrap"
                     aria-hidden="true"
                   >
                     {idx + 1}

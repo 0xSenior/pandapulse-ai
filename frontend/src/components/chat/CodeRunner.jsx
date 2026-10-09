@@ -121,13 +121,13 @@ export const CodeRunner = ({
   return (
     <div
       dir="ltr"
-      className="my-3.5 rounded-xl overflow-hidden border border-cyan-500/20 bg-slate-950/95 shadow-xl text-left font-sans transition-all"
+      className="my-3.5 rounded-xl overflow-hidden border border-white/[0.08] bg-[#0c0e14] shadow-2xl text-left font-sans transition-all"
     >
       {/* Code Header Bar */}
-      <div className="flex items-center justify-between px-3.5 py-2 bg-slate-900/90 border-b border-white/10 text-xs text-slate-300 font-mono">
+      <div className="flex items-center justify-between px-3.5 py-2 bg-white/[0.02] border-b border-white/[0.06] text-xs text-white/70 font-mono">
         <div className="flex items-center gap-2">
-          <Terminal className="w-3.5 h-3.5 text-cyan-400" />
-          <span className="text-cyan-300 font-semibold uppercase">{language}</span>
+          <Terminal className="w-3.5 h-3.5 text-[#6799fe]" />
+          <span className="text-white/90 font-semibold uppercase">{language}</span>
           {syntaxCheck && (
             <span
               className={`hidden sm:inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border font-mono ${syntaxCheck.color}`}
@@ -145,9 +145,9 @@ export const CodeRunner = ({
               type="button"
               onClick={() => onOpenInStudio(code)}
               title="Open code in Split-Screen Studio"
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-cyan-300 transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-white/70 hover:text-white border border-white/[0.06] hover:border-white/10 transition-colors cursor-pointer"
             >
-              <ExternalLink className="w-3 h-3 text-cyan-400" />
+              <ExternalLink className="w-3 h-3 text-[#6799fe]" />
               <span className="hidden sm:inline">Studio</span>
             </button>
           )}
@@ -156,7 +156,7 @@ export const CodeRunner = ({
           <button
             type="button"
             onClick={handleCopy}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-cyan-300 transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-white/70 hover:text-white border border-white/[0.06] hover:border-white/10 transition-colors cursor-pointer"
           >
             {copied ? (
               <>
@@ -175,7 +175,7 @@ export const CodeRunner = ({
           <button
             type="button"
             onClick={handleShare}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-cyan-300 transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-white/70 hover:text-white border border-white/[0.06] hover:border-white/10 transition-colors cursor-pointer"
             title="Share runnable code solution link"
           >
             {shared ? (
@@ -185,19 +185,19 @@ export const CodeRunner = ({
               </>
             ) : (
               <>
-                <Share2 className="w-3.5 h-3.5 text-cyan-400" />
+                <Share2 className="w-3.5 h-3.5 text-[#6799fe]" />
                 <span className="hidden sm:inline">Share</span>
               </>
             )}
           </button>
 
-          {/* Run in Browser Button */}
+          {/* Run in Browser Button (PandaPulse Signature Brand Button) */}
           {isPython && (
             <button
               type="button"
               onClick={handleRun}
               disabled={isRunning}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-cyan-600/90 hover:bg-cyan-500 text-white font-medium shadow-md shadow-cyan-900/40 hover:shadow-cyan-500/30 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-1.5 px-3.5 py-1 rounded-lg bg-[#6799fe] hover:bg-[#5287f5] text-white font-medium shadow-md shadow-[#6799fe]/20 hover:shadow-[#6799fe]/35 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
             >
               {isRunning ? (
                 <>
@@ -224,20 +224,20 @@ export const CodeRunner = ({
 
       {/* Live Loading Indicator */}
       {isRunning && (
-        <div className="px-4 py-2.5 bg-cyan-950/40 border-t border-cyan-800/40 flex items-center justify-between text-xs text-cyan-300">
+        <div className="px-4 py-2.5 bg-[#6799fe]/10 border-t border-[#6799fe]/20 flex items-center justify-between text-xs text-[#88b0ff]">
           <div className="flex items-center gap-2">
-            <Loader2 className="w-4 h-4 animate-spin text-cyan-400" />
+            <Loader2 className="w-4 h-4 animate-spin text-[#6799fe]" />
             <span>{statusMessage || 'Executing in WebAssembly sandbox...'}</span>
           </div>
-          <span className="text-[11px] text-cyan-500 font-mono">Python 3.12 (Client-Side)</span>
+          <span className="text-[11px] text-[#6799fe] font-mono">Python 3.14 (Client-Side WASM)</span>
         </div>
       )}
 
       {/* Execution Results Panel */}
       {result && (
-        <div className="border-t border-white/10 bg-slate-950/80">
+        <div className="border-t border-white/[0.08] bg-[#090b10]">
           {/* Result Header & Tabs */}
-          <div className="flex items-center justify-between px-3.5 py-1.5 bg-slate-900/60 border-b border-white/5 text-xs">
+          <div className="flex items-center justify-between px-3.5 py-1.5 bg-white/[0.02] border-b border-white/[0.06] text-xs">
             <div className="flex items-center gap-1">
               {/* Console Tab */}
               <button
@@ -245,11 +245,11 @@ export const CodeRunner = ({
                 onClick={() => setActiveTab('console')}
                 className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-colors cursor-pointer font-medium ${
                   activeTab === 'console'
-                    ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-[#6799fe]/15 text-[#88b0ff] border border-[#6799fe]/25'
+                    : 'text-white/60 hover:text-white'
                 }`}
               >
-                <Terminal className="w-3 h-3" />
+                <Terminal className="w-3 h-3 text-[#6799fe]" />
                 <span>Console</span>
               </button>
 
@@ -260,11 +260,11 @@ export const CodeRunner = ({
                   onClick={() => setActiveTab('table')}
                   className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-colors cursor-pointer font-medium ${
                     activeTab === 'table'
-                      ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
-                      : 'text-slate-400 hover:text-slate-200'
+                      ? 'bg-[#6799fe]/15 text-[#88b0ff] border border-[#6799fe]/25'
+                      : 'text-white/60 hover:text-white'
                   }`}
                 >
-                  <TableIcon className="w-3 h-3" />
+                  <TableIcon className="w-3 h-3 text-[#6799fe]" />
                   <span>DataFrame ({result.dataframe.shape[0]}×{result.dataframe.shape[1]})</span>
                 </button>
               )}
@@ -276,11 +276,11 @@ export const CodeRunner = ({
                   onClick={() => setActiveTab('plot')}
                   className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-colors cursor-pointer font-medium ${
                     activeTab === 'plot'
-                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                      : 'text-slate-400 hover:text-slate-200'
+                      ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/25'
+                      : 'text-white/60 hover:text-white'
                   }`}
                 >
-                  <ImageIcon className="w-3 h-3" />
+                  <ImageIcon className="w-3 h-3 text-emerald-400" />
                   <span>Plot</span>
                 </button>
               )}
@@ -360,38 +360,38 @@ export const CodeRunner = ({
               {/* Tab 2: Interactive DataFrame Table */}
               {activeTab === 'table' && result.dataframe && (
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between text-slate-400 text-[11px]">
-                    <span className="font-semibold text-cyan-300">
-                      Variable: <code className="text-cyan-400">{result.dataframe.var_name}</code> ({result.dataframe.shape[0]} rows × {result.dataframe.shape[1]} cols)
+                  <div className="flex items-center justify-between text-white/50 text-[11px]">
+                    <span className="font-semibold text-white/90">
+                      Variable: <code className="text-[#88b0ff]">{result.dataframe.var_name}</code> ({result.dataframe.shape[0]} rows × {result.dataframe.shape[1]} cols)
                     </span>
                     <span>Memory: ~{result.dataframe.memory_usage_kb} KB</span>
                   </div>
 
-                  <div className="overflow-x-auto rounded-lg border border-white/10 max-h-64">
+                  <div className="overflow-x-auto rounded-lg border border-white/[0.08] max-h-64 no-scrollbar">
                     <table className="w-full text-left border-collapse text-xs">
                       <thead>
-                        <tr className="bg-slate-900 border-b border-white/10 text-slate-300">
-                          <th className="px-3 py-1.5 border-r border-white/5 text-slate-500">#</th>
+                        <tr className="bg-white/[0.03] border-b border-white/[0.08] text-white/80">
+                          <th className="px-3 py-1.5 border-r border-white/5 text-white/40">#</th>
                           {result.dataframe.columns.map((col, idx) => (
-                            <th key={idx} className="px-3 py-1.5 border-r border-white/5 font-semibold text-slate-200 whitespace-nowrap">
+                            <th key={idx} className="px-3 py-1.5 border-r border-white/5 font-semibold text-white/90 whitespace-nowrap">
                               {col}
-                              <span className="block text-[10px] font-normal text-slate-500">
+                              <span className="block text-[10px] font-normal text-white/40">
                                 {result.dataframe.dtypes[col] || 'object'}
                               </span>
                             </th>
                           ))}
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-white/5 bg-slate-950/60">
+                      <tbody className="divide-y divide-white/[0.04] bg-[#0c0e14]">
                         {result.dataframe.records
                           .slice(page * pageSize, (page + 1) * pageSize)
                           .map((row, rIdx) => (
-                            <tr key={rIdx} className="hover:bg-slate-800/40 transition-colors">
-                              <td className="px-3 py-1.5 border-r border-white/5 text-slate-500 text-[11px]">
+                            <tr key={rIdx} className="hover:bg-white/[0.03] transition-colors">
+                              <td className="px-3 py-1.5 border-r border-white/5 text-white/40 text-[11px]">
                                 {page * pageSize + rIdx}
                               </td>
                               {result.dataframe.columns.map((col, cIdx) => (
-                                <td key={cIdx} className="px-3 py-1.5 border-r border-white/5 text-slate-300 whitespace-nowrap">
+                                <td key={cIdx} className="px-3 py-1.5 border-r border-white/5 text-white/80 whitespace-nowrap">
                                   {String(row[col] ?? 'NaN')}
                                 </td>
                               ))}
@@ -403,7 +403,7 @@ export const CodeRunner = ({
 
                   {/* Pagination */}
                   {result.dataframe.records.length > pageSize && (
-                    <div className="flex items-center justify-between text-[11px] text-slate-400 pt-1">
+                    <div className="flex items-center justify-between text-[11px] text-white/50 pt-1">
                       <span>
                         Showing {page * pageSize + 1} to{' '}
                         {Math.min((page + 1) * pageSize, result.dataframe.records.length)} of{' '}
@@ -414,7 +414,7 @@ export const CodeRunner = ({
                           type="button"
                           disabled={page === 0}
                           onClick={() => setPage(p => p - 1)}
-                          className="px-2 py-0.5 rounded bg-white/5 hover:bg-white/10 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
+                          className="px-2 py-0.5 rounded bg-white/[0.04] hover:bg-white/[0.08] text-white/70 hover:text-white border border-white/[0.06] disabled:opacity-30 cursor-pointer disabled:cursor-not-allowed"
                         >
                           Prev
                         </button>
@@ -422,7 +422,7 @@ export const CodeRunner = ({
                           type="button"
                           disabled={(page + 1) * pageSize >= result.dataframe.records.length}
                           onClick={() => setPage(p => p + 1)}
-                          className="px-2 py-0.5 rounded bg-white/5 hover:bg-white/10 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
+                          className="px-2 py-0.5 rounded bg-white/[0.04] hover:bg-white/[0.08] text-white/70 hover:text-white border border-white/[0.06] disabled:opacity-30 cursor-pointer disabled:cursor-not-allowed"
                         >
                           Next
                         </button>
@@ -435,7 +435,7 @@ export const CodeRunner = ({
               {/* Tab 3: Matplotlib Plot Viewer */}
               {activeTab === 'plot' && result.plot && (
                 <div className="space-y-2">
-                  <div className="rounded-lg overflow-hidden border border-white/10 bg-slate-950 flex items-center justify-center p-2">
+                  <div className="rounded-lg overflow-hidden border border-white/[0.08] bg-[#0c0e14] flex items-center justify-center p-2">
                     <img
                       src={result.plot}
                       alt="Rendered Matplotlib Chart"
@@ -446,9 +446,9 @@ export const CodeRunner = ({
                     <a
                       href={result.plot}
                       download="pandapulse_chart.png"
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-slate-300 hover:text-cyan-300 text-xs transition-colors cursor-pointer"
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-white/70 hover:text-[#88b0ff] border border-white/[0.06] text-xs transition-colors cursor-pointer"
                     >
-                      <Download className="w-3 h-3" />
+                      <Download className="w-3 h-3 text-[#6799fe]" />
                       <span>Download Chart PNG</span>
                     </a>
                   </div>
