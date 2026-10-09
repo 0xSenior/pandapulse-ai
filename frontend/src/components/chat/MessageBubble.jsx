@@ -215,7 +215,7 @@ export const MessageBubble = ({
           className={`${
             isAssistant
               ? `${isWideContent ? 'w-full' : 'w-fit max-w-full'} ds-card px-4 sm:px-5 py-3 text-white/90 shadow-md transition-all duration-200`
-              : 'w-fit max-w-full rounded-2xl px-4 py-2 bg-white text-[#0a0a0a] font-medium shadow-sm text-sm'
+              : 'w-fit max-w-full rounded-2xl px-4 py-2.5 bg-[#181b24] border border-white/[0.12] text-white/95 shadow-sm text-[13.5px] sm:text-sm leading-relaxed'
           }`}
         >
           {/* Assistant Header Metadata */}
