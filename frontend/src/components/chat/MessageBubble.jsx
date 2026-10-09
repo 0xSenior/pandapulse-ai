@@ -64,57 +64,55 @@ const ThinkingProcess = ({
 
   return (
     <div className="mb-3 select-none font-sans">
-      {/* Minimalist ChatGPT-style Toggle Button */}
+      {/* DeepSeek Harness Style Reasoning Button */}
       <button
         type="button"
         onClick={() => setIsExpanded(!isExpanded)}
-        className="group inline-flex items-center gap-2 py-1 text-xs sm:text-sm text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer select-none"
+        className="group inline-flex items-center gap-2 py-1 text-xs text-white/50 hover:text-white/80 transition-colors cursor-pointer select-none"
       >
         {isThinking ? (
           <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-400"></span>
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#6799fe] opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#6799fe]"></span>
           </span>
         ) : (
-          <Brain className="w-3.5 h-3.5 text-zinc-500 group-hover:text-zinc-400 transition-colors shrink-0" />
+          <Clock className="w-3.5 h-3.5 text-white/40 group-hover:text-white/60 transition-colors shrink-0" />
         )}
 
-        <span className="font-medium text-zinc-300 group-hover:text-zinc-100 transition-colors">
-          {isThinking ? 'يفكر الموديل...' : `تم التفكير (${durationText})`}
+        <span className="font-medium text-white/60 group-hover:text-white transition-colors">
+          {isThinking ? 'Thinking...' : 'Thought for a while'}
         </span>
 
-        {isThinking && (
-          <span className="text-[11px] text-zinc-500 font-mono">
-            {elapsedSec} ثانية
-          </span>
-        )}
+        <span className="text-[11px] text-white/40 font-mono">
+          {isThinking ? `${elapsedSec}s` : `(${durationText})`}
+        </span>
 
         <ChevronDown
-          className={`w-3.5 h-3.5 text-zinc-500 group-hover:text-zinc-300 transition-transform duration-200 ${
+          className={`w-3.5 h-3.5 text-white/40 group-hover:text-white/60 transition-transform duration-200 ${
             isExpanded ? 'rotate-180' : ''
           }`}
         />
       </button>
 
-      {/* Pure Gray Internal Monologue (ChatGPT Style: No card, No box, No borders) */}
+      {/* DeepSeek Reasoning Trace Stream */}
       {isExpanded && (
-        <div className="mt-2 pr-3.5 border-r-2 border-zinc-700/60 space-y-2 text-xs sm:text-[13px] text-zinc-400 leading-relaxed font-sans transition-all">
+        <div className="mt-2 pl-4 border-l-2 border-white/10 space-y-2 text-xs text-white/50 leading-relaxed font-mono transition-all">
           {thoughts && thoughts.length > 0 ? (
             thoughts.map((thought, tIdx) => (
-              <p key={tIdx} className="text-zinc-400/90 leading-relaxed font-sans">
+              <p key={tIdx} className="text-white/55 leading-relaxed font-mono">
                 {thought}
               </p>
             ))
           ) : (
-            <p className="text-zinc-500 italic">
-              {statusMessage || 'جاري استحضار المعطيات وتحليل بنية البيانات...'}
+            <p className="text-white/40 italic font-mono">
+              {statusMessage || 'Analyzing runtime context and synthesizing pipeline...'}
             </p>
           )}
 
           {isThinking && (
-            <div className="flex items-center gap-1.5 text-zinc-500 text-xs italic pt-1">
-              <span className="inline-block w-1.5 h-3 bg-zinc-400 animate-pulse" />
-              <span>جاري بلورة الأفكار وبناء الحل...</span>
+            <div className="flex items-center gap-1.5 text-[#6799fe] text-xs font-mono pt-1">
+              <span className="inline-block w-1.5 h-3 bg-[#6799fe] animate-pulse" />
+              <span>Deep diving...</span>
             </div>
           )}
         </div>

@@ -2,79 +2,141 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --ds-color-bg-page: #0a0a0a;
+  --ds-color-brand: #6799fe;
+  --ds-color-brand-deep: #4176e6;
+  --ds-color-brand-light-reverse: #73a3d2;
+  --ds-color-text-primary: #ffffff;
+  --ds-color-text-secondary: hsla(0, 0%, 100%, 0.8);
+  --ds-color-text-description: hsla(0, 0%, 100%, 0.5);
+  --ds-color-text-placeholder: hsla(0, 0%, 100%, 0.3);
+  --ds-color-bg-surface-1: hsla(0, 0%, 100%, 0.06);
+  --ds-color-bg-surface-2: hsla(0, 0%, 100%, 0.04);
+  --ds-color-bg-surface-3: hsla(0, 0%, 100%, 0.02);
+  --ds-color-bg-surface-raised: hsla(0, 0%, 100%, 0.25);
+  --ds-color-border-subtle: hsla(0, 0%, 100%, 0.08);
+  --ds-color-border-default: hsla(0, 0%, 100%, 0.12);
+  --ds-shadow-card: hsla(0, 0%, 100%, 0.12) 0px 1px 0px 0px inset;
+  --ds-font-body: "DM Sans", system-ui, -apple-system, sans-serif;
+  --ds-font-display: "Host Grotesk", system-ui, -apple-system, sans-serif;
+  --ds-font-mono: "Fragment Mono", "Fira Code", monospace;
+}
+
 @layer base {
   body {
-    background-color: #050811;
-    color: #f1f5f9;
-    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    background-color: var(--ds-color-bg-page);
+    color: var(--ds-color-text-primary);
+    font-family: var(--ds-font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overscroll-behavior: none;
   }
 
-  code, pre {
-    font-family: 'Fira Code', monospace;
+  h1, h2, h3, h4, .font-display {
+    font-family: var(--ds-font-display);
+    letter-spacing: -0.02em;
   }
 
-  /* Custom sleek scrollbar */
+  code, pre, .font-mono {
+    font-family: var(--ds-font-mono);
+  }
+
+  ::selection {
+    background-color: var(--ds-color-brand);
+    color: #ffffff;
+  }
+
+  /* DeepSeek Sleek minimal scrollbar */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: #050811;
+    background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: #1e293b;
+    background: rgba(255, 255, 255, 0.15);
     border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #334155;
+    background: rgba(255, 255, 255, 0.3);
+  }
+}
+
+@layer components {
+  /* DeepSeek Primary Button */
+  .ds-btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full font-medium text-[14px] text-[#0a0a0a] bg-white hover:bg-white/90 active:scale-[0.98] transition-all duration-200 cursor-pointer shadow-sm select-none;
+  }
+
+  /* DeepSeek Secondary Button */
+  .ds-btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full font-medium text-[14px] text-white bg-white/[0.06] hover:bg-white/[0.12] active:bg-white/[0.08] border border-white/15 hover:border-white/30 transition-all duration-200 cursor-pointer select-none;
+  }
+
+  /* DeepSeek Ghost Button */
+  .ds-btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg text-white/70 hover:text-white hover:bg-white/[0.06] transition-all duration-150 cursor-pointer select-none;
+  }
+
+  /* DeepSeek Card with Inset 1px highlight */
+  .ds-card {
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: hsla(0, 0%, 100%, 0.08) 0px 1px 0px 0px inset;
+    border-radius: 20px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .ds-card-hover {
+    @apply transition-all duration-200;
+  }
+  .ds-card-hover:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.16);
+    box-shadow: hsla(0, 0%, 100%, 0.12) 0px 1px 0px 0px inset, 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  }
+
+  /* DeepSeek Locale Toggle Pill */
+  .ds-locale-toggle {
+    @apply inline-flex items-center p-0.5 rounded-full bg-white/[0.06] border border-white/10;
+  }
+  .ds-locale-toggle-item {
+    @apply px-2.5 py-1 text-[12px] font-medium text-white/60 hover:text-white rounded-full transition-all cursor-pointer;
+  }
+  .ds-locale-toggle-item.is-active {
+    @apply bg-white text-[#0a0a0a] shadow-sm;
+  }
+
+  /* DeepSeek Brand Chip */
+  .ds-chip {
+    @apply inline-flex items-center px-2 py-0.5 rounded text-[11px] font-mono font-bold tracking-wider uppercase bg-[#F9FAFB] text-[#353638];
   }
 }
 
 @layer utilities {
   .glass-panel {
-    background: rgba(13, 20, 36, 0.65);
+    background: rgba(14, 14, 14, 0.75);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
-  .glass-card-hover {
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .glass-card-hover:hover {
-    transform: translateY(-2px);
-    border-color: rgba(0, 242, 254, 0.3);
-    box-shadow: 0 12px 30px -10px rgba(0, 242, 254, 0.15);
+  .ds-text-hero {
+    font-size: clamp(2rem, 5vw, 3.75rem);
+    line-height: 1.08;
+    letter-spacing: -0.03em;
   }
 
-  .glow-cyan {
-    box-shadow: 0 0 25px -5px rgba(0, 242, 254, 0.35);
-  }
-
-  .glow-violet {
-    box-shadow: 0 0 25px -5px rgba(79, 172, 254, 0.35);
-  }
-
-  .glow-amber {
-    box-shadow: 0 0 25px -5px rgba(245, 158, 11, 0.35);
-  }
-
-  .text-gradient-cyan {
-    background: linear-gradient(135deg, #ffffff 0%, #00f2fe 60%, #4facfe 100%);
+  .ds-gradient-text {
+    background: linear-gradient(180deg, #FFFFFF 0%, rgba(255, 255, 255, 0.75) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
-  .text-gradient-amber {
-    background: linear-gradient(135deg, #fef08a 0%, #f59e0b 60%, #d97706 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .bg-grid-ambient {
-    background-size: 32px 32px;
-    background-image: 
-      linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  .ds-glow-brand {
+    box-shadow: 0 0 40px -10px rgba(103, 153, 254, 0.25);
   }
 }

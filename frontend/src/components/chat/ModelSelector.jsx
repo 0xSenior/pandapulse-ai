@@ -1,19 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Cpu, Check, ChevronDown, Sparkles, Zap, Shield, Brain } from 'lucide-react';
+import { Cpu, Check, ChevronDown } from 'lucide-react';
 import { API_BASE_URL } from '../../config/api';
 
 const DEFAULT_MODELS = [
   {
-    id: 'qwen2.5-coder:1.5b',
-    name: 'Qwen 2.5 Coder',
-    provider: 'ollama',
-    type: 'local',
-    badge: 'Local & Private',
-  },
-  {
-    id: 'llama-3.3-70b-versatile',
-    name: 'Llama 3.3 70B',
-    provider: 'groq',
+    id: 'deepseek-v4-flash',
+    name: 'DeepSeek-V4-Flash',
+    provider: 'deepseek',
     type: 'cloud',
     badge: 'High Speed',
   },
@@ -23,6 +16,20 @@ const DEFAULT_MODELS = [
     provider: 'groq',
     type: 'cloud',
     badge: 'Deep Reasoning',
+  },
+  {
+    id: 'qwen2.5-coder:1.5b',
+    name: 'Qwen 2.5 Coder',
+    provider: 'ollama',
+    type: 'local',
+    badge: 'Local WASM',
+  },
+  {
+    id: 'llama-3.3-70b-versatile',
+    name: 'Llama 3.3 70B',
+    provider: 'groq',
+    type: 'cloud',
+    badge: 'Versatile',
   },
 ];
 
@@ -41,7 +48,7 @@ export const ModelSelector = ({ selectedModel, onSelectModel }) => {
           }
         }
       } catch (e) {
-        // use fallback models
+        // fallback
       }
     };
     fetchModels();
@@ -50,18 +57,18 @@ export const ModelSelector = ({ selectedModel, onSelectModel }) => {
   const current = models.find((m) => m.id === selectedModel?.id) || selectedModel || models[0];
 
   return (
-    <div className="relative font-sans">
+    <div className="relative font-sans select-none">
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800/90 border border-white/10 hover:border-cyan-500/40 text-xs text-slate-200 transition-all cursor-pointer shadow-sm"
+        className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 text-xs text-white transition-all cursor-pointer shadow-sm"
       >
-        <Cpu className="w-3.5 h-3.5 text-cyan-400" />
-        <span className="font-semibold text-white">{current.name}</span>
-        <span className="hidden sm:inline text-[10px] px-1.5 py-0.2 rounded bg-cyan-950 text-cyan-400 border border-cyan-800/40 font-mono">
+        <span className="w-1.5 h-1.5 rounded-full bg-[#6799fe]" />
+        <span className="font-medium text-white">{current.name}</span>
+        <span className="hidden sm:inline text-[10px] px-1.5 py-0.5 rounded-full bg-white/[0.06] text-white/60 font-mono">
           {current.badge || current.type}
         </span>
-        <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`w-3.5 h-3.5 text-white/40 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (
@@ -70,12 +77,12 @@ export const ModelSelector = ({ selectedModel, onSelectModel }) => {
             className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute left-0 mt-2 w-72 rounded-2xl bg-slate-900/95 border border-white/10 shadow-2xl backdrop-blur-2xl p-2 z-50 divide-y divide-white/5">
-            <div className="px-3 py-2 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-              Select Neural Engine
+          <div className="absolute left-0 mt-2 w-72 rounded-2xl bg-[#141414]/95 border border-white/10 shadow-2xl backdrop-blur-2xl p-1.5 z-50">
+            <div className="px-3 py-2 text-[10px] font-mono uppercase tracking-wider text-white/40 border-b border-white/[0.06]">
+              Select Model Engine
             </div>
 
-            <div className="py-1 space-y-1">
+            <div className="py-1 space-y-0.5">
               {models.map((model) => {
                 const isSelected = model.id === current.id;
                 return (
@@ -87,17 +94,23 @@ export const ModelSelector = ({ selectedModel, onSelectModel }) => {
                       setIsOpen(false);
                     }}
                     className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-left transition-colors cursor-pointer ${
-                      isSelected ? 'bg-cyan-500/15 text-cyan-200' : 'hover:bg-slate-800/60 text-slate-300'
+                      isSelected
+                        ? 'bg-white text-[#0a0a0a] font-medium'
+                        : 'hover:bg-white/[0.06] text-white/70 hover:text-white'
                     }`}
                   >
                     <div className="flex items-center gap-2 min-w-0">
-                      <span className="font-semibold text-xs text-white truncate">{model.name}</span>
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-cyan-400 font-mono border border-white/10 shrink-0">
+                      <span className="text-xs truncate">{model.name}</span>
+                      <span
+                        className={`text-[9.5px] px-1.5 py-0.5 rounded-full font-mono shrink-0 ${
+                          isSelected ? 'bg-black/10 text-black' : 'bg-white/[0.06] text-white/50'
+                        }`}
+                      >
                         {model.badge || model.type}
                       </span>
                     </div>
 
-                    {isSelected && <Check className="w-4 h-4 text-cyan-400 shrink-0 ml-2" />}
+                    {isSelected && <Check className="w-3.5 h-3.5 shrink-0 ml-2" />}
                   </button>
                 );
               })}

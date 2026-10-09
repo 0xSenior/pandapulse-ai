@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Database, 
-  RefreshCw, 
-  Trash2, 
-  Search, 
-  FileText, 
-  CheckCircle2, 
+import {
+  Database,
+  RefreshCw,
+  Trash2,
+  Search,
+  FileText,
+  CheckCircle2,
   AlertCircle,
   Hash,
-  Cpu
+  Cpu,
+  Layers,
 } from 'lucide-react';
-import { GlassCard } from '../components/ui/GlassCard';
-import { GlowButton } from '../components/ui/GlowButton';
 import { API_BASE_URL } from '../config/api';
 
 export const KnowledgePage = () => {
@@ -58,92 +57,108 @@ export const KnowledgePage = () => {
         body: JSON.stringify({ force_reindex: true }),
       });
       if (res.ok) {
-        const data = await res.json();
         setNotification({
           type: 'success',
-          message: `Indexed ${data.total_chunks} chunks across ${data.indexed_files} files in ${data.duration_ms}ms!`,
+          message: 'Vector index successfully rebuilt and synced with active data.',
         });
         await fetchStatusAndChunks();
       } else {
-        setNotification({ type: 'error', message: 'Reindexing failed.' });
+        setNotification({
+          type: 'error',
+          message: 'Failed to rebuild index. Please check your backend logs.',
+        });
       }
-    } catch (err) {
-      setNotification({ type: 'error', message: 'Could not reach backend service.' });
+    } catch {
+      setNotification({
+        type: 'error',
+        message: 'Network error communicating with indexing service.',
+      });
     } finally {
       setReindexing(false);
-      setTimeout(() => setNotification(null), 4000);
+      setTimeout(() => setNotification(null), 5000);
     }
   };
 
   const handleClearCache = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/v1/cache/clear`, { method: 'POST' });
+      const res = await fetch(`${API_BASE_URL}/api/v1/cache/clear`, {
+        method: 'POST',
+      });
       if (res.ok) {
-        setNotification({ type: 'success', message: 'LRU Query Cache successfully flushed.' });
+        setNotification({
+          type: 'success',
+          message: 'Query cache flushed successfully.',
+        });
         await fetchStatusAndChunks();
       }
-    } catch (err) {
-      setNotification({ type: 'error', message: 'Failed to clear cache.' });
+    } catch {
+      setNotification({
+        type: 'error',
+        message: 'Failed to clear cache.',
+      });
     } finally {
-      setTimeout(() => setNotification(null), 4000);
+      setTimeout(() => setNotification(null), 5000);
     }
   };
 
-  const filteredChunks = chunks.filter((c) =>
-    c.content.toLowerCase().includes(searchFilter.toLowerCase()) ||
-    c.source_file.toLowerCase().includes(searchFilter.toLowerCase())
+  const filteredChunks = chunks.filter(
+    (c) =>
+      c.content?.toLowerCase().includes(searchFilter.toLowerCase()) ||
+      c.source_file?.toLowerCase().includes(searchFilter.toLowerCase())
   );
 
   return (
-    <div className="py-8 px-4 max-w-6xl mx-auto pb-24">
+    <div className="py-10 px-4 sm:px-6 max-w-6xl mx-auto pb-28 font-sans">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-white/[0.08]">
         <div>
-          <h2 className="text-3xl font-extrabold text-white tracking-tight flex items-center gap-2.5">
-            <Database className="w-8 h-8 text-amber-400" />
-            Python & Pandas Knowledge Engine
-          </h2>
-          <p className="text-sm text-slate-400 mt-1">
-            Real-time ChromaDB collection telemetry for Python and Pandas 2.0+ documentation, chunk inspection, and vector indexing.
+          <span className="text-[11.5px] font-mono uppercase tracking-[0.2em] text-[#6799fe] mb-1.5 block">
+            Knowledge Engine Telemetry
+          </span>
+          <h1 className="text-3xl sm:text-4xl font-display font-medium text-white tracking-tight flex items-center gap-2.5">
+            Knowledge Base & Chunks
+          </h1>
+          <p className="text-sm text-white/60 mt-1 max-w-2xl leading-relaxed">
+            Real-time ChromaDB collection telemetry for Python & Pandas 2.0+ documentation, vector inspection, and neural index management.
           </p>
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-3">
-          <GlowButton
-            variant="amber"
-            icon={RefreshCw}
+        <div className="flex items-center gap-2.5 self-start md:self-auto">
+          <button
+            type="button"
             disabled={reindexing}
             onClick={handleReindex}
-            className="text-xs sm:text-sm px-4 py-2"
+            className="ds-btn-primary text-xs px-4 py-2"
           >
-            {reindexing ? 'Reindexing...' : 'Rebuild Vector Index'}
-          </GlowButton>
+            <RefreshCw className={`w-3.5 h-3.5 ${reindexing ? 'animate-spin' : ''}`} />
+            <span>{reindexing ? 'Reindexing...' : 'Rebuild Index'}</span>
+          </button>
 
-          <GlowButton
-            variant="outline"
-            icon={Trash2}
+          <button
+            type="button"
             onClick={handleClearCache}
-            className="text-xs sm:text-sm px-4 py-2"
+            className="ds-btn-secondary text-xs px-4 py-2"
           >
-            Clear Query Cache
-          </GlowButton>
+            <Trash2 className="w-3.5 h-3.5 text-white/60" />
+            <span>Flush Cache</span>
+          </button>
         </div>
       </div>
 
       {/* Notification Banner */}
       {notification && (
         <div
-          className={`p-4 rounded-xl mb-6 text-sm flex items-center gap-2.5 ${
+          className={`p-3.5 rounded-xl mb-6 text-xs font-mono flex items-center gap-2.5 ${
             notification.type === 'success'
-              ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
-              : 'bg-red-500/15 text-red-300 border border-red-500/30'
+              ? 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/20'
+              : 'bg-rose-500/10 text-rose-300 border border-rose-500/20'
           }`}
         >
           {notification.type === 'success' ? (
-            <CheckCircle2 className="w-5 h-5 shrink-0" />
+            <CheckCircle2 className="w-4 h-4 shrink-0" />
           ) : (
-            <AlertCircle className="w-5 h-5 shrink-0" />
+            <AlertCircle className="w-4 h-4 shrink-0" />
           )}
           <span>{notification.message}</span>
         </div>
@@ -151,62 +166,62 @@ export const KnowledgePage = () => {
 
       {/* Metrics Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <GlassCard className="p-4" hoverEffect={false}>
-          <div className="text-xs text-slate-400 font-medium mb-1">Python & Pandas Chunks</div>
-          <div className="text-2xl font-bold text-white font-mono">
-            {status?.total_indexed_chunks ?? chunks.length} Chunks
+        <div className="ds-card p-4">
+          <div className="text-[11px] font-mono uppercase tracking-wider text-white/40 mb-1">Total Chunks</div>
+          <div className="text-2xl font-display font-medium text-white">
+            {status?.total_indexed_chunks ?? chunks.length}
           </div>
-          <div className="text-[11px] text-cyan-400 mt-1">ChromaDB Persistent</div>
-        </GlassCard>
+          <div className="text-[11px] font-mono text-[#6799fe] mt-1">ChromaDB Persistent</div>
+        </div>
 
-        <GlassCard className="p-4" hoverEffect={false}>
-          <div className="text-xs text-slate-400 font-medium mb-1">Cached Queries</div>
-          <div className="text-2xl font-bold text-white font-mono">
-            {status?.cache_stats?.current_size ?? 0} / {status?.cache_stats?.capacity ?? 256}
+        <div className="ds-card p-4">
+          <div className="text-[11px] font-mono uppercase tracking-wider text-white/40 mb-1">Cached Queries</div>
+          <div className="text-2xl font-display font-medium text-white">
+            {status?.cache_stats?.current_size ?? 0} <span className="text-sm text-white/40">/ {status?.cache_stats?.capacity ?? 256}</span>
           </div>
-          <div className="text-[11px] text-blue-400 mt-1">
+          <div className="text-[11px] font-mono text-emerald-400 mt-1">
             Hit Ratio: {status?.cache_stats?.hit_percentage ?? '0%'}
           </div>
-        </GlassCard>
+        </div>
 
-        <GlassCard className="p-4" hoverEffect={false}>
-          <div className="text-xs text-slate-400 font-medium mb-1">Embedding Engine</div>
-          <div className="text-lg font-bold text-white font-mono truncate">
+        <div className="ds-card p-4">
+          <div className="text-[11px] font-mono uppercase tracking-wider text-white/40 mb-1">Embedding Engine</div>
+          <div className="text-lg font-display font-medium text-white truncate">
             {status?.embedding_model ?? 'nomic-embed-text'}
           </div>
-          <div className="text-[11px] text-indigo-400 mt-1">768-dim Cosine Space</div>
-        </GlassCard>
+          <div className="text-[11px] font-mono text-white/50 mt-1">768-dim Vector Space</div>
+        </div>
 
-        <GlassCard className="p-4" hoverEffect={false}>
-          <div className="text-xs text-slate-400 font-medium mb-1">Ollama Model Backend</div>
-          <div className="text-lg font-bold text-white font-mono truncate">
-            {status?.active_model ?? 'llama3:8b'}
+        <div className="ds-card p-4">
+          <div className="text-[11px] font-mono uppercase tracking-wider text-white/40 mb-1">Model Backend</div>
+          <div className="text-lg font-display font-medium text-white truncate">
+            {status?.active_model ?? 'DeepSeek-V4-Flash'}
           </div>
-          <div className="text-[11px] text-emerald-400 mt-1">
+          <div className="text-[11px] font-mono text-emerald-400 mt-1">
             Status: {status?.ollama_status ?? 'online'}
           </div>
-        </GlassCard>
+        </div>
       </div>
 
       {/* Search and Chunks List */}
-      <div className="glass-panel rounded-2xl p-6 border border-white/10">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-          <h3 className="text-lg font-bold text-white flex items-center gap-2">
-            <FileText className="w-5 h-5 text-cyan-400" />
-            <span>Document Chunks Inspection</span>
-            <span className="text-xs font-mono text-slate-400 bg-white/5 px-2 py-0.5 rounded-full">
-              {filteredChunks.length} chunks
+      <div className="ds-card p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-white/[0.08]">
+          <div className="flex items-center gap-2">
+            <FileText className="w-4 h-4 text-[#6799fe]" />
+            <span className="font-display font-medium text-white text-[15px]">Document Chunks</span>
+            <span className="text-[10px] font-mono bg-white/[0.06] text-white/60 px-2 py-0.5 rounded-full">
+              {filteredChunks.length} records
             </span>
-          </h3>
+          </div>
 
           <div className="relative w-full sm:w-72">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-3.5 h-3.5 text-white/40 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={searchFilter}
               onChange={(e) => setSearchFilter(e.target.value)}
-              placeholder="Search content or file..."
-              className="w-full bg-slate-900/80 border border-white/10 rounded-xl pl-9 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-400/50"
+              placeholder="Filter chunks or source..."
+              className="w-full bg-white/[0.04] border border-white/10 rounded-full pl-9 pr-3 py-1.5 text-xs text-white placeholder-white/40 focus:outline-none focus:border-white/30"
             />
           </div>
         </div>
@@ -214,29 +229,24 @@ export const KnowledgePage = () => {
         {/* Chunks List */}
         <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2">
           {filteredChunks.length === 0 ? (
-            <div className="text-center py-12 text-slate-500 text-sm">
-              {loading ? 'Loading chunks...' : 'No chunks match your search query.'}
+            <div className="text-center py-12 text-white/40 text-xs font-mono">
+              {loading ? 'Fetching vector chunks from database...' : 'No chunks match the current filter.'}
             </div>
           ) : (
-            filteredChunks.map((chunk) => (
+            filteredChunks.map((chunk, index) => (
               <div
-                key={chunk.id}
-                className="p-4 rounded-xl bg-slate-900/60 border border-white/5 hover:border-white/15 transition-colors"
+                key={chunk.id || index}
+                className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:border-white/[0.12] transition-colors flex flex-col gap-2"
               >
-                <div className="flex items-center justify-between mb-2 text-xs">
-                  <span className="font-semibold text-cyan-300 font-mono flex items-center gap-1.5">
-                    <FileText className="w-3.5 h-3.5 text-cyan-400" />
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[11.5px] font-mono text-[#6799fe] truncate font-medium">
                     {chunk.source_file}
                   </span>
-                  <div className="flex items-center gap-3 text-slate-400 font-mono text-[11px]">
-                    <span>{chunk.char_count} chars</span>
-                    <span className="px-1.5 py-0.5 rounded bg-white/5 text-slate-400">
-                      Index #{chunk.chunk_index}
-                    </span>
-                  </div>
+                  <span className="text-[10px] font-mono text-white/40 shrink-0">
+                    Chunk #{index + 1}
+                  </span>
                 </div>
-
-                <p className="text-xs text-slate-300 font-mono leading-relaxed bg-slate-950/60 p-3 rounded-lg border border-white/5 line-clamp-3">
+                <p className="text-[12.5px] text-white/70 font-mono leading-relaxed line-clamp-3">
                   {chunk.content}
                 </p>
               </div>

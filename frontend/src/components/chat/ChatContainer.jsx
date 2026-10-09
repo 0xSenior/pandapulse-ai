@@ -297,12 +297,12 @@ _j.dumps(schema_summary)
   return (
     <div className="flex flex-col h-[calc(100vh-85px)] w-full max-w-[1850px] mx-auto px-2 sm:px-4 pb-2 font-sans">
       {/* Top Header & Actions */}
-      <div className="flex flex-wrap items-center justify-between gap-3 py-2 mb-2 border-b border-white/10 shrink-0">
+      <div className="flex flex-wrap items-center justify-between gap-3 py-2.5 mb-2 border-b border-white/[0.08] shrink-0">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]" />
-            <h2 className="text-sm sm:text-base font-bold text-white tracking-wide">
-              PandaPulse AI Studio
+            <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]" />
+            <h2 className="text-sm sm:text-base font-display font-medium text-white tracking-tight">
+              PandaPulse Chat
             </h2>
           </div>
 
@@ -319,24 +319,24 @@ _j.dumps(schema_summary)
           <button
             type="button"
             onClick={handleNewChat}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-cyan-600/90 hover:bg-cyan-500 text-white shadow-sm shadow-cyan-900/30 transition-all cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-white text-[#0a0a0a] hover:bg-white/90 shadow-sm transition-all cursor-pointer"
             title="Start fresh conversation"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">New Chat</span>
+            <span className="hidden sm:inline">New Session</span>
           </button>
 
           {/* History Sessions Drawer Toggle */}
           <button
             type="button"
             onClick={() => setIsHistoryOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900/90 text-slate-300 hover:text-white border border-white/10 hover:border-cyan-500/30 transition-all cursor-pointer shadow-sm"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-white/[0.06] hover:bg-white/[0.12] text-white/80 hover:text-white border border-white/10 transition-all cursor-pointer"
             title="Open Chat History"
           >
-            <History className="w-3.5 h-3.5 text-cyan-400" />
+            <History className="w-3.5 h-3.5 text-white/60" />
             <span className="hidden sm:inline">History</span>
             {sessions.length > 0 && (
-              <span className="px-1.5 py-0.2 rounded-full bg-cyan-950 text-cyan-400 text-[10px] font-mono border border-cyan-800/40">
+              <span className="px-1.5 py-0.2 rounded-full bg-white/10 text-white text-[10px] font-mono">
                 {sessions.length}
               </span>
             )}
@@ -346,7 +346,7 @@ _j.dumps(schema_summary)
           <button
             type="button"
             onClick={handleExportJupyter}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900/90 text-slate-300 hover:text-white border border-white/10 hover:border-cyan-500/30 transition-all cursor-pointer shadow-sm"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-white/[0.06] hover:bg-white/[0.12] text-white/80 hover:text-white border border-white/10 transition-all cursor-pointer"
             title="Export full session as Jupyter Notebook (.ipynb)"
           >
             <FileCode className="w-3.5 h-3.5 text-amber-400" />
@@ -357,10 +357,10 @@ _j.dumps(schema_summary)
           <button
             type="button"
             onClick={() => setIsSettingsOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900/90 text-slate-300 hover:text-white border border-white/10 hover:border-cyan-500/30 transition-all cursor-pointer shadow-sm"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-white/[0.06] hover:bg-white/[0.12] text-white/80 hover:text-white border border-white/10 transition-all cursor-pointer"
             title="API Settings & BYOK"
           >
-            <Settings className="w-3.5 h-3.5 text-slate-400" />
+            <Settings className="w-3.5 h-3.5 text-white/60" />
             <span className="hidden sm:inline">Settings</span>
           </button>
 
@@ -368,14 +368,14 @@ _j.dumps(schema_summary)
           <button
             type="button"
             onClick={() => setIsStudioOpen(!isStudioOpen)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer shadow-sm ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all cursor-pointer ${
               isStudioOpen
-                ? 'bg-cyan-500/20 text-cyan-200 border-cyan-500/40 shadow-cyan-500/20'
-                : 'bg-slate-900/90 text-slate-300 hover:text-white border-white/10 hover:border-cyan-500/30'
+                ? 'bg-white text-[#0a0a0a] border-transparent shadow-sm'
+                : 'bg-white/[0.06] hover:bg-white/[0.12] text-white/80 hover:text-white border-white/10'
             }`}
             title="Toggle Split-Screen Canvas Studio"
           >
-            <Columns className="w-3.5 h-3.5 text-cyan-400" />
+            <Columns className="w-3.5 h-3.5" />
             <span className="hidden md:inline">{isStudioOpen ? 'Close Studio' : 'Split Canvas'}</span>
           </button>
 
@@ -383,11 +383,10 @@ _j.dumps(schema_summary)
           <button
             type="button"
             onClick={clearChat}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs text-slate-400 hover:text-slate-200 hover:bg-white/5 border border-white/10 transition-colors cursor-pointer"
+            className="p-1.5 rounded-full text-white/40 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
             title="Clear Chat Session"
           >
             <Trash2 className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Clear</span>
           </button>
         </div>
       </div>
@@ -419,8 +418,8 @@ _j.dumps(schema_summary)
 
           {/* Suggested Quick Prompts */}
           <div className="pt-2 pb-1.5 flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0">
-            <span className="flex items-center gap-1 text-[11px] text-slate-400 shrink-0 font-medium font-mono px-2 py-1 rounded-md bg-white/[0.03] border border-white/5">
-              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+            <span className="flex items-center gap-1 text-[11px] text-white/40 shrink-0 font-medium font-mono px-2 py-1 rounded-md bg-white/[0.03] border border-white/[0.06]">
+              <Sparkles className="w-3.5 h-3.5 text-[#6799fe]" />
               <span className="hidden sm:inline">Shortcuts</span>
             </span>
             {QUICK_PROMPTS.map((item) => {
@@ -432,37 +431,40 @@ _j.dumps(schema_summary)
                   onClick={() => handleQuickPrompt(item.prompt)}
                   disabled={isStreaming}
                   title={item.prompt}
-                  className="group flex items-center gap-1.5 text-xs whitespace-nowrap px-2.5 py-1.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-white/10 hover:border-cyan-400/40 transition-all cursor-pointer disabled:opacity-50 shadow-sm"
+                  className="group flex items-center gap-1.5 text-xs whitespace-nowrap px-2.5 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-white/70 hover:text-white border border-white/[0.06] hover:border-white/[0.15] transition-all cursor-pointer disabled:opacity-50"
                 >
-                  <PromptIcon className={`w-3.5 h-3.5 ${item.color} group-hover:scale-110 transition-transform`} />
+                  <PromptIcon className="w-3.5 h-3.5 text-[#6799fe] group-hover:scale-105 transition-transform" />
                   <span className="font-sans text-[12px]">{item.label}</span>
                 </button>
               );
             })}
           </div>
 
-          {/* Unified ChatGPT Input Box */}
+          {/* DeepSeek Harness Style Composer Input Box */}
           <form
             onSubmit={handleSubmit}
             onDragOver={(e) => e.preventDefault()}
             onDrop={handleDrop}
-            className="relative mt-1 shrink-0 rounded-2xl sm:rounded-3xl bg-slate-900/90 border border-white/10 hover:border-white/15 focus-within:border-cyan-500/40 focus-within:ring-2 focus-within:ring-cyan-500/10 shadow-2xl transition-all p-2.5 sm:p-3 backdrop-blur-xl"
+            className="relative mt-1 shrink-0 rounded-2xl bg-[#111111]/90 border border-white/[0.1] hover:border-white/20 focus-within:border-white/30 transition-all p-3 backdrop-blur-xl"
+            style={{
+              boxShadow: 'inset 0 1px 0 0 rgba(255, 255, 255, 0.1), 0 12px 30px rgba(0, 0, 0, 0.5)',
+            }}
           >
             {/* Embedded Attached Dataset Card */}
             {activeDataset && (
-              <div className="mb-2 p-2 sm:p-2.5 rounded-xl bg-slate-800/80 border border-cyan-500/30 flex items-center justify-between gap-3 text-xs">
+              <div className="mb-2 p-2 sm:p-2.5 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-between gap-3 text-xs">
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-8 h-8 rounded-lg bg-cyan-500/15 text-cyan-300 flex items-center justify-center shrink-0 border border-cyan-500/20">
+                  <div className="w-8 h-8 rounded-lg bg-[#6799fe]/15 text-[#6799fe] flex items-center justify-center shrink-0 border border-[#6799fe]/20">
                     <FileSpreadsheet className="w-4 h-4" />
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-slate-100 truncate text-xs">{activeDataset.name}</span>
-                      <span className="px-1.5 py-0.5 rounded-md bg-cyan-950/80 text-cyan-300 font-mono text-[10px] border border-cyan-800/40 shrink-0">
+                      <span className="font-medium text-white truncate text-xs">{activeDataset.name}</span>
+                      <span className="px-1.5 py-0.5 rounded-md bg-white/[0.06] text-white/70 font-mono text-[10px]">
                         {activeDataset.rows} rows × {activeDataset.cols} cols
                       </span>
                     </div>
-                    <p className="text-[11px] text-slate-400 font-mono mt-0.5 truncate">
+                    <p className="text-[11px] text-white/40 font-mono mt-0.5 truncate">
                       {activeDataset.path} • {activeDataset.sizeKb} KB
                     </p>
                   </div>
@@ -474,15 +476,15 @@ _j.dumps(schema_summary)
                     onClick={() => {
                       setInput(`Analyze dataset '${activeDataset.path}' with columns: [${(activeDataset.columns || []).slice(0, 8).join(', ')}]. Provide summary statistics, missing values, and modern Pandas 2.0+ operations.`);
                     }}
-                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/20 transition-all cursor-pointer text-xs"
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/[0.08] hover:bg-white/[0.15] text-white border border-white/10 transition-all cursor-pointer text-xs"
                   >
-                    <Sparkles className="w-3 h-3 text-cyan-400" />
+                    <Sparkles className="w-3 h-3 text-[#6799fe]" />
                     <span className="hidden sm:inline">Auto-Analyze</span>
                   </button>
                   <button
                     type="button"
                     onClick={clearDataset}
-                    className="p-1 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                    className="p-1 rounded-lg text-white/40 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
                     title="Remove dataset"
                   >
                     <X className="w-3.5 h-3.5" />
@@ -505,11 +507,11 @@ _j.dumps(schema_summary)
               placeholder="Ask anything about Python 3.x, modern Pandas 2.0+, or data engineering..."
               rows={1}
               disabled={isStreaming}
-              className="w-full bg-transparent px-2 py-1 text-sm sm:text-base text-slate-100 placeholder-slate-400/80 focus:outline-none resize-none font-sans min-h-[44px] max-h-40 leading-relaxed"
+              className="w-full bg-transparent px-2 py-1 text-sm sm:text-[14.5px] text-white placeholder-white/40 focus:outline-none resize-none font-sans min-h-[44px] max-h-40 leading-relaxed"
             />
 
             {/* Bottom Action Toolbar */}
-            <div className="flex items-center justify-between pt-1.5 border-t border-white/5">
+            <div className="flex items-center justify-between pt-2 border-t border-white/[0.06]">
               {/* Left: Attach File & Status */}
               <div className="flex items-center gap-2">
                 <input
@@ -523,40 +525,40 @@ _j.dumps(schema_summary)
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isUploading}
-                  className="group flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-cyan-300 hover:bg-white/5 border border-transparent hover:border-white/10 transition-all cursor-pointer disabled:opacity-50"
+                  className="group flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium text-white/60 hover:text-white hover:bg-white/[0.06] border border-white/[0.06] transition-all cursor-pointer disabled:opacity-50"
                   title="Attach CSV, Parquet, TSV, or Excel dataset"
                 >
                   {isUploading ? (
-                    <Loader2 className="w-4 h-4 animate-spin text-cyan-400" />
+                    <Loader2 className="w-3.5 h-3.5 animate-spin text-[#6799fe]" />
                   ) : (
-                    <Paperclip className="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform" />
+                    <Paperclip className="w-3.5 h-3.5 text-white/60 group-hover:text-white transition-colors" />
                   )}
                   <span className="hidden sm:inline">
                     {isUploading ? uploadStatus : 'Attach Dataset'}
                   </span>
                 </button>
                 {isUploading && (
-                  <span className="sm:hidden text-[11px] text-cyan-300 animate-pulse font-mono truncate max-w-[150px]">
+                  <span className="sm:hidden text-[11px] text-[#6799fe] animate-pulse font-mono truncate max-w-[150px]">
                     {uploadStatus}
                   </span>
                 )}
                 <span
                   title="Zero Data Retention: Datasets execute locally in browser memory via WebAssembly and are never sent to any server"
-                  className="hidden md:inline-flex items-center gap-1 text-[10px] text-emerald-400 font-mono px-2 py-0.5 rounded-full bg-emerald-950/40 border border-emerald-800/30"
+                  className="hidden md:inline-flex items-center gap-1 text-[10px] text-emerald-400 font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20"
                 >
                   <ShieldCheck className="w-3 h-3 text-emerald-400" />
                   <span>Client WASM Safe</span>
                 </span>
               </div>
 
-              {/* Right: Send Button */}
+              {/* Right: Send Button (DeepSeek Round White Button) */}
               <button
                 type="submit"
                 disabled={(!input.trim() && !activeDataset) || isStreaming}
-                className="p-2 sm:p-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold transition-all shadow-lg shadow-cyan-500/20 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer shrink-0"
+                className="w-8 h-8 rounded-full bg-white text-[#0a0a0a] flex items-center justify-center hover:bg-white/90 active:scale-95 transition-all shadow-sm disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer shrink-0"
                 title="Send prompt"
               >
-                <Send className="w-4 h-4" />
+                <Send className="w-3.5 h-3.5" />
               </button>
             </div>
           </form>
