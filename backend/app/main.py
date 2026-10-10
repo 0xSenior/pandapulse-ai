@@ -8,16 +8,18 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.application.use_cases import GetStatusUseCase
 from app.core.config import settings
+from app.core.middleware import RateLimitMiddleware, SecurityAndTracingMiddleware
 from app.presentation.dependencies import (
     get_doc_loader,
+    get_llm_provider,
     get_status_use_case,
     get_vector_store,
 )
 from app.presentation.routes import router as api_router, status_endpoint
 
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    level=getattr(logging, settings.LOG_LEVEL.upper(), logging.INFO),
+    format="%(asctime)s [%(levelname)s] [%(name)s] %(message)s",
 )
 logger = logging.getLogger("pandapulse")
 
@@ -25,7 +27,7 @@ logger = logging.getLogger("pandapulse")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifecycle: auto-indexes documentation on initial cold boot if empty."""
-    logger.info("Initializing PandaPulse AI Engine...")
+    logger.info("Initializing PandaPulse AI Engine in production mode...")
     try:
         vector_store = get_vector_store()
         doc_loader = get_doc_loader()
@@ -46,7 +48,14 @@ async def lifespan(app: FastAPI):
         logger.error(f"Error during vector store cold-boot initialization: {e}")
 
     yield
-    logger.info("Shutting down PandaPulse AI Engine...")
+
+    logger.info("Gracefully shutting down PandaPulse AI Engine...")
+    try:
+        llm = get_llm_provider()
+        if hasattr(llm, "aclose"):
+            await llm.aclose()
+    except Exception as e:
+        logger.warning(f"Error closing LLM connection pool: {e}")
 
 
 def create_app() -> FastAPI:
@@ -58,17 +67,41 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
 
-    # CORS Middleware
+    # 1. Security Headers & Request Correlation Tracing Middleware
+    app.add_middleware(SecurityAndTracingMiddleware)
+
+    # 2. Sliding Window Rate Limiting Middleware (safeguards LLM quota)
+    app.add_middleware(
+        RateLimitMiddleware,
+        per_minute=settings.RATE_LIMIT_PER_MINUTE,
+        enabled=settings.RATE_LIMIT_ENABLED,
+    )
+
+    # 3. CORS Middleware
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.CORS_ORIGINS,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
+        expose_headers=["X-Request-ID", "X-Response-Time", "X-RateLimit-Limit", "X-RateLimit-Remaining"],
     )
 
     # Mount API Router
     app.include_router(api_router)
+
+    # Orchestrator Probes at root level for Docker & Kubernetes
+    @app.get("/healthz")
+    async def root_healthz():
+        return {"status": "alive", "service": "pandapulse-ai"}
+
+    @app.get("/readyz")
+    async def root_readyz():
+        try:
+            count = get_vector_store().count()
+            return {"status": "ready", "total_chunks": count}
+        except Exception as e:
+            return {"status": "degraded", "error": str(e)}
 
     # Global status aliases for serverless path flexibility
     @app.get("/status")
@@ -87,6 +120,7 @@ def create_app() -> FastAPI:
             "tagline": "The Neural AI Engine for Python Programming and Modern Pandas Data Engineering",
             "version": "1.0.0",
             "status": "operational",
+            "environment": settings.ENVIRONMENT,
             "endpoints": {
                 "docs": "/docs",
                 "chat": "/api/v1/chat",
@@ -95,6 +129,8 @@ def create_app() -> FastAPI:
                 "models": "/api/v1/models",
                 "reindex": "/api/v1/reindex",
                 "chunks": "/api/v1/chunks",
+                "healthz": "/healthz",
+                "readyz": "/readyz",
             },
         }
 

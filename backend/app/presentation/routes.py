@@ -1,8 +1,6 @@
-"""API Presentation routes for PandaPulse AI."""
-
 import json
 
-from fastapi import APIRouter, Depends, Query as QueryParam
+from fastapi import APIRouter, Depends, Header, HTTPException, Query as QueryParam
 from fastapi.responses import StreamingResponse
 
 from app.application.dto import IngestRequestDTO, QueryRequestDTO
@@ -11,6 +9,7 @@ from app.application.use_cases import (
     IngestDocsUseCase,
     QueryPandasDocsUseCase,
 )
+from app.core.config import settings
 from app.domain.interfaces import ICache, IVectorStore
 from app.presentation.dependencies import (
     get_cache,
@@ -30,6 +29,35 @@ from app.presentation.schemas import (
 )
 
 router = APIRouter(prefix="/api/v1", tags=["PandaPulse AI"])
+
+
+def verify_admin_key(x_admin_key: str | None = Header(default=None, alias="X-Admin-Key")) -> bool:
+    """Protect sensitive operations if ADMIN_API_KEY is configured in production."""
+    admin_key = settings.ADMIN_API_KEY.strip()
+    if admin_key and x_admin_key != admin_key:
+        raise HTTPException(
+            status_code=403,
+            detail="Forbidden: Admin credentials required. Provide a valid 'X-Admin-Key' header.",
+        )
+    return True
+
+
+@router.get("/healthz")
+async def healthz_endpoint():
+    """Liveness probe for container orchestrators (Kubernetes / Docker)."""
+    return {"status": "alive", "service": "pandapulse-ai"}
+
+
+@router.get("/readyz")
+async def readyz_endpoint(
+    vector_store: IVectorStore = Depends(get_vector_store),
+):
+    """Readiness probe verifying vector store connectivity."""
+    try:
+        count = vector_store.count()
+        return {"status": "ready", "total_chunks": count}
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"Database not ready: {e!s}")
 
 
 @router.post("/chat", response_model=ChatResponse)
@@ -120,6 +148,7 @@ async def status_endpoint(
 async def reindex_endpoint(
     request: ReindexRequest = ReindexRequest(),
     use_case: IngestDocsUseCase = Depends(get_ingest_use_case),
+    _admin: bool = Depends(verify_admin_key),
 ):
     """Rebuild or incrementally update ChromaDB vector store."""
     dto_in = IngestRequestDTO(
@@ -160,6 +189,7 @@ async def get_chunks_endpoint(
 @router.post("/cache/clear")
 async def clear_cache_endpoint(
     cache: ICache = Depends(get_cache),
+    _admin: bool = Depends(verify_admin_key),
 ):
     """Manually flush the query cache."""
     cache.clear()

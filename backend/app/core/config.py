@@ -20,6 +20,10 @@ class Settings(BaseSettings):
         "http://127.0.0.1:3000",
         "*",
     ]
+    ADMIN_API_KEY: str = ""
+    RATE_LIMIT_ENABLED: bool = True
+    RATE_LIMIT_PER_MINUTE: int = 60
+    LOG_LEVEL: str = "INFO"
 
     # Ollama & Local Models
     OLLAMA_BASE_URL: str = "http://localhost:11434"

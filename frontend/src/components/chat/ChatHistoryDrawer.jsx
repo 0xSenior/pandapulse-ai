@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X,
@@ -9,9 +10,9 @@ import {
   Search,
   MessageSquare,
   Clock,
-  Sparkles,
 } from 'lucide-react';
 import { exportChatAsJupyterNotebook } from '../../services/exportService';
+import { useLanguage } from '../../context/LanguageContext';
 
 export const ChatHistoryDrawer = ({
   isOpen,
@@ -23,7 +24,26 @@ export const ChatHistoryDrawer = ({
   onDeleteSession,
   onClearAll,
 }) => {
+  const { t, locale, isRTL } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Lock body scroll and listen for Escape key when open
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
 
   const filteredSessions = sessions.filter((s) =>
     s.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -32,37 +52,56 @@ export const ChatHistoryDrawer = ({
   const formatDate = (dateStr) => {
     try {
       const date = new Date(dateStr);
-      return date.toLocaleDateString(undefined, {
+      return date.toLocaleDateString(locale === 'AR' ? 'ar-EG' : undefined, {
         month: 'short',
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
       });
     } catch {
-      return 'Recently';
+      return locale === 'AR' ? 'مؤخراً' : 'Recently';
     }
   };
 
-  return (
+  const getSessionsCountText = () => {
+    const count = sessions.length;
+    if (locale === 'AR') {
+      if (count === 0) return t('noHistory');
+      if (count === 1) return `1 ${t('savedSession')}`;
+      return `${count} ${t('savedSessions')}`;
+    }
+    return `${count} ${count === 1 ? t('savedSession') : t('savedSessions')}`;
+  };
+
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <>
+        <div
+          className="fixed inset-0 z-[100] isolate pointer-events-auto"
+          dir={isRTL ? 'rtl' : 'ltr'}
+        >
           {/* Backdrop */}
           <motion.div
+            key="history-backdrop"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 cursor-pointer"
+            className="fixed inset-0 bg-black/75 backdrop-blur-md z-[100] cursor-pointer"
+            aria-hidden="true"
           />
 
           {/* Side Drawer */}
           <motion.aside
+            key="history-drawer"
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 220 }}
-            className="fixed top-0 right-0 bottom-0 w-full sm:w-[460px] bg-[#141414]/95 border-l border-white/[0.08] shadow-2xl z-50 flex flex-col backdrop-blur-2xl p-6 overflow-hidden"
+            className="fixed top-0 right-0 bottom-0 w-full sm:w-[460px] bg-[#141414]/98 border-l border-white/[0.08] shadow-[0_0_60px_rgba(0,0,0,0.85)] z-[101] flex flex-col backdrop-blur-2xl p-6 overflow-hidden"
           >
             {/* Drawer Header */}
             <div className="flex items-center justify-between pb-4 border-b border-white/[0.08] mb-4 shrink-0">
@@ -71,9 +110,11 @@ export const ChatHistoryDrawer = ({
                   <History className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-white text-base font-display">Chat History</h3>
+                  <h3 className="font-semibold text-white text-base font-display">
+                    {t('chatHistoryTitle')}
+                  </h3>
                   <p className="text-xs text-white/50 font-mono">
-                    {sessions.length} saved session{sessions.length === 1 ? '' : 's'}
+                    {getSessionsCountText()}
                   </p>
                 </div>
               </div>
@@ -86,16 +127,18 @@ export const ChatHistoryDrawer = ({
                     onClose();
                   }}
                   className="flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-white hover:bg-white/90 text-[#0a0a0a] text-xs font-semibold shadow-sm transition-all cursor-pointer active:scale-95"
-                  title="Start a new chat session"
+                  title={t('newChat')}
                 >
                   <Plus className="w-3.5 h-3.5" />
-                  <span>New Chat</span>
+                  <span>{t('newChat')}</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={onClose}
                   className="w-8 h-8 rounded-full bg-white/[0.05] hover:bg-white/[0.1] text-white/60 hover:text-white transition-all flex items-center justify-center cursor-pointer border border-white/[0.06]"
+                  title={t('closeDrawer')}
+                  aria-label={t('closeDrawer')}
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -104,13 +147,19 @@ export const ChatHistoryDrawer = ({
 
             {/* Search Bar */}
             <div className="relative mb-3 shrink-0">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/40" />
+              <Search
+                className={`w-4 h-4 absolute top-1/2 -translate-y-1/2 text-white/40 ${
+                  isRTL ? 'right-3' : 'left-3'
+                }`}
+              />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search sessions..."
-                className="w-full bg-white/[0.03] hover:bg-white/[0.05] focus:bg-white/[0.05] border border-white/[0.08] focus:border-[#6799fe]/50 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-white/30 focus:outline-none font-sans transition-all"
+                placeholder={t('searchSessionsPlaceholder')}
+                className={`w-full bg-white/[0.03] hover:bg-white/[0.05] focus:bg-white/[0.05] border border-white/[0.08] focus:border-[#6799fe]/50 rounded-xl py-2 text-xs text-white placeholder-white/30 focus:outline-none font-sans transition-all ${
+                  isRTL ? 'pr-9 pl-3' : 'pl-9 pr-3'
+                }`}
               />
             </div>
 
@@ -119,8 +168,8 @@ export const ChatHistoryDrawer = ({
               {filteredSessions.length === 0 ? (
                 <div className="text-center py-16 text-white/40 text-xs">
                   <MessageSquare className="w-8 h-8 mx-auto mb-2 text-white/20" />
-                  <p className="font-medium text-white/70">No chat sessions found</p>
-                  <p className="text-white/40 mt-1">Start a conversation to see your history here.</p>
+                  <p className="font-medium text-white/70">{t('noSessionsFound')}</p>
+                  <p className="text-white/40 mt-1">{t('startConversationPrompt')}</p>
                 </div>
               ) : (
                 filteredSessions.map((session) => {
@@ -161,7 +210,7 @@ export const ChatHistoryDrawer = ({
                               );
                             }}
                             className="p-1 rounded-md text-white/50 hover:text-[#6799fe] hover:bg-white/5 transition-colors cursor-pointer"
-                            title="Export session as Jupyter Notebook (.ipynb)"
+                            title={t('exportNotebookTooltip')}
                           >
                             <Download className="w-3.5 h-3.5" />
                           </button>
@@ -173,7 +222,7 @@ export const ChatHistoryDrawer = ({
                               onDeleteSession(session.id);
                             }}
                             className="p-1 rounded-md text-white/50 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
-                            title="Delete session"
+                            title={t('deleteSessionTooltip')}
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -189,7 +238,10 @@ export const ChatHistoryDrawer = ({
                           <span className="px-1.5 py-0.5 rounded bg-white/[0.05] text-white/60 text-[10px] border border-white/[0.05]">
                             {session.modelName}
                           </span>
-                          <span>{session.messageCount} messages</span>
+                          <span>
+                            {session.messageCount}{' '}
+                            {session.messageCount === 1 ? t('messageUnit') : t('messagesUnit')}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -202,7 +254,7 @@ export const ChatHistoryDrawer = ({
             {sessions.length > 0 && (
               <div className="pt-3 border-t border-white/[0.08] mt-2 shrink-0 flex items-center justify-between text-xs">
                 <span className="text-white/40 font-mono text-[11px]">
-                  Stored locally in browser
+                  {t('storedLocally')}
                 </span>
                 <button
                   type="button"
@@ -210,13 +262,14 @@ export const ChatHistoryDrawer = ({
                   className="flex items-center gap-1 px-2.5 py-1 text-white/50 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer"
                 >
                   <Trash2 className="w-3 h-3" />
-                  <span>Clear All History</span>
+                  <span>{t('clearAllHistory')}</span>
                 </button>
               </div>
             )}
           </motion.aside>
-        </>
+        </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 };
